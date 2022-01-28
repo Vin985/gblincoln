@@ -1,0 +1,474 @@
+---
+title: "Brownie_ATBRards"
+author: "F Baldwin"
+date: "09/02/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+## ----Libraries------------------
+
+```{r}
+library(tidyverse)
+library(RMark)
+library(stringr)
+library(geosphere)
+library(rworldmap)
+library(rnaturalearth)
+library(sf)
+library(xlsx)
+
+root <- getwd()
+```
+
+
+
+#GAMEBIRDS SCREENING CRITERIA
+
+#Bandings:
+#ATBR, everything else
+
+
+#Recoveries
+
+#ATBR, everything else
+
+#Additonal R filtering in code below
+
+#NU
+#Banding Month: 07/08
+#recovery month: Sept-March
+#if recovery month <4 then recovery year = recovery year - 1
+#Ages:01, 05, 06, 07, 08 (AHY), 02 (HY), 03 (juvenile), 04(local)<- all considered HY
+#SEX: 04 (male), 05 (female)
+#Status: 3 only
+#Extra info: 00 (normal), 01 (color band), 07 (double bands), 08 (temp marker, dye), 25 (geolocators), 18 (blood sampled)
+
+#############################################################################################################################
+###                                                  ATBR BANDING DATA
+#############################################################################################################################
+
+
+#Files to import
+
+
+```{r}
+ATBRBAND <- read.csv(file.path(root, "ATBR_allbandings.csv"),stringsAsFactors = FALSE)
+```
+
+##Replaces spaces in column names using stringr package (replaces spaces with .)
+
+```{r}
+names(ATBRBAND)<-str_replace_all(names(ATBRBAND), c(" " = "." , "," = "" ))
+```
+
+##check for any NA banding years; there are none
+```{r}
+table(ATBRBAND$B.Year, useNA = "always")
+```
+#ASSIGN AGE CLASSES (AHY or HY)
+
+
+```{r}
+ATBRBAND$TAGE[ATBRBAND$Age == 1] <- "AHY"
+ATBRBAND$TAGE[ATBRBAND$Age == 5] <- "AHY"
+ATBRBAND$TAGE[ATBRBAND$Age == 6] <- "AHY"
+ATBRBAND$TAGE[ATBRBAND$Age == 7] <- "AHY"
+ATBRBAND$TAGE[ATBRBAND$Age == 8] <- "AHY"
+ATBRBAND$TAGE[ATBRBAND$Age == 2] <- "HY"
+ATBRBAND$TAGE[ATBRBAND$Age == 3] <- "HY"
+ATBRBAND$TAGE[ATBRBAND$Age == 4] <- "HY"
+ATBRBAND$TAGE[ATBRBAND$Age == 0] <- NA
+ATBRBAND$TSEX[ATBRBAND$Sex== 4] <-"MALE"
+ATBRBAND$TSEX[ATBRBAND$Sex== 5] <-"FEMALE"
+```
+
+
+#Extra info: 00 (normal), 01 (color band), 07 (double bands), 08 (temp marker, dye), 25 (geolocators), 18 (blood sampled)
+#FILTERING FOR ONLY KNOWN SEXES (MALES, FEMALES)
+#SHORTENING STATE/PROV COLUMN TO 'LOC'
+
+
+```{r}
+ATBRBAND1 <- ATBRBAND %>%
+  filter(Status==3) %>% # normal, wild birds
+    filter(Add.Info %in% c(00, 01, 07, 08, 25, 18),  #00 (normal), 01 (color band), 07 (double bands), 08 (temp marker-paint or dye), 25 (geolocators), 18 (blood sampled)
+        Sex%in% c(4,5)
+         ) %>%
+  filter(TAGE=='AHY') %>% 
+  rename(LOC = Location_lu..STATE_NAME
+         )
+```
+
+
+
+
+#DESELECT COLUMNS NOT oF INTEREST and remove any NAs from Age
+
+```{r}
+ATBRBAND2 <- ATBRBAND1 %>%
+  filter(!is.na(TAGE)) %>%
+  filter(LOC %in% c("Nunavut"))%>%
+  filter(B.Month>6)%>%
+  filter(B.Month<9)%>%
+  select(-Sex..VSEX, -B.Coordinate.Precision, -Band.Size, -How_aged..How.Aged.Description, -How.Sexed, -How.Aged, -Age..VAGE,
+         -AI..VAI, -coord_precision..LOCATION_ACCURACY_DESC, -DayCode..Day.Span, -How_sexed..How.Sexed.Description, 
+         -Location_lu..COUNTRY_NAME, -Month..VMonth, -Permits..Permittee, -Region..Flyway, -Status..VStatus, -Region..State, -Object_Name, -MARPLOT.Layer.Name, -MARPLOT.Map.Name, -symbol, -color, -idmarplot, -Species.Game.Birds..Species)
+```
+
+
+
+```{r}
+head(ATBRBAND2)
+```
+
+
+
+
+
+### SUMMARIZE DATA FOR BUILDING MATRIX
+
+```{r}
+ATBRBANDsum<- ATBRBAND2%>%
+  filter(B.Year%in% 2000:2019) %>% 
+  group_by(B.Year)%>%
+  summarise(total= sum(Count.of.Birds))
+ATBRBANDsum
+```
+
+```{r}
+write.csv(ATBRBANDsum, 'ATBR_band_summary.csv')
+```
+
+
+
+
+
+
+
+
+#############################################################################################################################
+###                                                  ATBR RECOVERY DATA
+#############################################################################################################################
+
+#Files to import
+
+
+```{r}
+ATBRRECOV <- read.csv(file.path(root, "ATBR_allrecovs.csv"),stringsAsFactors = FALSE)
+```
+
+
+##Replaces spaces in column names using stringr package (replaces spaces with .)
+
+```{r}
+names(ATBRRECOV)<-str_replace_all(names(ATBRRECOV), c(" " = "." , "," = "" ))
+```
+
+
+
+#ASSIGN AGE CLASSES (AHY or HY)
+```{r}
+ATBRRECOV$TAGE[ATBRRECOV$Age == 1] <- "AHY"
+ATBRRECOV$TAGE[ATBRRECOV$Age == 5] <- "AHY"
+ATBRRECOV$TAGE[ATBRRECOV$Age == 6] <- "AHY"
+ATBRRECOV$TAGE[ATBRRECOV$Age == 7] <- "AHY"
+ATBRRECOV$TAGE[ATBRRECOV$Age == 8] <- "AHY"
+ATBRRECOV$TAGE[ATBRRECOV$Age == 2] <- "HY"
+ATBRRECOV$TAGE[ATBRRECOV$Age == 3] <- "HY"
+ATBRRECOV$TAGE[ATBRRECOV$Age == 4] <- "HY"
+ATBRRECOV$TAGE[ATBRRECOV$Age == 0] <- NA
+ATBRRECOV$TSEX[ATBRRECOV$Sex== 4] <-"MALE"
+ATBRRECOV$TSEX[ATBRRECOV$Sex== 5] <-"FEMALE"
+ATBRRECOV$COUNT<- 1
+```
+
+##Extra info: 00 (normal), 07 (double bands), 08 (??), 25 (geolocators), 18 (blood sampled)
+#How.Obt (1) Shot only
+#US recovs only, in the atlantic flyway (for Lincoln estimates)
+```{r}
+ATBRRECOV1 <- ATBRRECOV %>%
+ filter(Status==3) %>% # normal, wild birds
+    filter(Add.Info %in% c(00, 01, 07, 08, 25, 18),  #00 (normal), 01 (color band), 07 (double bands), 08 (temp marker-paint or dye), 25 (geolocators), 18 (blood sampled)
+        Sex%in% c(4,5)
+         ) %>%
+  filter(TAGE=='AHY') %>% 
+  filter(How.Obt==1) %>% 
+  filter(e_country_code=='US') %>% 
+  filter(R.Flyway==1) %>% 
+  rename(LOC = Location_lu..STATE_NAME
+         )
+```
+
+
+
+
+#DESELECT COLUMNS NOT oF INTEREST and remove any NAs from Age
+
+```{r}
+ATBRRECOV2 <- ATBRRECOV1 %>%
+  filter(!is.na(TAGE)) %>%
+  filter(LOC %in% c("Nunavut"))%>%
+  filter(R.Month %in% c(9,10,11,12,1,2,3)) %>%
+  filter(B.Month %in% c(7,8))%>%
+  select(-B.Coordinate.Precision, -b_country_code, -b_state_code, -Band.Size, -Band.Type.Current, -Band.Type.Orig,
+         -Cardinal.Direction, -Distance, -e_state_code, -How.Aged, -How.Obt, -How.Sexed, -Hunt..Season.Surv.,
+         -Marker_Desc_bndg, -Marker_Desc_enc, -MIN_AGE_AT_ENC, -other_bands, -Permit, -Pres..Cond., -R.Coordinate.Precision, 
+         -R.Create.date.Month, -R.Create.date.Year, -R.Dir, -Replaced.Band.Code, -Replaced.Band.Translated, -Same.Block,
+         -Who.Reported, -Why..pre.1994...Report.Method..after.1994., -Age..VAGE, -AI..VAI, -B.Coord.Precision..LOCATION_ACCURACY_DESC, -BDay..VRDay,
+         -BMonth..VMonth, -BRegion..STA, -BRegion..State, -BType.Current..VBtype, -BType.Current..VText, -BType..VBtype, -BType..VText,
+         -Condition..VBandStatus, -Condition..VCondition, -How_aged..How.Aged.Description,
+         -How_sexed..How.Sexed.Description, -Location_lu_enc..STATE_NAME, -Location_lu..COUNTRY_NAME, 
+         -Permits..Permittee, -R.Coord.Precision..LOCATION_ACCURACY_DESC, -RDay..VRDay, -Region..Flyway, -How.Obt..VHow,
+         -Rept.Mthd..VRept.Mthd, -RMonth..VMonth, -Sex..VSEX, -Species.Game.Birds..SPEC, -Species.Game.Birds..Species, -Status..VStatus, 
+         -Who..VWho)
+```
+
+##Check month filtering- recovs
+
+```{r}
+CHECK<-ATBRRECOV2%>%
+  group_by(R.Month)%>%
+  summarise(total= sum(COUNT))
+CHECK
+```
+
+
+
+```{r}
+names(ATBRRECOV2)
+```
+##Adjust recovery year for hunting season, not calendar year (If recovered before April, then subtract 1 from recovery year)
+
+```{r}
+ATBRRECOV2$R.Corr.Year<-ifelse(ATBRRECOV2$R.Month<4, ATBRRECOV2$R.Year-1, ATBRRECOV2$R.Year)
+```
+
+```{r}
+table(ATBRRECOV2$R.Corr.Year, useNA="always")
+```
+##Restrict years to 2000-2019
+```{r}
+ATBRRECOV3<-ATBRRECOV2%>%
+  filter(R.Corr.Year%in% 2000:2019)
+```
+
+##ASSEMBLE DIRECT RECOVERIES ONLY
+```{r}
+ATBRRECOVsum<-ATBRRECOV3%>%
+  filter(B.Year==R.Corr.Year) %>% 
+  group_by(TAGE, B.Year, R.Corr.Year)%>%
+  summarise(total_recov=sum(COUNT))
+
+```
+
+##ATBR recovs by band type
+```{r}
+ATBRRECOV_by_band_type<-ATBRRECOV3%>%
+  filter(B.Year==R.Corr.Year) %>% 
+  group_by(B.Year, Add.Info)%>%
+  summarise(total_recov=sum(COUNT))
+ATBRRECOV_by_band_type
+
+```
+
+
+
+##MERGE BANDING AND DIRECT RECOV DATAFRAMES
+
+```{r}
+DIRECT_RECOVS<-merge(ATBRBANDsum, ATBRRECOVsum)
+  
+```
+
+##DIRECT RECOVERY RATE
+
+```{r}
+names(DIRECT_RECOVS)
+```
+
+
+```{r}
+DRR<-DIRECT_RECOVS%>%
+  mutate(DRR=total_recov/total)
+```
+
+
+
+
+##PLOT RECOVERIES TO CHECK FILTERS (US only)
+
+
+```{r}
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+
+ggplot(data = world) + geom_sf() + 
+  coord_sf(xlim = c(-180,-55),ylim = c(28,73),expand = FALSE) + 
+   geom_point(data = ATBRRECOV3, aes(GISRLong,GISRLat, color = R.Year))
+```
+
+##PLOT BANDINGS TO CHECK FILTERS
+```{r}
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+
+ggplot(data = world) + geom_sf() + 
+  coord_sf(xlim = c(-180,-55),ylim = c(28,73),expand = FALSE) + 
+   geom_point(data = ATBRBAND2, aes(GISBLong,GISBLat, color = B.Year))
+```
+## ADD RHO dataframe (based on Arnold et al 2020 for 2000 to 2010, and linear est for 2011-2019)
+```{r}
+RHO <- read.csv(file.path(root, "RHO_1976_2010(Arnold2020)_2011_2019(linear).csv"),stringsAsFactors = FALSE)
+```
+
+##MERGE DRR and RHO dataframes
+```{r}
+HR<-inner_join(DRR, RHO, by="B.Year")
+  
+```
+
+##CALCULATE HR
+```{r}
+HR_all_band<-HR%>%
+  mutate(HR=DRR/rho)%>%
+  mutate(varDRR=(DRR*(1-DRR))/(total-1))%>%
+  mutate(seDRR=sqrt(varDRR))%>%
+  mutate(varh=(varDRR/(rho^2))+((DRR^2*Var_rho)/rho^4))%>%
+  mutate(seh=sqrt(varh))%>%
+  mutate(CL_h=seh*1.96) %>% 
+  mutate(CV=seh/HR) %>% 
+  mutate(band_type='all_bands') %>% 
+  select(-TAGE)
+```
+
+
+
+
+
+#####################################################################################################################################################
+
+##Metal and color and double bands only(no geos: 325)
+  
+
+```{r}
+ATBRBAND_no_geo<- ATBRBAND2%>%
+  filter(B.Year%in% 2000:2019) %>% 
+  filter(Add.Info%in% c(00, 01, 07 )) %>% 
+  group_by(B.Year)%>%
+  summarise(total= sum(Count.of.Birds))
+ATBRBAND_no_geo
+```
+
+##ASSEMBLE DIRECT RECOVERIES ONLY, for metal (00), color (01), double bands only (07)
+```{r}
+ATBRRECOV_no_geo<-ATBRRECOV3%>%
+  filter(B.Year==R.Corr.Year) %>% 
+  filter(Add.Info%in% c(00, 01, 07 )) %>% 
+  group_by(B.Year, R.Corr.Year)%>%
+  summarise(total_recov=sum(COUNT))
+
+```
+
+##MERGE BANDING AND DIRECT RECOV DATAFRAMES, for metal (00), color (01), double bands only (07)
+
+```{r}
+DIRECT_RECOVS_no_geo<-merge(ATBRBAND_no_geo, ATBRRECOV_no_geo)%>%
+  mutate(DRR=total_recov/total)
+  
+```
+
+##MERGE DRR and RHO dataframes for non geos: geos were only deployed in 2018 and 2019
+```{r}
+HR_no_geo<-inner_join(DIRECT_RECOVS_no_geo, RHO, by="B.Year") %>% 
+  mutate(HR=DRR/rho)%>%
+  mutate(varDRR=(DRR*(1-DRR))/(total-1))%>%
+  mutate(seDRR=sqrt(varDRR))%>%
+  mutate(varh=(varDRR/(rho^2))+((DRR^2*Var_rho)/rho^4))%>%
+  mutate(seh=sqrt(varh))%>%
+  mutate(CL_h=seh*1.96) %>% 
+  mutate(CV=seh/HR) %>% 
+  mutate(band_type='no_geo') %>% 
+  filter(B.Year%in% 2018:2019)
+```
+  
+
+  
+
+##merge HR_all_band and HR_no_geo to plot on same figure
+
+```{r}
+HR_by_band_type<-rbind(HR_all_band, HR_no_geo)
+  
+```
+
+## CLs overlap (not a great comparison, but no metal bandings in 2019 make comparison of metal to plastic impossible)
+```{r}
+  both_plot<-ggplot(data=HR_by_band_type, aes(x=B.Year, y=HR))+
+  geom_point(aes(color=band_type))+
+  geom_errorbar(aes(ymin=HR-CL_h, ymax=HR+CL_h))
+both_plot
+```
+
+##CLs overlap, so use all band types for Lincoln
+
+```{r}
+ATBRharvest <- read.csv("ATBR_harvest_2000_2019(atlantic flyway).csv",stringsAsFactors = FALSE)
+```
+
+##MERGE harvest estimate and harvest rates generated by all band types 
+```{r}
+lincoln<-inner_join(ATBRharvest, HR_all_band, by="B.Year")
+  
+```
+
+
+##Add bias adjustment to adjust N and cls, using Alisauskas et al 2014 equations
+```{r}
+lincoln1<-lincoln %>% 
+  mutate(H_adj= harvest*0.61 )%>% 
+  mutate(H_adj_SE= se_harvest*0.61 )%>%
+  mutate(H_adj_var= H_adj_SE^2 )%>%
+  mutate(N=( ( ((total+1)*(H_adj+1)*rho) / (total_recov+1) )-1) )%>% 
+  mutate(N_var_b.r= ( (total+1)*(total-total_recov) ) / ( ((total_recov+1)^2)*(total_recov+2) )  )%>%
+  mutate(N_var_bH.r=  ((total/total_recov)^2) * H_adj_var + H_adj^2 * N_var_b.r )%>%
+  mutate(N_var= (((total*H_adj)/total_recov)^2) * Var_rho + rho^2 * N_var_bH.r )%>%
+  mutate(N_se=sqrt(N_var)) %>% 
+  mutate(N_cl=N_se*1.96)
+
+```
+
+
+##Plot Lincoln estimates and Cls
+```{r}
+  ggplot(data=lincoln1, aes(x=B.Year, y=N))+
+  geom_point()+geom_smooth()+
+  scale_y_continuous(name="Abundance (Lincoln)", limits=c(0,500000))+
+  geom_errorbar(aes(ymin=N-N_cl, ymax=N+N_cl))+
+  labs(x="Year")
+```
+ 
+##Write Estimates to file 
+```{r}
+ Lincoln_est <- as.data.frame(cbind(lincoln1$B.Year,lincoln1$N, lincoln1$N_cl))
+ colnames(Lincoln_est) <- c("year","N","NCL")
+ Lincoln_est
+```
+
+
+```{r}
+write.csv(Lincoln_est, 'ATBR_Lincoln_2010_2019_Oct22_2021.csv')
+```
+```
+ 
+
+ 
