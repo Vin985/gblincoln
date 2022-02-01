@@ -61,9 +61,11 @@ get_species_data <- function(species_name, db_dtype = "banding") {
 #' countries, states and flyways
 #' @param spec The 4 letters short code for the desired species
 #' (as found in the SPEC column of the gb_banding dataset)
-#' @param columns PARAM_DESCRIPTION, Default: c("country_name", "state_name", "flyway")
-#' @param db_type PARAM_DESCRIPTION, Default: 'banding'
-#' @param sort_by PARAM_DESCRIPTION, Default: NULL
+#' @param columns The desired columns. By default returns all the location
+#' related columns: "country_name", "state_name" and "flyway"
+#' @param db_type Which database to use, banding or encounters. Default: 'banding'
+#' @param sort_by Column by which the results are sorted. Default: NULL, the
+#' results are unsorted
 #' @return If columns contains more than one element, a data frame with all
 #' available combinations of the selected columns.
 #' If columns contains only one element, a sorted vector of the unique values
@@ -77,19 +79,20 @@ get_species_data <- function(species_name, db_dtype = "banding") {
 #' get_species_countries("ATBR")
 #'
 #' @rdname get_species_locations
+#' @import tidyverse
 #' @export
 get_species_locations <-
-  function(spec,
+  function(species_code,
            columns = c("country_name", "state_name", "flyway"),
            db_type = "banding",
            sort_by = NULL) {
     if (db_type == "banding") {
-      db = gb_banding
+      df = gb_banding
     }
     if (length(columns) == 1) {
-      res = sort(unique(db[db$SPEC == spec, columns]))
+      res = sort(unique(df[df$SPEC == species_code, columns]))
     } else {
-      res = db[db$SPEC == species_name, columns] %>% distinct()
+      res = df[df$SPEC == species_code, columns] %>% distinct()
       if (!is.null(sort_by)) {
         print(sort_by)
         res = res %>% arrange(.data[[sort_by]])
@@ -98,26 +101,91 @@ get_species_locations <-
     return(res)
   }
 
-#' @inheritParams get_species_locations
 #' @describeIn get_species_locations Convenience functions to list
 #'             all available countries for the given species.
 #' @export
-get_species_countries <- function(spec) {
-  return(get_species_locations(spec, "country_name"))
+get_species_countries <- function(species_code) {
+  return(get_species_locations(species_code, "country_name"))
 }
 
-#' @inheritParams get_species_locations
 #' @describeIn get_species_locations Convenience functions to list
 #'             all available states for the given species.
 #' @export
-get_species_states <- function(spec) {
-  return(get_species_locations(spec, "state_name"))
+get_species_states <- function(species_code) {
+  return(get_species_locations(species_code, "state_name"))
 }
 
-#' @inheritParams get_species_locations
 #' @describeIn get_species_locations Convenience functions to list
 #'             all available countries for the given species.
 #' @export
-get_species_flyways <- function(spec) {
-  return(get_species_locations(spec, "flyway"))
+get_species_flyways <- function(species_code) {
+  return(get_species_locations(species_code, "flyway"))
+}
+
+
+#' @title gb_banding dataset columns for Lincoln estimates
+#' @description Columns selected for filtering the gb_banding dataset to calculate
+#' Lincoln estimates
+#' @format A character vector with 1 value
+LINCOLN_FILTERS = list(
+  status_code = "3",
+  add_info = c("00", "01", "07", "08", "25", "18"),
+  sex_code = c(4,5),
+  age_short = c("AHY"),
+  columns = c("SPEC", "country_code")
+)
+
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param columns \link[gblincoln]{LINCOLN_BANDING_COLUMNS}, Default: LINCOLN_BANDING_COLUMNS
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @rdname lincoln_banding_filter
+#' @export
+lincoln_banding_filter <- function(df=NULL, filters=NULL){
+  if (is.null(df)){
+    df = gb_banding
+  }
+  filters <- update_list(filters, LINCOLN_FILTERS)
+
+  if ("columns" %in% names(filters)){
+    df <- df[, filters$columns]
+  }
+
+  for(i in seq_along(filters)){
+    col_name <- names(filters)[i]
+    if (col_name %in% colnames(db)){
+      filter = filters[[i]]
+      print(col_name)
+      print(filter)
+      # df <- df[!is.na(df[col_name]),]
+      df <- df[df[[col_name]] %in% filter, ]
+      print(df)
+    }
+
+
+  }
+  print(df)
+
+  # df <- df %>%
+  #   filter(Status==3) %>% # normal, wild birds
+  #   filter(Add.Info %in% c(00, 01, 07, 08, 25, 18),  #00 (normal), 01 (color band), 07 (double bands), 08 (temp marker-paint or dye), 25 (geolocators), 18 (blood sampled)
+  #          Sex%in% c(4,5)
+  #   ) %>%
+  #   filter(TAGE=='AHY') %>%
+  #
+  # ATBRBAND2 <- ATBRBAND1 %>%
+  #   filter(!is.na(TAGE)) %>%
+  #   filter(LOC %in% c("Nunavut"))%>%
+  #   filter(B.Month>6)%>%
+  #   filter(B.Month<9)%>%
+  #   select(-Sex..VSEX, -B.Coordinate.Precision, -Band.Size, -How_aged..How.Aged.Description, -How.Sexed, -How.Aged, -Age..VAGE,
+  #          -AI..VAI, -coord_precision..LOCATION_ACCURACY_DESC, -DayCode..Day.Span, -How_sexed..How.Sexed.Description,
+  #          -Location_lu..COUNTRY_NAME, -Month..VMonth, -Permits..Permittee, -Region..Flyway, -Status..VStatus, -Region..State, -Object_Name, -MARPLOT.Layer.Name, -MARPLOT.Map.Name, -symbol, -color, -idmarplot, -Species.Game.Birds..Species)
 }
