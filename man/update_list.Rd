@@ -4,12 +4,12 @@
 \alias{update_list}
 \title{FUNCTION_TITLE}
 \usage{
-update_list(new, old)
+update_list(old, new)
 }
 \arguments{
-\item{new}{PARAM_DESCRIPTION}
-
 \item{old}{PARAM_DESCRIPTION}
+
+\item{new}{PARAM_DESCRIPTION}
 }
 \value{
 OUTPUT_DESCRIPTION

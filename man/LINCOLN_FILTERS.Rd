@@ -3,15 +3,15 @@
 \docType{data}
 \name{LINCOLN_FILTERS}
 \alias{LINCOLN_FILTERS}
-\title{gb_banding dataset columns for Lincoln estimates}
+\title{Default filters to prepare the gb_banding dataset for Lincoln estimates}
 \format{
-A character vector with 1 value
+A list with column names as names and values for the desired filters
 }
 \usage{
 LINCOLN_FILTERS
 }
 \description{
-Columns selected for filtering the gb_banding dataset to calculate
-Lincoln estimates
+This lists contains all the default filters used to preprare
+gb_banding dataset to calculate Lincoln estimates.
 }
 \keyword{datasets}

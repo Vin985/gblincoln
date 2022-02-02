@@ -2,9 +2,9 @@
 % Please edit documentation in R/data.R
 \name{lincoln_banding_filter}
 \alias{lincoln_banding_filter}
-\title{FUNCTION_TITLE}
+\title{Performs filtering on the gb_banding dataset for Lincoln estimates}
 \usage{
-lincoln_banding_filter(df = NULL, filters = NULL)
+lincoln_banding_filter(filters = NULL, df = NULL)
 }
 \arguments{
 \item{columns}{\link[gblincoln]{LINCOLN_BANDING_COLUMNS}, Default: LINCOLN_BANDING_COLUMNS}
@@ -13,7 +13,9 @@ lincoln_banding_filter(df = NULL, filters = NULL)
 OUTPUT_DESCRIPTION
 }
 \description{
-FUNCTION_DESCRIPTION
+For time columns, i.e. 'year', 'month_code' and 'day_code',
+it is possible to select a period by
+providing a vector with two named values 'start' and 'end'
 }
 \details{
 DETAILS
