@@ -1,5 +1,5 @@
 ## code to prepare `gamebirds` dataset goes here
-library(openxlsx)
+# library(openxlsx)
 library(tidyverse)
 
 # https://www.pwrc.usgs.gov/BBL/manual/summary.cfm
@@ -37,24 +37,24 @@ GB_COLNAMES <-
     sp_num = "Sp..Num.",
     state_code = "State_code",
     status_code = "Status",
-    age = "Age::VAGE",
-    VAI = "AI::VAI",
-    btype_vbtype = "BType::VBtype",
-    btype_text = "BType::VText",
-    location_accuracy_desc = "coord_precision::LOCATION_ACCURACY_DESC",
-    day_span = "DayCode::Day.Span",
-    how_aged_desc = "How_aged::How.Aged.Description",
-    how_sexed_desc = "How_sexed::How.Sexed.Description",
-    country_name = "Location_lu::COUNTRY_NAME",
-    state_name = "Location_lu::STATE_NAME",
-    month = "Month::VMonth",
-    permittee = "Permits::Permittee",
-    flyway = "Region::Flyway",
-    state = "Region::State",
-    sex = "Sex::VSEX",
-    SPEC = "Species.Game.Birds::SPEC",
-    species = "Species.Game.Birds::Species",
-    status = "Status::VStatus"
+    age = "Age..VAGE",
+    VAI = "AI..VAI",
+    btype_vbtype = "BType..VBtype",
+    btype_text = "BType..VText",
+    location_accuracy_desc = "coord_precision..LOCATION_ACCURACY_DESC",
+    day_span = "DayCode..Day.Span",
+    how_aged_desc = "How_aged..How.Aged.Description",
+    how_sexed_desc = "How_sexed..How.Sexed.Description",
+    country_name = "Location_lu..COUNTRY_NAME",
+    state_name = "Location_lu..STATE_NAME",
+    month = "Month..VMonth",
+    permittee = "Permits..Permittee",
+    flyway = "Region..Flyway",
+    state = "Region..State",
+    sex = "Sex..VSEX",
+    SPEC = "Species.Game.Birds..SPEC",
+    species = "Species.Game.Birds..Species",
+    status = "Status..VStatus"
   )
 
 AGE_CLASSES <- list("HY" = c(2, 3, 4), "AHY" = c(1, 5, 6, 7, 8))
@@ -90,7 +90,8 @@ clean_dataset <- function(df, colnames = GB_COLNAMES) {
 }
 
 
-gb_banding <- read.xlsx("data_raw/gamebirds_banding.xlsx")
+# gb_banding <- read.xlsx("data_raw/gamebirds_banding.xlsx")
+gb_banding <- read.csv2("data_raw/gamebirds_banding.csv", dec=".")
 
 gb_banding <- clean_dataset(gb_banding)
 
