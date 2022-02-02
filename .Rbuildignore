@@ -3,4 +3,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^test$
+^tests$
 ^data_raw$
