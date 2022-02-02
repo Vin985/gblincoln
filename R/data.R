@@ -1,50 +1,51 @@
-#' @title Gamebirds Dataset
+#' @title Gamebirds Banding Dataset
 #' @description DATASET_DESCRIPTION
 #' @format A data frame with 16068 rows and 43 variables:
 #' \describe{
-#'   \item{\code{Add.Info}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{Age}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{B.Coordinate.Precision}}{double COLUMN_DESCRIPTION}
-#'   \item{\code{B.Day.Code}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{B.Dir}}{double COLUMN_DESCRIPTION}
-#'   \item{\code{B.Flyway}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{B.Lat}}{double COLUMN_DESCRIPTION}
-#'   \item{\code{B.Long}}{double COLUMN_DESCRIPTION}
-#'   \item{\code{B.Month}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{B.Region}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{B.Year}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{Band.Prefix.Plus}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{Band.Size}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{Band.Type}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{Count.of.Birds}}{double COLUMN_DESCRIPTION}
-#'   \item{\code{Country_code}}{character COLUMN_DESCRIPTION}
+#'   \item{\code{add_info}}{integer COLUMN_DESCRIPTION}
+#'   \item{\code{age_code}}{integer COLUMN_DESCRIPTION}
+#'   \item{\code{coordinate_precision}}{integer COLUMN_DESCRIPTION}
+#'   \item{\code{day_code}}{integer COLUMN_DESCRIPTION}
+#'   \item{\code{dir}}{integer COLUMN_DESCRIPTION}
+#'   \item{\code{flyway_code}}{integer COLUMN_DESCRIPTION}
+#'   \item{\code{lat}}{integer COLUMN_DESCRIPTION}
+#'   \item{\code{long}}{integer COLUMN_DESCRIPTION}
+#'   \item{\code{month_code}}{integer COLUMN_DESCRIPTION}
+#'   \item{\code{region_code}}{integer COLUMN_DESCRIPTION}
+#'   \item{\code{year}}{integer COLUMN_DESCRIPTION}
+#'   \item{\code{band_prefix_plus}}{integer COLUMN_DESCRIPTION}
+#'   \item{\code{band_size}}{character COLUMN_DESCRIPTION}
+#'   \item{\code{band_type}}{character COLUMN_DESCRIPTION}
+#'   \item{\code{count_of_birds}}{integer COLUMN_DESCRIPTION}
+#'   \item{\code{country_code}}{character COLUMN_DESCRIPTION}
 #'   \item{\code{GISBLat}}{double COLUMN_DESCRIPTION}
 #'   \item{\code{GISBLong}}{double COLUMN_DESCRIPTION}
-#'   \item{\code{How.Aged}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{How.Sexed}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{Permit}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{Sex}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{Sp..Num.}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{State_code}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{Status}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{Age::VAGE}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{AI::VAI}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{BType::VBtype}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{BType::VText}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{coord_precision::LOCATION_ACCURACY_DESC}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{DayCode::Day.Span}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{How_aged::How.Aged.Description}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{How_sexed::How.Sexed.Description}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{Location_lu::COUNTRY_NAME}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{Location_lu::STATE_NAME}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{Month::VMonth}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{Permits::Permittee}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{Region::Flyway}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{Region::State}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{Sex::VSEX}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{Species.Game.Birds::SPEC}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{Species.Game.Birds::Species}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{Status::VStatus}}{character COLUMN_DESCRIPTION}
+#'   \item{\code{how_aged}}{character COLUMN_DESCRIPTION}
+#'   \item{\code{how_sexed}}{character COLUMN_DESCRIPTION}
+#'   \item{\code{permit}}{integer COLUMN_DESCRIPTION}
+#'   \item{\code{sex_code}}{integer COLUMN_DESCRIPTION}
+#'   \item{\code{sp_num}}{integer COLUMN_DESCRIPTION}
+#'   \item{\code{state_code}}{integer COLUMN_DESCRIPTION}
+#'   \item{\code{status_code}}{integer COLUMN_DESCRIPTION}
+#'   \item{\code{age}}{character COLUMN_DESCRIPTION}
+#'   \item{\code{VAI}}{character COLUMN_DESCRIPTION}
+#'   \item{\code{btype_vbtype}}{character COLUMN_DESCRIPTION}
+#'   \item{\code{btype_text}}{character COLUMN_DESCRIPTION}
+#'   \item{\code{location_accuracy_desc}}{character COLUMN_DESCRIPTION}
+#'   \item{\code{day_span}}{character COLUMN_DESCRIPTION}
+#'   \item{\code{how_aged_desc}}{character COLUMN_DESCRIPTION}
+#'   \item{\code{how_sexed_desc}}{character COLUMN_DESCRIPTION}
+#'   \item{\code{country_name}}{character COLUMN_DESCRIPTION}
+#'   \item{\code{state_name}}{character COLUMN_DESCRIPTION}
+#'   \item{\code{month}}{character COLUMN_DESCRIPTION}
+#'   \item{\code{permittee}}{character COLUMN_DESCRIPTION}
+#'   \item{\code{flyway}}{character COLUMN_DESCRIPTION}
+#'   \item{\code{state}}{character COLUMN_DESCRIPTION}
+#'   \item{\code{sex}}{character COLUMN_DESCRIPTION}
+#'   \item{\code{SPEC}}{character COLUMN_DESCRIPTION}
+#'   \item{\code{species}}{character COLUMN_DESCRIPTION}
+#'   \item{\code{status}}{character COLUMN_DESCRIPTION}
+#'   \item{\code{age_short}}{character COLUMN_DESCRIPTION}
 #'}
 "gb_banding"
 
@@ -52,7 +53,7 @@ get_species_data <- function(species_name, db_dtype = "banding") {
   if (db_type == "banding") {
     db = gb_banding
   }
-  return(db[db$SPEC == species_name, ])
+  return(db[db$SPEC == species_name,])
 }
 
 #' @title List the locations available for a species
@@ -123,20 +124,77 @@ get_species_flyways <- function(species_code) {
 }
 
 
-#' @title gb_banding dataset columns for Lincoln estimates
-#' @description Columns selected for filtering the gb_banding dataset to calculate
-#' Lincoln estimates
-#' @format A character vector with 1 value
+#' @title Default filters to prepare the gb_banding dataset for Lincoln estimates
+#' @description This lists contains all the default filters used to preprare
+#' gb_banding dataset to calculate Lincoln estimates.
+#' @format A list with column names as names and values for the desired filters
+#' @export
 LINCOLN_FILTERS = list(
   status_code = "3",
   add_info = c("00", "01", "07", "08", "25", "18"),
-  sex_code = c(4,5),
+  sex_code = c(4, 5),
   age_short = c("AHY"),
-  columns = c("SPEC", "country_code")
+  columns = c(
+    "add_info",
+    "age_code",
+    "day_code",
+    "dir",
+    "flyway_code",
+    "lat",
+    "long",
+    "month_code",
+    "region_code",
+    "year",
+    "band_prefix_plus",
+    "band_type",
+    "count_of_birds",
+    "country_code",
+    "GISBLat",
+    "GISBLong",
+    "permit",
+    "sex_code",
+    "sp_num",
+    "state_code",
+    "status_code" ,
+    "btype_vbtype",
+    "btype_text",
+    "day_span",
+    "state_name",
+    "sex" ,
+    "SPEC",
+    "age_short"
+  ),
+  month = c(start = 07, end = 08)
 )
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
+
+filter_time_period <- function(df, filter, col_name) {
+  if (!"start" %in% names(filter)) {
+    stop(
+      sprintf(
+        "Names are provided for '%s' date filter but 'start' is not present",
+        col_name
+      )
+    )
+  }
+  if (!"end" %in% names(filter)) {
+    stop(sprintf(
+      "Names are provided for '%s' date filter but 'end' is not present",
+      col_name
+    ))
+  }
+  df <-
+    df[df[[col_name]] >= filter["start"] &
+         df[[col_name]] <= filter["end"],]
+  return(df)
+}
+
+TIME_COLUMNS = c("year", "month_code", "day_code")
+
+#' @title Performs filtering on the gb_banding dataset for Lincoln estimates
+#' @description For time columns, i.e. 'year', 'month_code' and 'day_code',
+#' it is possible to select a period by
+#' providing a vector with two named values 'start' and 'end'
 #' @param columns \link[gblincoln]{LINCOLN_BANDING_COLUMNS}, Default: LINCOLN_BANDING_COLUMNS
 #' @return OUTPUT_DESCRIPTION
 #' @details DETAILS
@@ -148,44 +206,28 @@ LINCOLN_FILTERS = list(
 #' }
 #' @rdname lincoln_banding_filter
 #' @export
-lincoln_banding_filter <- function(df=NULL, filters=NULL){
-  if (is.null(df)){
+lincoln_banding_filter <- function(filters = NULL, df = NULL) {
+  if (is.null(df)) {
     df = gb_banding
   }
-  filters <- update_list(filters, LINCOLN_FILTERS)
+  filters <- update_list(LINCOLN_FILTERS, filters)
 
-  if ("columns" %in% names(filters)){
+  if ("columns" %in% names(filters)) {
     df <- df[, filters$columns]
   }
 
-  for(i in seq_along(filters)){
+  for (i in seq_along(filters)) {
     col_name <- names(filters)[i]
-    if (col_name %in% colnames(db)){
+    if (col_name %in% colnames(df)) {
       filter = filters[[i]]
-      print(col_name)
-      print(filter)
-      # df <- df[!is.na(df[col_name]),]
-      df <- df[df[[col_name]] %in% filter, ]
-      print(df)
+      if (col_name %in% TIME_COLUMNS) {
+        if (!is.null(names(filter))) {
+          df <- filter_time_period(df, filter, col_name)
+          next
+        }
+      }
+      df <- df[df[[col_name]] %in% filter,]
     }
-
-
   }
-  print(df)
-
-  # df <- df %>%
-  #   filter(Status==3) %>% # normal, wild birds
-  #   filter(Add.Info %in% c(00, 01, 07, 08, 25, 18),  #00 (normal), 01 (color band), 07 (double bands), 08 (temp marker-paint or dye), 25 (geolocators), 18 (blood sampled)
-  #          Sex%in% c(4,5)
-  #   ) %>%
-  #   filter(TAGE=='AHY') %>%
-  #
-  # ATBRBAND2 <- ATBRBAND1 %>%
-  #   filter(!is.na(TAGE)) %>%
-  #   filter(LOC %in% c("Nunavut"))%>%
-  #   filter(B.Month>6)%>%
-  #   filter(B.Month<9)%>%
-  #   select(-Sex..VSEX, -B.Coordinate.Precision, -Band.Size, -How_aged..How.Aged.Description, -How.Sexed, -How.Aged, -Age..VAGE,
-  #          -AI..VAI, -coord_precision..LOCATION_ACCURACY_DESC, -DayCode..Day.Span, -How_sexed..How.Sexed.Description,
-  #          -Location_lu..COUNTRY_NAME, -Month..VMonth, -Permits..Permittee, -Region..Flyway, -Status..VStatus, -Region..State, -Object_Name, -MARPLOT.Layer.Name, -MARPLOT.Map.Name, -symbol, -color, -idmarplot, -Species.Game.Birds..Species)
+  return(df)
 }

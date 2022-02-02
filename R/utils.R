@@ -12,17 +12,13 @@
 #' }
 #' @rdname update_list
 #' @export
-update_list <- function(new, old){
-  if (is.null(new)){
-    return(old)
-  } else {
-    tmp = old
+update_list <- function(old, new){
+  tmp = old
+  if (!is.null(new)){
     for (i in seq_along(new)){
       var = names(new)[i]
-      if (var %in% names(tmp)) {
-        tmp[var] = new[i]
-      }
+      tmp[var] = new[i]
     }
-    return(tmp)
   }
+  return(tmp)
 }
