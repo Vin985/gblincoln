@@ -3,53 +3,54 @@
 \docType{data}
 \name{gb_banding}
 \alias{gb_banding}
-\title{Gamebirds Dataset}
+\title{Gamebirds Banding Dataset}
 \format{
 A data frame with 16068 rows and 43 variables:
 \describe{
-  \item{\code{Add.Info}}{character COLUMN_DESCRIPTION}
-  \item{\code{Age}}{character COLUMN_DESCRIPTION}
-  \item{\code{B.Coordinate.Precision}}{double COLUMN_DESCRIPTION}
-  \item{\code{B.Day.Code}}{character COLUMN_DESCRIPTION}
-  \item{\code{B.Dir}}{double COLUMN_DESCRIPTION}
-  \item{\code{B.Flyway}}{character COLUMN_DESCRIPTION}
-  \item{\code{B.Lat}}{double COLUMN_DESCRIPTION}
-  \item{\code{B.Long}}{double COLUMN_DESCRIPTION}
-  \item{\code{B.Month}}{character COLUMN_DESCRIPTION}
-  \item{\code{B.Region}}{character COLUMN_DESCRIPTION}
-  \item{\code{B.Year}}{character COLUMN_DESCRIPTION}
-  \item{\code{Band.Prefix.Plus}}{character COLUMN_DESCRIPTION}
-  \item{\code{Band.Size}}{character COLUMN_DESCRIPTION}
-  \item{\code{Band.Type}}{character COLUMN_DESCRIPTION}
-  \item{\code{Count.of.Birds}}{double COLUMN_DESCRIPTION}
-  \item{\code{Country_code}}{character COLUMN_DESCRIPTION}
+  \item{\code{add_info}}{integer COLUMN_DESCRIPTION}
+  \item{\code{age_code}}{integer COLUMN_DESCRIPTION}
+  \item{\code{coordinate_precision}}{integer COLUMN_DESCRIPTION}
+  \item{\code{day_code}}{integer COLUMN_DESCRIPTION}
+  \item{\code{dir}}{integer COLUMN_DESCRIPTION}
+  \item{\code{flyway_code}}{integer COLUMN_DESCRIPTION}
+  \item{\code{lat}}{integer COLUMN_DESCRIPTION}
+  \item{\code{long}}{integer COLUMN_DESCRIPTION}
+  \item{\code{month_code}}{integer COLUMN_DESCRIPTION}
+  \item{\code{region_code}}{integer COLUMN_DESCRIPTION}
+  \item{\code{year}}{integer COLUMN_DESCRIPTION}
+  \item{\code{band_prefix_plus}}{integer COLUMN_DESCRIPTION}
+  \item{\code{band_size}}{character COLUMN_DESCRIPTION}
+  \item{\code{band_type}}{character COLUMN_DESCRIPTION}
+  \item{\code{count_of_birds}}{integer COLUMN_DESCRIPTION}
+  \item{\code{country_code}}{character COLUMN_DESCRIPTION}
   \item{\code{GISBLat}}{double COLUMN_DESCRIPTION}
   \item{\code{GISBLong}}{double COLUMN_DESCRIPTION}
-  \item{\code{How.Aged}}{character COLUMN_DESCRIPTION}
-  \item{\code{How.Sexed}}{character COLUMN_DESCRIPTION}
-  \item{\code{Permit}}{character COLUMN_DESCRIPTION}
-  \item{\code{Sex}}{character COLUMN_DESCRIPTION}
-  \item{\code{Sp..Num.}}{character COLUMN_DESCRIPTION}
-  \item{\code{State_code}}{character COLUMN_DESCRIPTION}
-  \item{\code{Status}}{character COLUMN_DESCRIPTION}
-  \item{\code{Age::VAGE}}{character COLUMN_DESCRIPTION}
-  \item{\code{AI::VAI}}{character COLUMN_DESCRIPTION}
-  \item{\code{BType::VBtype}}{character COLUMN_DESCRIPTION}
-  \item{\code{BType::VText}}{character COLUMN_DESCRIPTION}
-  \item{\code{coord_precision::LOCATION_ACCURACY_DESC}}{character COLUMN_DESCRIPTION}
-  \item{\code{DayCode::Day.Span}}{character COLUMN_DESCRIPTION}
-  \item{\code{How_aged::How.Aged.Description}}{character COLUMN_DESCRIPTION}
-  \item{\code{How_sexed::How.Sexed.Description}}{character COLUMN_DESCRIPTION}
-  \item{\code{Location_lu::COUNTRY_NAME}}{character COLUMN_DESCRIPTION}
-  \item{\code{Location_lu::STATE_NAME}}{character COLUMN_DESCRIPTION}
-  \item{\code{Month::VMonth}}{character COLUMN_DESCRIPTION}
-  \item{\code{Permits::Permittee}}{character COLUMN_DESCRIPTION}
-  \item{\code{Region::Flyway}}{character COLUMN_DESCRIPTION}
-  \item{\code{Region::State}}{character COLUMN_DESCRIPTION}
-  \item{\code{Sex::VSEX}}{character COLUMN_DESCRIPTION}
-  \item{\code{Species.Game.Birds::SPEC}}{character COLUMN_DESCRIPTION}
-  \item{\code{Species.Game.Birds::Species}}{character COLUMN_DESCRIPTION}
-  \item{\code{Status::VStatus}}{character COLUMN_DESCRIPTION}
+  \item{\code{how_aged}}{character COLUMN_DESCRIPTION}
+  \item{\code{how_sexed}}{character COLUMN_DESCRIPTION}
+  \item{\code{permit}}{integer COLUMN_DESCRIPTION}
+  \item{\code{sex_code}}{integer COLUMN_DESCRIPTION}
+  \item{\code{sp_num}}{integer COLUMN_DESCRIPTION}
+  \item{\code{state_code}}{integer COLUMN_DESCRIPTION}
+  \item{\code{status_code}}{integer COLUMN_DESCRIPTION}
+  \item{\code{age}}{character COLUMN_DESCRIPTION}
+  \item{\code{VAI}}{character COLUMN_DESCRIPTION}
+  \item{\code{btype_vbtype}}{character COLUMN_DESCRIPTION}
+  \item{\code{btype_text}}{character COLUMN_DESCRIPTION}
+  \item{\code{location_accuracy_desc}}{character COLUMN_DESCRIPTION}
+  \item{\code{day_span}}{character COLUMN_DESCRIPTION}
+  \item{\code{how_aged_desc}}{character COLUMN_DESCRIPTION}
+  \item{\code{how_sexed_desc}}{character COLUMN_DESCRIPTION}
+  \item{\code{country_name}}{character COLUMN_DESCRIPTION}
+  \item{\code{state_name}}{character COLUMN_DESCRIPTION}
+  \item{\code{month}}{character COLUMN_DESCRIPTION}
+  \item{\code{permittee}}{character COLUMN_DESCRIPTION}
+  \item{\code{flyway}}{character COLUMN_DESCRIPTION}
+  \item{\code{state}}{character COLUMN_DESCRIPTION}
+  \item{\code{sex}}{character COLUMN_DESCRIPTION}
+  \item{\code{SPEC}}{character COLUMN_DESCRIPTION}
+  \item{\code{species}}{character COLUMN_DESCRIPTION}
+  \item{\code{status}}{character COLUMN_DESCRIPTION}
+  \item{\code{age_short}}{character COLUMN_DESCRIPTION}
 }
 }
 \usage{
