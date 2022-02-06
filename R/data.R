@@ -124,50 +124,6 @@ get_species_flyways <- function(species_code) {
 }
 
 
-#' @title Default filters to prepare the gb_banding dataset for Lincoln estimates
-#' @description This lists contains all the default filters used to preprare
-#' gb_banding dataset to calculate Lincoln estimates.
-#' @format A list with column names as names and values for the desired filters
-#' @export
-LINCOLN_FILTERS = list(
-  status_code = "3",
-  add_info = c("00", "01", "07", "08", "25", "18"),
-  sex_code = c(4, 5),
-  age_short = c("AHY"),
-  columns = c(
-    "add_info",
-    "age_code",
-    "day_code",
-    "dir",
-    "flyway_code",
-    "lat",
-    "long",
-    "month_code",
-    "region_code",
-    "year",
-    "band_prefix_plus",
-    "band_type",
-    "count_of_birds",
-    "country_code",
-    "GISBLat",
-    "GISBLong",
-    "permit",
-    "sex_code",
-    "sp_num",
-    "state_code",
-    "status_code" ,
-    "btype_vbtype",
-    "btype_text",
-    "day_span",
-    "state_name",
-    "sex" ,
-    "SPEC",
-    "age_short"
-  ),
-  month = c(start = 07, end = 08)
-)
-
-
 filter_time_period <- function(df, filter, col_name) {
   if (!"start" %in% names(filter)) {
     stop(
@@ -189,8 +145,6 @@ filter_time_period <- function(df, filter, col_name) {
   return(df)
 }
 
-TIME_COLUMNS = c("year", "month_code", "day_code")
-
 #' @title Performs filtering on the gb_banding dataset for Lincoln estimates
 #' @description For time columns, i.e. 'year', 'month_code' and 'day_code',
 #' it is possible to select a period by
@@ -204,16 +158,26 @@ TIME_COLUMNS = c("year", "month_code", "day_code")
 #'  #EXAMPLE1
 #'  }
 #' }
-#' @rdname lincoln_banding_filter
+#' @rdname lincoln_filter_db
 #' @export
-lincoln_banding_filter <- function(filters = NULL, df = NULL) {
+lincoln_filter_db <- function(filters = NULL, type="banding", df = NULL) {
   if (is.null(df)) {
     df = gb_banding
   }
-  filters <- update_list(LINCOLN_FILTERS, filters)
+  if (tolower(type) %in% c("banding", "b")) {
+    default <- BANDING_FILTERS
+  }
+  else if (tolower(type) %in% c("recoveries", "r")){
+    default <- RECOVERIES_FILTERS
+  } else {
+    stop("Unexpected value for 'type' argument. Please refer to ?lincoln_filter_db for accepted values.")
+  }
+  filters <- list_update(DEFAULT_LINCOLN_FILTERS, filters)
 
   if ("columns" %in% names(filters)) {
-    df <- df[, filters$columns]
+    columns <- filters$columns
+    columns <- columns[!is.na(match(columns, colnames(df)))]
+    df <- df[, columns]
   }
 
   for (i in seq_along(filters)) {

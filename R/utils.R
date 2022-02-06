@@ -10,9 +10,9 @@
 #'  #EXAMPLE1
 #'  }
 #' }
-#' @rdname update_list
+#' @rdname list_update
 #' @export
-update_list <- function(old, new){
+list_update <- function(old, new){
   tmp = old
   if (!is.null(new)){
     for (i in seq_along(new)){
