@@ -9,12 +9,16 @@
 
 
 test_that("Time filter, no start", {
-  filter <- list(month = c(from = 09, to = 10))
-  expect_error(lincoln_banding_filter(filter))
+  filter <- list(b.month_code = c(from = 09, to = 10))
+  expect_error(lincoln_filter_db(filter))
 })
 
 test_that("Time filter, no end", {
-  filter <- list(month = c(start = 09, to = 10))
-  expect_error(lincoln_banding_filter(filter))
+  filter <- list(b.month_code = c(start = 09, to = 10))
+  expect_error(lincoln_filter_db(filter))
+})
+
+test_that("Filter, wrong type", {
+  expect_error(lincoln_filter_db(type="s"))
 })
 
