@@ -283,8 +283,8 @@ filter_time_period <- function(df, filter, col_name) {
 #' @export
 lincoln_filter_db <-
   function(filters = NULL,
-           type = "banding",
            df = NULL,
+           type = "banding",
            all_bands=TRUE) {
     if (is.null(df)) {
       df = get_db(type)

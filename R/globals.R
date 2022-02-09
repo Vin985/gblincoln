@@ -1,4 +1,5 @@
 
+
 #
 # GB_COLNAMES <-
 #   c(
@@ -141,7 +142,7 @@ DEFAULT_LINCOLN_FILTERS = list(
     "b.flyway_code",
     "b.lat",
     "b.long",
-    "b.month_code",
+    "b.month",
     "b.region_code",
     "b.year",
     "band_prefix_plus",
@@ -161,14 +162,32 @@ DEFAULT_LINCOLN_FILTERS = list(
     "state_name",
     "sex" ,
     "SPEC",
-    "age_short"
+    "age_short",
+    "e.object_name",
+    "GISRLong",
+    "GISRLat",
+    "band",
+    "e_country_code",
+    "r.day_code",
+    "r.flyway",
+    "r.lat",
+    "r.long",
+    "r.month",
+    "r.region",
+    "r.year",
+    "status_code",
+    "e.country_name",
+    "r.flyway",
+    "r.state_code",
+    "r.state_name",
+    "how_obt"
   ),
   how_obt = 1,
   # Shot only
-  b.month_code = c(start = 07, end = 08),
-  r.month_code = c(9, 10, 11, 12, 1, 2, 3)
+  b.month = c(7, 8),
+  r.month = c(9, 10, 11, 12, 1, 2, 3)
 )
 
-BANDING_FILTERS <- list_update(DEFAULT_LINCOLN_FILTERS, list())
+BANDING_FILTERS <- list_update(DEFAULT_LINCOLN_FILTERS, list(b.year= 2000:2019))
 RECOVERIES_FILTERS <- list_update(DEFAULT_LINCOLN_FILTERS, list())
-TIME_COLUMNS = c("b.year", "b.month_code", "b.day_code")
+TIME_COLUMNS = c("b.year", "b.month", "b.day", "r.year", "r.month", "r.day")
