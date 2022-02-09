@@ -49,11 +49,130 @@
 #'}
 "gb_banding"
 
-get_species_data <- function(species_name, db_dtype = "banding") {
-  if (db_type == "banding") {
-    db = gb_banding
+
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param col_names PARAM_DESCRIPTION
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @rdname check_columns
+#' @export
+check_columns <- function(col_names) {
+  old_cols <- match(col_names, GB_COLNAMES$old_colnames)
+  idx_to_replace <- (!is.na(old_cols))
+  col_names[idx_to_replace] <- GB_COLNAMES$new_colnames[old_cols[idx_to_replace]]
+  return(col_names)
+}
+
+
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param species_name PARAM_DESCRIPTION
+#' @param db_dtype PARAM_DESCRIPTION, Default: 'banding'
+#' @param use_spec_code PARAM_DESCRIPTION, Default: TRUE
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @rdname get_species_data
+#' @export
+get_species_data <-
+  function(species_name,
+           db_dtype = "banding",
+           use_spec_code = TRUE) {
+    db <- get_db(db_type)
+    if (use_spec_code) {
+      col <- "SPEC"
+    } else {
+      col <- "species"
+    }
+    return(db[db[col] == species_name,])
   }
-  return(db[db$SPEC == species_name,])
+
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param type PARAM_DESCRIPTION
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @rdname check_type
+#' @export
+check_type <- function(type) {
+  type <- tolower(type)
+  if (type %in% c("banding", "b")) {
+    return("b")
+  } else if (type %in% c("recoveries", "r")) {
+    return("r")
+  } else {
+    #TODO : change manual reference for error message
+    stop(
+      "Unexpected value for 'type' argument. Please refer to ?check_type for accepted values."
+    )
+  }
+}
+
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param db_type PARAM_DESCRIPTION
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @rdname get_db
+#' @export
+get_db <- function(db_type) {
+  type <- check_type(db_type)
+  if (type == "r") {
+    return(gb_recoveries)
+  } else if (type == "b") {
+    return(gb_banding)
+  }
+}
+
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param type PARAM_DESCRIPTION
+#' @param filters PARAM_DESCRIPTION
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @rdname get_filters
+#' @export
+get_filters <- function(type, filters) {
+  type <- check_type(type)
+  if (type == "r") {
+    base <- RECOVERIES_FILTERS
+  } else if (type == "b") {
+    base <- BANDING_FILTERS
+  } else {
+    base <- DEFAULT_LINCOLN_FILTERS
+  }
+
+  return(list_update(base, filters))
 }
 
 #' @title List the locations available for a species
@@ -85,22 +204,23 @@ get_species_data <- function(species_name, db_dtype = "banding") {
 get_species_locations <-
   function(species_code,
            columns = c("country_name", "state_name", "flyway"),
+           df = NULL,
            db_type = "banding",
            sort_by = NULL) {
-    if (db_type == "banding") {
-      df = gb_banding
+    if (is.null(df)) {
+      df = get_db(db_type)
     }
     if (length(columns) == 1) {
       res = sort(unique(df[df$SPEC == species_code, columns]))
     } else {
       res = df[df$SPEC == species_code, columns] %>% distinct()
       if (!is.null(sort_by)) {
-        print(sort_by)
         res = res %>% arrange(.data[[sort_by]])
       }
     }
     return(res)
   }
+
 
 #' @describeIn get_species_locations Convenience functions to list
 #'             all available countries for the given species.
@@ -108,6 +228,7 @@ get_species_locations <-
 get_species_countries <- function(species_code) {
   return(get_species_locations(species_code, "country_name"))
 }
+
 
 #' @describeIn get_species_locations Convenience functions to list
 #'             all available states for the given species.
@@ -160,38 +281,44 @@ filter_time_period <- function(df, filter, col_name) {
 #' }
 #' @rdname lincoln_filter_db
 #' @export
-lincoln_filter_db <- function(filters = NULL, type="banding", df = NULL) {
-  if (is.null(df)) {
-    df = gb_banding
-  }
-  if (tolower(type) %in% c("banding", "b")) {
-    default <- BANDING_FILTERS
-  }
-  else if (tolower(type) %in% c("recoveries", "r")){
-    default <- RECOVERIES_FILTERS
-  } else {
-    stop("Unexpected value for 'type' argument. Please refer to ?lincoln_filter_db for accepted values.")
-  }
-  filters <- list_update(DEFAULT_LINCOLN_FILTERS, filters)
-
-  if ("columns" %in% names(filters)) {
-    columns <- filters$columns
-    columns <- columns[!is.na(match(columns, colnames(df)))]
-    df <- df[, columns]
-  }
-
-  for (i in seq_along(filters)) {
-    col_name <- names(filters)[i]
-    if (col_name %in% colnames(df)) {
-      filter = filters[[i]]
-      if (col_name %in% TIME_COLUMNS) {
-        if (!is.null(names(filter))) {
-          df <- filter_time_period(df, filter, col_name)
-          next
-        }
-      }
-      df <- df[df[[col_name]] %in% filter,]
+lincoln_filter_db <-
+  function(filters = NULL,
+           type = "banding",
+           df = NULL,
+           all_bands=TRUE) {
+    if (is.null(df)) {
+      df = get_db(type)
     }
+    # Get filter list and updates it if needed
+    filters <- get_filters(type, filters)
+
+    # If no geolocators should be included
+    if(!all_bands){
+      filters$add_info <- ADD_INFO_NO_GEO
+    }
+
+    # Select relevant columns
+    if ("columns" %in% names(filters)) {
+      df <- df[, which(colnames(df) %in% check_columns(filters$columns))]
+    }
+
+    # Iterate on all other filters
+    for (i in seq_along(filters)) {
+      col_name <- check_columns(names(filters)[i])
+      # Check if the name of the filter is a column of the database
+      if (col_name %in% colnames(df)) {
+        filter = filters[[i]]
+        # Check if the filter is a time filter
+        if (col_name %in% TIME_COLUMNS) {
+          if (!is.null(names(filter))) {
+            # If so, check if it can be a range
+            df <- filter_time_period(df, filter, col_name)
+            next
+          }
+        }
+        # Else, subset the database based on the filter
+        df <- df[df[[col_name]] %in% filter,]
+      }
+    }
+    return(df)
   }
-  return(df)
-}
