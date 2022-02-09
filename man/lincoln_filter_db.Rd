@@ -4,7 +4,12 @@
 \alias{lincoln_filter_db}
 \title{Performs filtering on the gb_banding dataset for Lincoln estimates}
 \usage{
-lincoln_filter_db(filters = NULL, type = "banding", df = NULL)
+lincoln_filter_db(
+  filters = NULL,
+  type = "banding",
+  df = NULL,
+  all_bands = TRUE
+)
 }
 \arguments{
 \item{columns}{\link[gblincoln]{LINCOLN_BANDING_COLUMNS}, Default: LINCOLN_BANDING_COLUMNS}

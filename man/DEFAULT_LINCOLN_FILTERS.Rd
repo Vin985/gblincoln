@@ -13,5 +13,7 @@ DEFAULT_LINCOLN_FILTERS
 \description{
 This lists contains all the default filters used to preprare
 gb_banding dataset to calculate Lincoln estimates.
+add_info: 00 (normal), 01 (color band), 07 (double bands),
+08 (temp marker-paint or dye), 25 (geolocators), 18 (blood sampled)
 }
 \keyword{datasets}

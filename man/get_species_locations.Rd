@@ -10,6 +10,7 @@
 get_species_locations(
   species_code,
   columns = c("country_name", "state_name", "flyway"),
+  df = NULL,
   db_type = "banding",
   sort_by = NULL
 )
