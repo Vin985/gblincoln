@@ -4,11 +4,11 @@ Age,age_code
 B.Coordinate.Precision,b.coordinate_precision
 B.Day.Code,b.day_code
 B.Dir,b.dir
-B.Flyway,b.flyway_code
+B.Flyway,b.flyway
 B.Lat,b.lat
 B.Long,b.long
-B.Month,b.month_code
-B.Region,b.region_code
+B.Month,b.month
+B.Region,b.region
 B.Year,b.year
 Band.Prefix.Plus,band_prefix_plus
 Band.Size,band_size
@@ -34,7 +34,7 @@ How_aged..How.Aged.Description,how_aged_desc
 How_sexed..How.Sexed.Description,how_sexed_desc
 Location_lu..COUNTRY_NAME,country_name
 Location_lu..STATE_NAME,state_name
-Month..VMonth,month
+Month..VMonth,month_name
 Permits..Permittee,permittee
 Region..Flyway,flyway
 Region..State,state
@@ -44,7 +44,7 @@ Species.Game.Birds..Species,species
 Status..VStatus,status
 GISRLong,GISRLong
 GISRLat,GISRLat
-Object_Name.E,object_name.r
+Object_Name.E,e.object_name
 MARPLOT.Layer.Name,MARPLOT_layer_name
 MARPLOT.Map.Name,MARPLOT_map_name
 symbol,symbol
@@ -92,10 +92,10 @@ BType.Current..VText,btype_current_text
 Condition..VBandStatus,condition_band_status
 Condition..VCondition,condition_condition
 How.Obt..VHow,how_obt_text
-Location_lu_enc..COUNTRY_NAME,location_lu_enc_country_name
-Location_lu_enc..STATE_NAME,location_lu_enc_state_name
+Location_lu_enc..COUNTRY_NAME,e.country_name
+Location_lu_enc..STATE_NAME,e.state_name
 R.Coord.Precision..LOCATION_ACCURACY_DESC,r.location_accuracy_desc
-RDay..VRDay,r.dat_vrday
+RDay..VRDay,r.day_vrday
 Rept.Mthd..VRept.Mthd,rept_method_text
 RFly..Flyway,r.flyway
 RMonth..VMonth,r.month_name

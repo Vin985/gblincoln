@@ -66,5 +66,6 @@ gb_banding <- clean_dataset(gb_banding)
 gb_recoveries <- read.csv("data_raw/gamebirds_recoveries.csv")
 gb_recoveries <- clean_dataset(gb_recoveries)
 
+
 usethis::use_data(gb_banding, overwrite = TRUE)
 usethis::use_data(gb_recoveries, overwrite = TRUE)
