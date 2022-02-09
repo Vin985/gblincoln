@@ -17,3 +17,15 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(gblincoln)
 ```
+
+# Available data
+
+# Perform Single Lincoln estimation
+
+## use all bands/ no geolocs
+
+## See results
+
+# Perform multiple Estimations
+
+# Use custom database
