@@ -13,8 +13,8 @@ source("R/globals.R")
 # dput(a)
 
 rename_columns <- function(df, columns){
-  found_columns <- match(colnames(df), columns)
-  new_names <- names(columns)[found_columns]
+  found_columns <- match(colnames(df), columns$old_colnames)
+  new_names <- columns[found_columns, "new_colnames"]
   new_columns <- colnames(df)
   new_columns[!is.na(new_names)] <- new_names[!is.na(new_names)]
   colnames(df) <- new_columns
