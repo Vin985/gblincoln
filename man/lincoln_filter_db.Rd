@@ -6,8 +6,8 @@
 \usage{
 lincoln_filter_db(
   filters = NULL,
-  type = "banding",
   df = NULL,
+  type = "banding",
   all_bands = TRUE
 )
 }
