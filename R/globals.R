@@ -180,6 +180,7 @@ DEFAULT_LINCOLN_FILTERS = list(
     "r.flyway",
     "r.state_code",
     "r.state_name",
+    "r.corrected_year",
     "how_obt"
   ),
   how_obt = 1,
@@ -189,5 +190,5 @@ DEFAULT_LINCOLN_FILTERS = list(
 )
 
 BANDING_FILTERS <- list_update(DEFAULT_LINCOLN_FILTERS, list(b.year= 2000:2019))
-RECOVERIES_FILTERS <- list_update(DEFAULT_LINCOLN_FILTERS, list())
+RECOVERIES_FILTERS <- list_update(DEFAULT_LINCOLN_FILTERS, list(r.corrected_year=2000:2019))
 TIME_COLUMNS = c("b.year", "b.month", "b.day", "r.year", "r.month", "r.day")

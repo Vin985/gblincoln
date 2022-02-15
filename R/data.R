@@ -269,7 +269,8 @@ filter_time_period <- function(df, filter, col_name) {
 #' @title Performs filtering on the gb_banding dataset for Lincoln estimates
 #' @description For time columns, i.e. 'year', 'month_code' and 'day_code',
 #' it is possible to select a period by
-#' providing a vector with two named values 'start' and 'end'
+#' providing a vector with two named values 'start' and 'end'.
+#' If a filter is NULL, it will be skipped
 #' @param columns \link[gblincoln]{LINCOLN_BANDING_COLUMNS}, Default: LINCOLN_BANDING_COLUMNS
 #' @return OUTPUT_DESCRIPTION
 #' @details DETAILS
@@ -304,6 +305,9 @@ lincoln_filter_db <-
 
     # Iterate on all other filters
     for (i in seq_along(filters)) {
+      if(is.null(filters[[i]])) {
+        next
+      }
       col_name <- check_columns(names(filters)[i])
       # Check if the name of the filter is a column of the database
       if (col_name %in% colnames(df)) {
@@ -322,3 +326,4 @@ lincoln_filter_db <-
     }
     return(df)
   }
+
