@@ -20,7 +20,8 @@ OUTPUT_DESCRIPTION
 \description{
 For time columns, i.e. 'year', 'month_code' and 'day_code',
 it is possible to select a period by
-providing a vector with two named values 'start' and 'end'
+providing a vector with two named values 'start' and 'end'.
+If a filter is NULL, it will be skipped
 }
 \details{
 DETAILS
