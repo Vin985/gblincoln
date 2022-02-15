@@ -85,7 +85,7 @@ Why..pre.1994...Report.Method..after.1994.,why_pre_1994.report_method_after_1994
 B.Coord.Precision..LOCATION_ACCURACY_DESC,b.location_accuracy_desc
 BDay..VRDay,b.day_vrday
 BMonth..VMonth,b.month_name
-BRegion..STA,b.state_code
+BRegion..STA,b.state_name_short
 BRegion..State,b.state_name
 BType.Current..VBtype,btype_current_vbtype
 BType.Current..VText,btype_current_text
@@ -97,7 +97,7 @@ Location_lu_enc..STATE_NAME,e.state_name
 R.Coord.Precision..LOCATION_ACCURACY_DESC,r.location_accuracy_desc
 RDay..VRDay,r.day_vrday
 Rept.Mthd..VRept.Mthd,rept_method_text
-RFly..Flyway,r.flyway
+RFly..Flyway,r.flyway_name
 RMonth..VMonth,r.month_name
 RRegion..STA,r.state_code
 RRegion..State,r.state_name
