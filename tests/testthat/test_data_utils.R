@@ -1,5 +1,3 @@
-
-
 REF_COUNTRIES <- c("", "Canada", "United States")
 REF_FLYWAYS <- c("Alaska", "Atlantic", "Canada", "Pacific")
 REF_STATES <-
