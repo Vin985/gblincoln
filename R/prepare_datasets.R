@@ -66,7 +66,8 @@
 check_columns <- function(col_names) {
   old_cols <- match(col_names, GB_COLNAMES$old_colnames)
   idx_to_replace <- (!is.na(old_cols))
-  col_names[idx_to_replace] <- GB_COLNAMES$new_colnames[old_cols[idx_to_replace]]
+  col_names[idx_to_replace] <-
+    GB_COLNAMES$new_colnames[old_cols[idx_to_replace]]
   return(col_names)
 }
 
@@ -96,7 +97,7 @@ get_species_data <-
     } else {
       col <- "species"
     }
-    return(db[db[col] == species_name,])
+    return(db[db[col] == species_name, ])
   }
 
 #' @title FUNCTION_TITLE
@@ -262,7 +263,7 @@ filter_time_period <- function(df, filter, col_name) {
   }
   df <-
     df[df[[col_name]] >= filter["start"] &
-         df[[col_name]] <= filter["end"],]
+         df[[col_name]] <= filter["end"], ]
   return(df)
 }
 
@@ -286,7 +287,7 @@ lincoln_filter_db <-
   function(filters = NULL,
            df = NULL,
            type = "banding",
-           all_bands=TRUE) {
+           band_type = "all") {
     if (is.null(df)) {
       df = get_db(type)
     }
@@ -294,10 +295,9 @@ lincoln_filter_db <-
     filters <- get_filters(type, filters)
 
     # If no geolocators should be included
-    if(!all_bands){
+    if (band_type == "no_geo") {
       filters$add_info <- ADD_INFO_NO_GEO
     }
-
     # Select relevant columns
     if ("columns" %in% names(filters)) {
       df <- df[, which(colnames(df) %in% check_columns(filters$columns))]
@@ -305,7 +305,7 @@ lincoln_filter_db <-
 
     # Iterate on all other filters
     for (i in seq_along(filters)) {
-      if(is.null(filters[[i]])) {
+      if (is.null(filters[[i]])) {
         next
       }
       col_name <- check_columns(names(filters)[i])
@@ -321,9 +321,8 @@ lincoln_filter_db <-
           }
         }
         # Else, subset the database based on the filter
-        df <- df[df[[col_name]] %in% filter,]
+        df <- df[df[[col_name]] %in% filter, ]
       }
     }
     return(df)
   }
-
