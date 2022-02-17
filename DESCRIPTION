@@ -17,6 +17,7 @@ VignetteBuilder: knitr
 Depends: 
     R (>= 4.0),
     tidyverse,
+    ggplot2
 RoxygenNote: 7.1.2
 Imports:
     xlsx
@@ -24,5 +25,5 @@ Config/testthat/edition: 3
 Collate:
     utils.R
     globals.R
-    data.R
+    prepare_datasets.R
     lincoln.R
