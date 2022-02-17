@@ -4,7 +4,13 @@
 \alias{get_all_direct_recoveries}
 \title{FUNCTION_TITLE}
 \usage{
-get_all_direct_recoveries(banding_filters, recoveries_filters)
+get_all_direct_recoveries(
+  banding_filters,
+  recoveries_filters,
+  band_type = "all",
+  banding_df = NULL,
+  recoveries_df = NULL
+)
 }
 \arguments{
 \item{df}{PARAM_DESCRIPTION}
