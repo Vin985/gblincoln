@@ -62,6 +62,49 @@ test_that("Get total direct recoveries", {
   pkg_res <-
     get_all_direct_recoveries(banding_filter, recoveries_filter)
   colnames(pkg_res) <-
-    c("B.Year", "total", "TAGE", "R.Corr.Year", "total_recoveries")
-  expect_equal(pkg_res, DIRECT_RECOVS)
+    c("B.Year", "total", "TAGE", "R.Corr.Year", "total_recoveries", "DRR")
+  expect_equal(pkg_res, DRR)
 })
+
+test_that("Get HR, all bands", {
+  banding_filter <- list(SPEC = "ATBR", state_name = "Nunavut")
+  recoveries_filter <-
+    list(SPEC = "ATBR",
+         e.country_code = 'US',
+         r.flyway = 1)
+  pkg_res <-
+    get_hr_df(banding_filter=banding_filter, recoveries_filter=recoveries_filter)
+  colnames(pkg_res) <-
+    c("B.Year", "total", "R.Corr.Year", "total_recoveries", "DRR",
+      "rho", "Var_rho", "SE_rho", "HR", "varDRR", "seDRR", "varh",
+      "seh", "CL_h", "CV", "band_type")
+  expect_equal(pkg_res, HR_all_band)
+})
+
+
+test_that("Get HR, no_geo bands", {
+  banding_filter <- list(SPEC = "ATBR", state_name = "Nunavut")
+  recoveries_filter <-
+    list(SPEC = "ATBR",
+         e.country_code = 'US',
+         r.flyway = 1)
+  pkg_res <-
+    get_hr_df(banding_filter=banding_filter, recoveries_filter=recoveries_filter, band_type="no_geo")
+  colnames(pkg_res) <-
+    c("B.Year", "total", "R.Corr.Year", "total_recoveries", "DRR",
+      "rho", "Var_rho", "SE_rho", "HR", "varDRR", "seDRR", "varh",
+      "seh", "CL_h", "CV", "band_type")
+  pkg_res <- pkg_res[pkg_res$B.Year %in% 2018:2019, ]
+  rownames(pkg_res) <- 1:2
+  expect_equal(pkg_res, HR_no_geo)
+})
+
+test_that("Use all bands", {
+  banding_filter <- list(SPEC = "ATBR", state_name = "Nunavut")
+  recoveries_filter <-
+    list(SPEC = "ATBR",
+         e.country_code = 'US',
+         r.flyway = 1)
+  expect_equal(compare_band_types(banding_filter=banding_filter, recoveries_filter=recoveries_filter, plot=FALSE)$overlap, TRUE)
+})
+

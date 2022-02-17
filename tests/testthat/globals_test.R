@@ -111,3 +111,57 @@ ATBRRECOV_by_band_type <- ATBRRECOV3 %>%
   summarise(total_recoveries = sum(COUNT))
 
 DIRECT_RECOVS <- merge(ATBRBANDsum, ATBRRECOVsum)
+DRR <- DIRECT_RECOVS %>%
+  mutate(DRR = total_recoveries / total)
+
+
+RHO <-
+  read.csv(
+    "/mnt/win/dev/EC/Lincoln/data/RHO_1976_2010(Arnold2020)_2011_2019(linear).csv",
+    stringsAsFactors = FALSE
+  )
+
+
+HR <- inner_join(DRR, RHO, by = "B.Year")
+HR_all_band <- HR %>%
+  mutate(HR = DRR / rho) %>%
+  mutate(varDRR = (DRR * (1 - DRR)) / (total - 1)) %>%
+  mutate(seDRR = sqrt(varDRR)) %>%
+  mutate(varh = (varDRR / (rho ^ 2)) + ((DRR ^ 2 * Var_rho) / rho ^ 4)) %>%
+  mutate(seh = sqrt(varh)) %>%
+  mutate(CL_h = seh * 1.96) %>%
+  mutate(CV = seh / HR) %>%
+  mutate(band_type = 'all') %>%
+  select(-TAGE)
+
+
+ATBRBAND_no_geo <- ATBRBAND2 %>%
+  filter(B.Year %in% 2000:2019) %>%
+  filter(Add.Info %in% c(00, 01, 07)) %>%
+  group_by(B.Year) %>%
+  summarise(total = sum(Count.of.Birds))
+ATBRBAND_no_geo
+
+ATBRRECOV_no_geo <- ATBRRECOV3 %>%
+  filter(B.Year == R.Corr.Year) %>%
+  filter(Add.Info %in% c(00, 01, 07)) %>%
+  group_by(TAGE, B.Year, R.Corr.Year) %>%
+  summarise(total_recoveries = sum(COUNT))
+
+
+DIRECT_RECOVS_no_geo <- merge(ATBRBAND_no_geo, ATBRRECOV_no_geo) %>%
+  mutate(DRR = total_recoveries / total)
+
+HR_no_geo <- inner_join(DIRECT_RECOVS_no_geo, RHO, by = "B.Year") %>%
+  mutate(HR = DRR / rho) %>%
+  mutate(varDRR = (DRR * (1 - DRR)) / (total - 1)) %>%
+  mutate(seDRR = sqrt(varDRR)) %>%
+  mutate(varh = (varDRR / (rho ^ 2)) + ((DRR ^ 2 * Var_rho) / rho ^ 4)) %>%
+  mutate(seh = sqrt(varh)) %>%
+  mutate(CL_h = seh * 1.96) %>%
+  mutate(CV = seh / HR) %>%
+  mutate(band_type = 'no_geo') %>%
+  filter(B.Year %in% 2018:2019) %>%
+  select(-TAGE)
+
+# HR_by_band_type <- rbind(HR_all_band, HR_no_geo)
