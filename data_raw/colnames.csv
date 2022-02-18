@@ -4,7 +4,7 @@ Age,age_code
 B.Coordinate.Precision,b.coordinate_precision
 B.Day.Code,b.day_code
 B.Dir,b.dir
-B.Flyway,b.flyway
+B.Flyway,b.flyway_code
 B.Lat,b.lat
 B.Long,b.long
 B.Month,b.month
@@ -36,8 +36,8 @@ Location_lu..COUNTRY_NAME,b.country_name
 Location_lu..STATE_NAME,b.loc_state_name
 Month..VMonth,month_name
 Permits..Permittee,permittee
-Region..Flyway,flyway
-Region..State,state
+Region..Flyway,b.flyway_name
+Region..State,b.state_name
 Sex..VSEX,sex
 Species.Game.Birds..SPEC,SPEC
 Species.Game.Birds..Species,species
@@ -71,7 +71,7 @@ R.Create.date.Month,r.create_date_month
 R.Create.date.Year,r.create_date.year
 R.Day,r.day
 R.Dir,r.dir
-R.Flyway,r.flyway
+R.Flyway,r.flyway_code
 R.Lat,r.lat
 R.Long,r.long
 R.Month,r.month
