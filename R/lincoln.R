@@ -60,30 +60,27 @@ get_recoveries_summary <- function(df, by_band = FALSE) {
 #' @rdname get_all_direct_recoveries
 #' @export
 get_all_direct_recoveries <-
-  function(banding_filters,
-           recoveries_filters,
+  function(filters,
            band_type = "all",
            banding_df = NULL,
            recoveries_df = NULL) {
     banding_db <-
-      lincoln_filter_db(banding_filters,
+      lincoln_filter_db(filters,
                         df = banding_df,
                         type = "banding",
                         band_type = band_type)
     bandings <- get_banding_summary(banding_db)
 
     rec_db <-
-      lincoln_filter_db(
-        recoveries_filters,
-        df = recoveries_df,
-        type = "recoveries",
-        band_type = band_type
-      )
+      lincoln_filter_db(filters,
+                        df = recoveries_df,
+                        type = "recoveries",
+                        band_type = band_type)
     recoveries <- get_recoveries_summary(rec_db)
 
     direct_recoveries <-
       merge(bandings, recoveries) %>% mutate(drr = total_recoveries /
-                                               total)
+                                               total_banding)
     return(direct_recoveries)
   }
 
@@ -152,7 +149,7 @@ compare_band_types <-
         ggplot(data = hr_by_band_type, aes(x = b.year, y = hr)) +
         geom_point(aes(color = band_type)) +
         geom_errorbar(aes(ymin = hr - cl_h, ymax = hr + cl_h))
-      both_plot
+      print(both_plot)
     }
 
     if (check_overlap) {
@@ -179,13 +176,20 @@ compare_band_types <-
     }
   }
 
+
+#' @rdname get_lincoln_estimates
+#' @export
 get_lincoln_estimates <-
-  function(hr_df,
+  function(filters,
+           hr_df = NULL,
            harvest_df = NULL,
-           plot = TRUE,
-           save = TRUE,
-           save_path=".") {
+           plot_estimates = TRUE,
+           save_estimates = TRUE,
+           save_path = ".") {
     if (is.null(harvest_df)) {
+
+    }
+    if (is.null(hr_df)) {
 
     }
     lincoln_df <- inner_join(hr_df, harvest_df, by = "b.year")
@@ -201,29 +205,37 @@ get_lincoln_estimates <-
         total_recoveries +
           1
       ) ^ 2) * (total_recoveries + 2))) %>%
-      mutate(var_N_bH.r =  ((total_banding / total_recoveries) ^ 2) * H_adj_var + H_adj ^
+      mutate(var_N_bH.r =  ((total_banding / total_recoveries) ^ 2) * var_harvest_adj + harvest_adj ^
                2 * var_N_b.r) %>%
       mutate(var_N = (((total_banding * harvest_adj) / total_recoveries
       ) ^ 2) * var_rho + rho ^
         2 * var_N_bH.r) %>%
       mutate(se_N = sqrt(var_N)) %>%
       mutate(cl_N = se_N * 1.96)
-    if (plot) {
-      library(ggplot)
-      ggplot(data = lincoln, aes(x = b.year, y = N)) +
+
+
+    if (plot_estimates) {
+      library(ggplot2)
+      plt <- ggplot(data = lincoln, aes(x = b.year, y = N)) +
         geom_point() + geom_smooth() +
         scale_y_continuous(name = "Abundance (Lincoln)", limits = c(0, 500000)) +
         geom_errorbar(aes(ymin = N - cl_N, ymax = N + cl_N)) +
         labs(x = "Year")
+      print(plt)
     }
 
-    lincoln_est <- as.data.frame(cbind(lincoln$b.year,lincoln$N, lincoln$cl_N))
-    colnames(lincoln_est) <- c("year","N","NCL")
-    if (save) {
-      min_year = min(lincoln_est$year)
-      max_year = max(lincoln_est$year)
-      species =
-      write.csv(Lincoln_est, 'ATBR_Lincoln_2010_2019_Oct22_2021.csv')
+    lincoln_est <-
+      as.data.frame(cbind(lincoln$b.year, lincoln$N, lincoln$cl_N))
+    colnames(lincoln_est) <- c("year", "N", "NCL")
+    if (save_estimates) {
+      file_path = file.path(save_path,
+                            sprintf(
+                              '%s_Lincoln_2000_2019_%s.csv',
+                              filters$SPEC,
+                              format(Sys.time(), "%b%d_%Y")
+                            ))
+      write.csv(lincoln_est,
+                file_path)
     }
     return(lincoln_est)
 
