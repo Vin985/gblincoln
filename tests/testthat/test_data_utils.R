@@ -2,9 +2,10 @@ REF_COUNTRIES <- c("", "Canada", "United States")
 REF_FLYWAYS <- c("Alaska", "Atlantic", "Canada", "Pacific")
 REF_STATES <-
   c(
-    "",
     "Alaska",
+    "California",
     "Connecticut",
+    "Keewatin",
     "Maine",
     "Maryland",
     "Massachusetts",
@@ -23,7 +24,7 @@ REF_STATES <-
 REF_LOCATIONS <-
   structure(
     list(
-      country_name = c(
+      b.country_name = c(
         "United States",
         "Canada",
         "United States",
@@ -39,11 +40,13 @@ REF_LOCATIONS <-
         "Canada",
         "Canada",
         "Canada",
+        "",
+        "",
         "",
         "",
         ""
       ),
-      state_name = c(
+      b.state_name = c(
         "New York",
         "Nunavut",
         "New Jersey",
@@ -59,11 +62,13 @@ REF_LOCATIONS <-
         "Ontario",
         "Nova Scotia",
         "New Brunswick",
-        "",
-        "",
-        ""
+        "Maine",
+        "New Jersey",
+        "New York",
+        "California",
+        "Keewatin"
       ),
-      flyway = c(
+      b.flyway_name = c(
         "Atlantic",
         "Canada",
         "Atlantic",
@@ -80,11 +85,13 @@ REF_LOCATIONS <-
         "Canada",
         "Canada",
         "Atlantic",
+        "Atlantic",
+        "Atlantic",
         "Pacific",
         "Canada"
       )
     ),
-    row.names = c(NA,-18L),
+    row.names = c(NA, -20L),
     class = "data.frame"
   )
 
@@ -101,7 +108,7 @@ test_that("Species states", {
 })
 
 test_that("Species states manual", {
-  expect_equal(get_species_locations("ATBR", "state_name"), REF_STATES)
+  expect_equal(get_species_locations("ATBR", "b.state_name"), REF_STATES)
 })
 
 
@@ -111,18 +118,19 @@ test_that("Species locations", {
 
 
 test_that("Species locations sort", {
-  ref <- arrange(REF_LOCATIONS, state_name)
-  expect_equal(get_species_locations("ATBR", sort_by = "state_name"), ref)
+  ref <- arrange(REF_LOCATIONS, b.state_name)
+  expect_equal(get_species_locations("ATBR", sort_by = "b.state_name"), ref)
 })
 
 test_that("Species locations sort, 2 cols", {
-  ref <- unique(REF_LOCATIONS[, c("flyway", "country_name")])
-  ref <- arrange(ref, country_name)
-  expect_equal(get_species_locations("ATBR", c("flyway", "country_name"), sort_by = "country_name"), ref)
+  ref <- unique(REF_LOCATIONS[, c("b.flyway_name", "b.country_name")])
+  ref <- arrange(ref, b.country_name)
+  expect_equal(get_species_locations("ATBR", c("b.flyway_name", "b.country_name"), sort_by = "b.country_name"),
+               ref)
 })
 
 test_that("Missing column", {
-  expect_equal(get_species_locations("ATBR", columns=c("no_col")), NULL)
+  expect_equal(get_species_locations("ATBR", columns = c("no_col")), NULL)
 })
 
 test_that("Check type r", {
@@ -153,6 +161,3 @@ test_that("Get database", {
 test_that("Check columns", {
   expect_equal(check_columns(c("Add.Info", "add_info")), c("add_info", "add_info"))
 })
-
-
-
