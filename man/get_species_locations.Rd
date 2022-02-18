@@ -9,17 +9,18 @@
 \usage{
 get_species_locations(
   species_code,
-  columns = c("country_name", "state_name", "flyway"),
+  columns = c("b.country_name", "b.state_name", "b.flyway_name", "r.country_name",
+    "r.state_name", "r.flyway_name"),
   df = NULL,
   db_type = "banding",
   sort_by = NULL
 )
 
-get_species_countries(species_code)
+get_species_countries(species_code, db_type = "banding")
 
-get_species_states(species_code)
+get_species_states(species_code, db_type = "banding")
 
-get_species_flyways(species_code)
+get_species_flyways(species_code, db_type = "banding")
 }
 \arguments{
 \item{columns}{The desired columns. By default returns all the location

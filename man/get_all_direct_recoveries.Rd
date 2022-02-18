@@ -5,8 +5,7 @@
 \title{FUNCTION_TITLE}
 \usage{
 get_all_direct_recoveries(
-  banding_filters,
-  recoveries_filters,
+  filters,
   band_type = "all",
   banding_df = NULL,
   recoveries_df = NULL
