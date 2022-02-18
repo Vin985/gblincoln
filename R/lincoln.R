@@ -1,13 +1,3 @@
-
-
-
-
-
-
-
-
-
-
 #' @title FUNCTION_TITLE
 #' @description FUNCTION_DESCRIPTION
 #' @param df PARAM_DESCRIPTION
@@ -25,7 +15,7 @@
 get_banding_summary <- function(df) {
   res = df %>%
     group_by(b.year) %>%
-    summarise(total = sum(count_of_birds))
+    summarise(total_banding = sum(count_of_birds))
   return(res)
 }
 
@@ -113,7 +103,7 @@ get_hr_df <-
     hr_df <- inner_join(drr_df, rho_df, by = "b.year")
     hr_df <- hr_df %>%
       mutate(hr = drr / rho) %>%
-      mutate(var_drr = (drr * (1 - drr)) / (total - 1)) %>%
+      mutate(var_drr = (drr * (1 - drr)) / (total_banding - 1)) %>%
       mutate(se_drr = sqrt(var_drr)) %>%
       mutate(var_h = (var_drr / (rho ^ 2)) + ((drr ^ 2 * var_rho) / rho ^ 4)) %>%
       mutate(se_h = sqrt(var_h)) %>%
@@ -126,7 +116,7 @@ get_hr_df <-
 
 
 
-get_confidence_levels <- function(df){
+get_confidence_levels <- function(df) {
   return(as.data.frame(cbind(
     b.year = df$b.year,
     start = (df$h - df$cl_h),
@@ -141,7 +131,7 @@ compare_band_types <-
            hr_no_geo = NULL,
            plot = TRUE,
            check_overlap = TRUE,
-           geo_years=GEO_YEARS,
+           geo_years = GEO_YEARS,
            ...) {
     # All Bands
     if (is.null(hr_all)) {
@@ -165,7 +155,7 @@ compare_band_types <-
       both_plot
     }
 
-    if (check_overlap){
+    if (check_overlap) {
       ## Compute overlap
       # Get only relevant year for all bands
       all_subset <-
@@ -173,10 +163,11 @@ compare_band_types <-
       # Get confidence levels for all bands
       all_cl <- get_confidence_levels(all_subset)
       # Get confidence levels without geolocators
-      no_geo_cl <-get_confidence_levels(no_geo_subset)
+      no_geo_cl <- get_confidence_levels(no_geo_subset)
       # Check if there is an overlap
       overlap <-
-        (no_geo_cl$start <= all_cl$end) & (no_geo_cl$end >= all_cl$start)
+        (no_geo_cl$start <= all_cl$end) &
+        (no_geo_cl$end >= all_cl$start)
       # Return TRUE if all confidence levels overlap
       res <-
         list(
@@ -186,4 +177,54 @@ compare_band_types <-
         )
       return(res)
     }
+  }
+
+get_lincoln_estimates <-
+  function(hr_df,
+           harvest_df = NULL,
+           plot = TRUE,
+           save = TRUE,
+           save_path=".") {
+    if (is.null(harvest_df)) {
+
+    }
+    lincoln_df <- inner_join(hr_df, harvest_df, by = "b.year")
+    lincoln <- lincoln_df %>%
+      mutate(harvest_adj = harvest * 0.61) %>%
+      mutate(se_harvest_adj = se_harvest * 0.61) %>%
+      mutate(var_harvest_adj = se_harvest_adj ^ 2) %>%
+      mutate(N = ((((total_banding + 1) * (harvest_adj + 1) * rho
+      ) / (
+        total_recoveries + 1
+      )) - 1)) %>%
+      mutate(var_N_b.r = ((total_banding + 1) * (total_banding - total_recoveries)) / (((
+        total_recoveries +
+          1
+      ) ^ 2) * (total_recoveries + 2))) %>%
+      mutate(var_N_bH.r =  ((total_banding / total_recoveries) ^ 2) * H_adj_var + H_adj ^
+               2 * var_N_b.r) %>%
+      mutate(var_N = (((total_banding * harvest_adj) / total_recoveries
+      ) ^ 2) * var_rho + rho ^
+        2 * var_N_bH.r) %>%
+      mutate(se_N = sqrt(var_N)) %>%
+      mutate(cl_N = se_N * 1.96)
+    if (plot) {
+      library(ggplot)
+      ggplot(data = lincoln, aes(x = b.year, y = N)) +
+        geom_point() + geom_smooth() +
+        scale_y_continuous(name = "Abundance (Lincoln)", limits = c(0, 500000)) +
+        geom_errorbar(aes(ymin = N - cl_N, ymax = N + cl_N)) +
+        labs(x = "Year")
+    }
+
+    lincoln_est <- as.data.frame(cbind(lincoln$b.year,lincoln$N, lincoln$cl_N))
+    colnames(lincoln_est) <- c("year","N","NCL")
+    if (save) {
+      min_year = min(lincoln_est$year)
+      max_year = max(lincoln_est$year)
+      species =
+      write.csv(Lincoln_est, 'ATBR_Lincoln_2010_2019_Oct22_2021.csv')
+    }
+    return(lincoln_est)
+
   }
