@@ -14,7 +14,7 @@ Band.Prefix.Plus,band_prefix_plus
 Band.Size,band_size
 Band.Type,band_type
 Count.of.Birds,count_of_birds
-Country_code,country_code
+Country_code,b.country_code
 GISBLat,GISBLat
 GISBLong,GISBLong
 How.Aged,how_aged
@@ -22,7 +22,7 @@ How.Sexed,how_sexed
 Permit,permit
 Sex,sex_code
 Sp..Num.,sp_num
-State_code,state_code
+State_code,b.state_code
 Status,status_code
 Age..VAGE,age
 AI..VAI,VAI
@@ -32,8 +32,8 @@ coord_precision..LOCATION_ACCURACY_DESC,location_accuracy_desc
 DayCode..Day.Span,day_span
 How_aged..How.Aged.Description,how_aged_desc
 How_sexed..How.Sexed.Description,how_sexed_desc
-Location_lu..COUNTRY_NAME,country_name
-Location_lu..STATE_NAME,state_name
+Location_lu..COUNTRY_NAME,b.country_name
+Location_lu..STATE_NAME,b.loc_state_name
 Month..VMonth,month_name
 Permits..Permittee,permittee
 Region..Flyway,flyway
@@ -41,7 +41,7 @@ Region..State,state
 Sex..VSEX,sex
 Species.Game.Birds..SPEC,SPEC
 Species.Game.Birds..Species,species
-Status..VStatus,status
+Status..VStatus,status_text
 GISRLong,GISRLong
 GISRLat,GISRLat
 Object_Name.E,e.object_name
