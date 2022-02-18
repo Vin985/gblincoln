@@ -1,3 +1,5 @@
+rm(list=ls())
+
 ATBRBAND <-
   read.csv("/mnt/win/dev/EC/Lincoln/data/ATBR_allbandings.csv",
            stringsAsFactors = FALSE)
@@ -29,15 +31,34 @@ ATBRBAND2 <- ATBRBAND1 %>%
   filter(B.Month > 6) %>%
   filter(B.Month < 9) %>%
   select(
-    -Sex..VSEX,-B.Coordinate.Precision,-Band.Size,-How_aged..How.Aged.Description,-How.Sexed,-How.Aged,-Age..VAGE,
-    -AI..VAI,-coord_precision..LOCATION_ACCURACY_DESC,-DayCode..Day.Span,-How_sexed..How.Sexed.Description,
-    -Location_lu..COUNTRY_NAME,-Month..VMonth,-Permits..Permittee,-Region..Flyway,-Status..VStatus,-Region..State,-Object_Name,-MARPLOT.Layer.Name,-MARPLOT.Map.Name,-symbol,-color,-idmarplot,-Species.Game.Birds..Species
+    -Sex..VSEX,
+    -B.Coordinate.Precision,
+    -Band.Size,
+    -How_aged..How.Aged.Description,
+    -How.Sexed,
+    -How.Aged,
+    -Age..VAGE,-AI..VAI,
+    -coord_precision..LOCATION_ACCURACY_DESC,
+    -DayCode..Day.Span,
+    -How_sexed..How.Sexed.Description,-Location_lu..COUNTRY_NAME,
+    -Month..VMonth,
+    -Permits..Permittee,
+    -Region..Flyway,
+    -Status..VStatus,
+    -Region..State,
+    -Object_Name,
+    -MARPLOT.Layer.Name,
+    -MARPLOT.Map.Name,
+    -symbol,
+    -color,
+    -idmarplot,
+    -Species.Game.Birds..Species
   )
 
 ATBRBANDsum <- ATBRBAND2 %>%
   filter(B.Year %in% 2000:2019) %>%
   group_by(B.Year) %>%
-  summarise(total = sum(Count.of.Birds))
+  summarise(total_banding = sum(Count.of.Birds))
 ATBRBANDsum
 
 
@@ -76,22 +97,58 @@ ATBRRECOV2 <- ATBRRECOV1 %>%
   filter(R.Month %in% c(9, 10, 11, 12, 1, 2, 3)) %>%
   filter(B.Month %in% c(7, 8)) %>%
   select(
-    -B.Coordinate.Precision,-b_country_code,-b_state_code,-Band.Size,-Band.Type.Current,-Band.Type.Orig,
-    -Cardinal.Direction,-Distance,-e_state_code,-How.Aged,-How.Obt,-How.Sexed,-Hunt..Season.Surv.,
-    -Marker_Desc_bndg,-Marker_Desc_enc,-MIN_AGE_AT_ENC,-other_bands,-Permit,-Pres..Cond.,-R.Coordinate.Precision,
-    -R.Create.date.Month,-R.Create.date.Year,-R.Dir,-Replaced.Band.Code,-Replaced.Band.Translated,-Same.Block,
-    -Who.Reported,-Why..pre.1994...Report.Method..after.1994.,-Age..VAGE,-AI..VAI,-B.Coord.Precision..LOCATION_ACCURACY_DESC,-BDay..VRDay,
-    -BMonth..VMonth,-BRegion..STA,-BRegion..State,-BType.Current..VBtype,-BType.Current..VText,-BType..VBtype,-BType..VText,
-    -Condition..VBandStatus,-Condition..VCondition,-How_aged..How.Aged.Description,
-    -How_sexed..How.Sexed.Description,-Location_lu_enc..STATE_NAME,-Location_lu..COUNTRY_NAME,
-    -Permits..Permittee,-R.Coord.Precision..LOCATION_ACCURACY_DESC,-RDay..VRDay,-Region..Flyway,-How.Obt..VHow,
-    -Rept.Mthd..VRept.Mthd,-RMonth..VMonth,-Sex..VSEX,-Species.Game.Birds..SPEC,-Species.Game.Birds..Species,-Status..VStatus,
-    -Who..VWho
+    -B.Coordinate.Precision,
+    -b_country_code,
+    -b_state_code,
+    -Band.Size,
+    -Band.Type.Current,
+    -Band.Type.Orig,-Cardinal.Direction,
+    -Distance,
+    -e_state_code,
+    -How.Aged,
+    -How.Obt,
+    -How.Sexed,
+    -Hunt..Season.Surv.,-Marker_Desc_bndg,
+    -Marker_Desc_enc,
+    -MIN_AGE_AT_ENC,
+    -other_bands,
+    -Permit,
+    -Pres..Cond.,
+    -R.Coordinate.Precision,-R.Create.date.Month,
+    -R.Create.date.Year,
+    -R.Dir,
+    -Replaced.Band.Code,
+    -Replaced.Band.Translated,
+    -Same.Block,-Who.Reported,
+    -Why..pre.1994...Report.Method..after.1994.,
+    -Age..VAGE,
+    -AI..VAI,
+    -B.Coord.Precision..LOCATION_ACCURACY_DESC,
+    -BDay..VRDay,-BMonth..VMonth,
+    -BRegion..STA,
+    -BRegion..State,
+    -BType.Current..VBtype,
+    -BType.Current..VText,
+    -BType..VBtype,
+    -BType..VText,-Condition..VBandStatus,
+    -Condition..VCondition,
+    -How_aged..How.Aged.Description,-How_sexed..How.Sexed.Description,
+    -Location_lu_enc..STATE_NAME,
+    -Location_lu..COUNTRY_NAME,-Permits..Permittee,
+    -R.Coord.Precision..LOCATION_ACCURACY_DESC,
+    -RDay..VRDay,
+    -Region..Flyway,
+    -How.Obt..VHow,-Rept.Mthd..VRept.Mthd,
+    -RMonth..VMonth,
+    -Sex..VSEX,
+    -Species.Game.Birds..SPEC,
+    -Species.Game.Birds..Species,
+    -Status..VStatus,-Who..VWho
   )
 
 CHECK <- ATBRRECOV2 %>%
   group_by(R.Month) %>%
-  summarise(total = sum(COUNT))
+  summarise(total_recoveries = sum(COUNT))
 CHECK
 
 ATBRRECOV2$R.Corr.Year <-
@@ -112,7 +169,7 @@ ATBRRECOV_by_band_type <- ATBRRECOV3 %>%
 
 DIRECT_RECOVS <- merge(ATBRBANDsum, ATBRRECOVsum)
 DRR <- DIRECT_RECOVS %>%
-  mutate(DRR = total_recoveries / total)
+  mutate(DRR = total_recoveries / total_banding)
 
 
 RHO <-
@@ -125,7 +182,7 @@ RHO <-
 HR <- inner_join(DRR, RHO, by = "B.Year")
 HR_all_band <- HR %>%
   mutate(HR = DRR / rho) %>%
-  mutate(varDRR = (DRR * (1 - DRR)) / (total - 1)) %>%
+  mutate(varDRR = (DRR * (1 - DRR)) / (total_banding - 1)) %>%
   mutate(seDRR = sqrt(varDRR)) %>%
   mutate(varh = (varDRR / (rho ^ 2)) + ((DRR ^ 2 * Var_rho) / rho ^ 4)) %>%
   mutate(seh = sqrt(varh)) %>%
@@ -139,7 +196,7 @@ ATBRBAND_no_geo <- ATBRBAND2 %>%
   filter(B.Year %in% 2000:2019) %>%
   filter(Add.Info %in% c(00, 01, 07)) %>%
   group_by(B.Year) %>%
-  summarise(total = sum(Count.of.Birds))
+  summarise(total_banding = sum(Count.of.Birds))
 ATBRBAND_no_geo
 
 ATBRRECOV_no_geo <- ATBRRECOV3 %>%
@@ -150,11 +207,12 @@ ATBRRECOV_no_geo <- ATBRRECOV3 %>%
 
 
 DIRECT_RECOVS_no_geo <- merge(ATBRBAND_no_geo, ATBRRECOV_no_geo) %>%
-  mutate(DRR = total_recoveries / total)
+  mutate(DRR = total_recoveries / total_banding)
 
-HR_no_geo <- inner_join(DIRECT_RECOVS_no_geo, RHO, by = "B.Year") %>%
+HR_no_geo <-
+  inner_join(DIRECT_RECOVS_no_geo, RHO, by = "B.Year") %>%
   mutate(HR = DRR / rho) %>%
-  mutate(varDRR = (DRR * (1 - DRR)) / (total - 1)) %>%
+  mutate(varDRR = (DRR * (1 - DRR)) / (total_banding - 1)) %>%
   mutate(seDRR = sqrt(varDRR)) %>%
   mutate(varh = (varDRR / (rho ^ 2)) + ((DRR ^ 2 * Var_rho) / rho ^ 4)) %>%
   mutate(seh = sqrt(varh)) %>%
@@ -165,3 +223,24 @@ HR_no_geo <- inner_join(DIRECT_RECOVS_no_geo, RHO, by = "B.Year") %>%
   select(-TAGE)
 
 # HR_by_band_type <- rbind(HR_all_band, HR_no_geo)
+
+ATBRharvest <-
+  read.csv("/mnt/win/dev/EC/Lincoln/data/ATBR_harvest_2000_2019(atlantic flyway).csv",
+           stringsAsFactors = FALSE)
+
+
+lincoln <- inner_join(ATBRharvest, HR_all_band, by = "B.Year")
+lincoln1 <- lincoln %>%
+  mutate(H_adj = harvest * 0.61) %>%
+  mutate(H_adj_SE = se_harvest * 0.61) %>%
+  mutate(H_adj_var = H_adj_SE ^ 2) %>%
+  mutate(N = ((((total_banding + 1) * (H_adj + 1) * rho
+  ) / (total_recoveries + 1)) - 1)) %>%
+  mutate(N_var_b.r = ((total_banding + 1) * (total_banding - total_recoveries)) / (((total_recoveries +
+                                                                  1) ^ 2) * (total_recoveries + 2))) %>%
+  mutate(N_var_bH.r =  ((total_banding / total_recoveries) ^ 2) * H_adj_var + H_adj ^
+           2 * N_var_b.r) %>%
+  mutate(N_var = (((total_banding * H_adj) / total_recoveries) ^ 2) * Var_rho + rho ^
+           2 * N_var_bH.r) %>%
+  mutate(N_se = sqrt(N_var)) %>%
+  mutate(N_cl = N_se * 1.96)

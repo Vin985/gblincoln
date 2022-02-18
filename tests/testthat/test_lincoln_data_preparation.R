@@ -4,7 +4,7 @@ test_that("Summarize banding", {
   filter <- list(SPEC = "ATBR", state_name = "Nunavut")
   banding_db <- lincoln_filter_db(filter)
   pkg_sum <- get_banding_summary(banding_db)
-  colnames(pkg_sum) <- c("B.Year", "total")
+  colnames(pkg_sum) <- c("B.Year", "total_banding")
   expect_equal(pkg_sum, ATBRBANDsum)
 })
 
@@ -23,7 +23,7 @@ test_that("Summarize recoveries", {
   pkg_sum = rec_db %>%
     group_by(r.month) %>%
     summarise(total = n())
-  colnames(pkg_sum) <- c("R.Month", "total")
+  colnames(pkg_sum) <- c("R.Month", "total_recoveries")
   expect_equal(pkg_sum, CHECK)
 })
 
@@ -75,7 +75,7 @@ test_that("Get HR, all bands", {
   pkg_res <-
     get_hr_df(banding_filter=banding_filter, recoveries_filter=recoveries_filter)
   colnames(pkg_res) <-
-    c("B.Year", "total", "R.Corr.Year", "total_recoveries", "DRR",
+    c("B.Year", "total_banding", "R.Corr.Year", "total_recoveries", "DRR",
       "rho", "Var_rho", "SE_rho", "HR", "varDRR", "seDRR", "varh",
       "seh", "CL_h", "CV", "band_type")
   expect_equal(pkg_res, HR_all_band)
