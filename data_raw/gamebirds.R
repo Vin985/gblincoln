@@ -50,7 +50,7 @@ set_sex_classes <- function(df, sex_classes = NULL) {
 
 clean_dataset <- function(df, colnames = NULL) {
   if(is.null(colnames)) {
-    colnames <- GB_COLNAMES
+    colnames <- gb_colnames
   }
 
   cleaned <-
@@ -66,6 +66,9 @@ correct_recoveries_years <- function(df){
   return(df)
 }
 
+gb_colnames <- read.csv('data_raw/colnames.csv')
+gb_reporting_probas <- read.csv('data_raw/reporting_probabilities.csv')
+
 # gb_banding <- read.xlsx("data_raw/gamebirds_banding.xlsx")
 gb_banding <- read.csv("data_raw/gamebirds_banding.csv")
 gb_banding <- clean_dataset(gb_banding)
@@ -74,5 +77,12 @@ gb_recoveries <- read.csv("data_raw/gamebirds_recoveries.csv")
 gb_recoveries <- gb_recoveries %>% clean_dataset() %>% correct_recoveries_years()
 
 
+
 usethis::use_data(gb_banding, overwrite = TRUE)
 usethis::use_data(gb_recoveries, overwrite = TRUE)
+
+usethis::use_data(gb_colnames, overwrite = TRUE)
+usethis::use_data(gb_reporting_probas, overwrite = TRUE)
+
+
+

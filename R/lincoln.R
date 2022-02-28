@@ -95,7 +95,7 @@ get_hr_df <-
       drr_df <- get_all_direct_recoveries(band_type = band_type, ...)
     }
     if (is.null(rho_df)) {
-      rho_df = REPORTING_PROBABILITIES
+      rho_df = gb_reporting_probas
     }
     hr_df <- inner_join(drr_df, rho_df, by = "b.year")
     hr_df <- hr_df %>%

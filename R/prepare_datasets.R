@@ -64,10 +64,10 @@
 #' @rdname check_columns
 #' @export
 check_columns <- function(col_names) {
-  old_cols <- match(col_names, GB_COLNAMES$old_colnames)
+  old_cols <- match(col_names, gb_colnames$old_colnames)
   idx_to_replace <- (!is.na(old_cols))
   col_names[idx_to_replace] <-
-    GB_COLNAMES$new_colnames[old_cols[idx_to_replace]]
+    gb_colnames$new_colnames[old_cols[idx_to_replace]]
   return(col_names)
 }
 

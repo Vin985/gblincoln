@@ -1,9 +1,3 @@
-#' @export
-GB_COLNAMES <- read.csv('data_raw/colnames.csv')
-
-#' @export
-REPORTING_PROBABILITIES <- read.csv('data_raw/reporting_probabilities.csv')
-
 SEX_CLASSES <- list("MALE" = 4, "FEMALE" = 5)
 AGE_CLASSES <- list("HY" = c(2, 3, 4), "AHY" = c(1, 5, 6, 7, 8))
 
