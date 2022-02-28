@@ -140,7 +140,7 @@ compare_band_types <-
     }
 
 
-    no_geo_subset <- hr_no_geo[hr_no_geo$b.year %in% geo_years, ]
+    no_geo_subset <- hr_no_geo[hr_no_geo$b.year %in% geo_years,]
 
     if (plot) {
       library(ggplot2)
@@ -156,7 +156,7 @@ compare_band_types <-
       ## Compute overlap
       # Get only relevant year for all bands
       all_subset <-
-        hr_all[hr_all$b.year %in% geo_years, ]
+        hr_all[hr_all$b.year %in% geo_years,]
       # Get confidence levels for all bands
       all_cl <- get_confidence_levels(all_subset)
       # Get confidence levels without geolocators
@@ -186,11 +186,14 @@ get_lincoln_estimates <-
            plot_estimates = TRUE,
            save_estimates = TRUE,
            save_path = ".") {
-    if (is.null(harvest_df)) {
-
-    }
     if (is.null(hr_df)) {
-
+      # TODO: how to select best hr_df? Compare bands?
+      hr_df <- get_hr_df(filters=filters)
+    }
+    if (is.null(harvest_df)) {
+      # Should be an error since it is a big portion of estimates
+      # TODO
+      stop("A harvest dataframe for the selected species should be provided")
     }
     lincoln_df <- inner_join(hr_df, harvest_df, by = "b.year")
     lincoln <- lincoln_df %>%
@@ -240,3 +243,23 @@ get_lincoln_estimates <-
     return(lincoln_est)
 
   }
+
+#' @rdname lincoln_estimates
+#' @export
+lincoln_estimates <- function(filters_list, ...) {
+  res = list()
+  if (length(filters_list) == 0) {
+    print("At least one set of filters must be defined")
+  } else {
+    for (filter in filters_list) {
+      sprintf("Calculating Lincoln estimates for filter %s",
+              toString(lapply(1:length(filters), function(i, filters) {
+                return(paste(names(filters)[i], as.character(filters[i]), sep = ": "))
+              }, filters)))
+      # TODO: make the function more user friendly
+      estimates <- get_lincoln_estimates(filter, ...)
+      res <- c(res, estimates)
+    }
+  }
+  return(res)
+}
