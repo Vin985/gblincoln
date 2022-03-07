@@ -1,53 +1,80 @@
-#' @title Gamebirds Banding Dataset
-#' @description DATASET_DESCRIPTION
-#' @format A data frame with 16068 rows and 43 variables:
-#' \describe{
-#'   \item{\code{add_info}}{integer COLUMN_DESCRIPTION}
-#'   \item{\code{age_code}}{integer COLUMN_DESCRIPTION}
-#'   \item{\code{coordinate_precision}}{integer COLUMN_DESCRIPTION}
-#'   \item{\code{day_code}}{integer COLUMN_DESCRIPTION}
-#'   \item{\code{dir}}{integer COLUMN_DESCRIPTION}
-#'   \item{\code{flyway_code}}{integer COLUMN_DESCRIPTION}
-#'   \item{\code{lat}}{integer COLUMN_DESCRIPTION}
-#'   \item{\code{long}}{integer COLUMN_DESCRIPTION}
-#'   \item{\code{month_code}}{integer COLUMN_DESCRIPTION}
-#'   \item{\code{region_code}}{integer COLUMN_DESCRIPTION}
-#'   \item{\code{year}}{integer COLUMN_DESCRIPTION}
-#'   \item{\code{band_prefix_plus}}{integer COLUMN_DESCRIPTION}
-#'   \item{\code{band_size}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{band_type}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{count_of_birds}}{integer COLUMN_DESCRIPTION}
-#'   \item{\code{country_code}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{GISBLat}}{double COLUMN_DESCRIPTION}
-#'   \item{\code{GISBLong}}{double COLUMN_DESCRIPTION}
-#'   \item{\code{how_aged}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{how_sexed}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{permit}}{integer COLUMN_DESCRIPTION}
-#'   \item{\code{sex_code}}{integer COLUMN_DESCRIPTION}
-#'   \item{\code{sp_num}}{integer COLUMN_DESCRIPTION}
-#'   \item{\code{state_code}}{integer COLUMN_DESCRIPTION}
-#'   \item{\code{status_code}}{integer COLUMN_DESCRIPTION}
-#'   \item{\code{age}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{VAI}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{btype_vbtype}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{btype_text}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{location_accuracy_desc}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{day_span}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{how_aged_desc}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{how_sexed_desc}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{country_name}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{state_name}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{month}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{permittee}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{flyway}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{state}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{sex}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{SPEC}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{species}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{status}}{character COLUMN_DESCRIPTION}
-#'   \item{\code{age_short}}{character COLUMN_DESCRIPTION}
-#'}
-"gb_banding"
+rename_columns <- function(df, columns) {
+  found_columns <- match(colnames(df), columns$old_colnames)
+  new_names <- columns[found_columns, "new_colnames"]
+  new_columns <- colnames(df)
+  new_columns[!is.na(new_names)] <- new_names[!is.na(new_names)]
+  colnames(df) <- new_columns
+  return(df)
+}
+
+set_age_classes <- function(df, age_classes = NULL) {
+  if (is.null(age_classes)) {
+    age_classes <- AGE_CLASSES
+  }
+  i = 1
+  for (age_class in age_classes) {
+    df$age_short[df$age_code %in% age_class] <- names(age_classes)[i]
+    i <- i + 1
+  }
+  df$age_short[df$age_code == 0] <- NA
+
+  return(df)
+}
+
+
+set_sex_classes <- function(df, sex_classes = NULL) {
+  if (is.null(sex_classes)) {
+    sex_classes <- SEX_CLASSES
+  }
+  i = 1
+  for (sex_class in sex_classes) {
+    df$sex[df$sex_code %in% sex_class] <- names(sex_classes)[i]
+    i <- i + 1
+  }
+  return(df)
+}
+
+#' @title Clean a data file directly exported from Gamebirds
+#' @description FUNCTION_DESCRIPTION
+#' @param df PARAM_DESCRIPTION
+#' @param colnames A data frame with old column names (old_colnames) and
+#' new column names (new_colnames), Default: NULL
+#' @param recoveries PARAM_DESCRIPTION, Default: FALSE
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @rdname clean_dataset
+#' @export
+
+clean_dataset <- function(df,
+                          colnames = NULL,
+                          recoveries = FALSE) {
+  if (is.null(colnames)) {
+    colnames <- gb_colnames
+  }
+
+  cleaned <-
+    df %>% rename_columns(colnames) %>% set_age_classes() %>% set_sex_classes()
+
+  if (recoveries) {
+    cleaned <- correct_recoveries_years(cleaned)
+  }
+
+  return(cleaned)
+}
+
+correct_recoveries_years <- function(df) {
+  df$r.corrected_year <- df$r.year
+  idx <- which(df$r.month < 4)
+  df$r.corrected_year[idx] <-  df$r.corrected_year[idx] - 1
+  return(df)
+}
+
 
 
 #' @title FUNCTION_TITLE
@@ -64,6 +91,7 @@
 #' @rdname check_columns
 #' @export
 check_columns <- function(col_names) {
+  # TODO: ALWAYS use gb_colnames?
   old_cols <- match(col_names, gb_colnames$old_colnames)
   idx_to_replace <- (!is.na(old_cols))
   col_names[idx_to_replace] <-
@@ -89,18 +117,21 @@ check_columns <- function(col_names) {
 #' @export
 get_species_data <-
   function(species_name,
+           df = NULL,
            db_dtype = "banding",
            use_spec_code = TRUE) {
-    db <- get_db(db_type)
+    if (is.null(df)) {
+      df <- get_db(db_type)
+    }
     if (use_spec_code) {
       col <- "SPEC"
     } else {
       col <- "species"
     }
-    return(db[db[col] == species_name,])
+    return(df[df[col] == species_name,])
   }
 
-#' @title FUNCTION_TITLE
+#' @title Check database type
 #' @description FUNCTION_DESCRIPTION
 #' @param type PARAM_DESCRIPTION
 #' @return OUTPUT_DESCRIPTION
@@ -111,10 +142,10 @@ get_species_data <-
 #'  #EXAMPLE1
 #'  }
 #' }
-#' @rdname check_type
+#' @rdname check_db_type
 #' @export
-check_type <- function(type) {
-  type <- tolower(type)
+check_db_type <- function(db_type) {
+  type <- tolower(db_type)
   if (type %in% c("banding", "b")) {
     return("b")
   } else if (type %in% c("recoveries", "r")) {
@@ -122,7 +153,7 @@ check_type <- function(type) {
   } else {
     #TODO : change manual reference for error message
     stop(
-      "Unexpected value for 'type' argument. Please refer to ?check_type for accepted values."
+      "Unexpected value for 'db_type' argument. Please refer to ?check_db_type for accepted values."
     )
   }
 }
@@ -141,7 +172,7 @@ check_type <- function(type) {
 #' @rdname get_db
 #' @export
 get_db <- function(db_type) {
-  type <- check_type(db_type)
+  type <- check_db_type(db_type)
   if (type == "r") {
     return(gb_recoveries)
   } else if (type == "b") {
@@ -163,17 +194,17 @@ get_db <- function(db_type) {
 #' }
 #' @rdname get_filters
 #' @export
-get_filters <- function(type, filters) {
-  type <- check_type(type)
-  if (type == "r") {
-    base <- RECOVERIES_FILTERS
+get_filters <- function(db_type, filters) {
+  type <- check_db_type(db_type)
+  default <- if (type == "r") {
+    RECOVERIES_FILTERS
   } else if (type == "b") {
-    base <- BANDING_FILTERS
+    BANDING_FILTERS
   } else {
-    base <- DEFAULT_LINCOLN_FILTERS
+    DEFAULT_LINCOLN_FILTERS
   }
 
-  return(list_update(base, filters))
+  return(list_update(default, filters))
 }
 
 #' @title List the locations available for a species
@@ -219,7 +250,7 @@ get_species_locations <-
       df = get_db(db_type)
     }
     columns = columns[columns %in% colnames(df)]
-    if (length(columns) == 0){
+    if (length(columns) == 0) {
       print("No valid columns specified")
       return(NULL)
     }
@@ -238,23 +269,30 @@ get_species_locations <-
 #' @describeIn get_species_locations Convenience functions to list
 #'             all available countries for the given species.
 #' @export
-get_species_countries <- function(species_code, db_type="banding") {
-  return(get_species_locations(species_code, c("b.country_name", "r.country_name"), db_type=db_type))
-}
+get_species_countries <-
+  function(species_code, db_type = "banding") {
+    return(get_species_locations(
+      species_code,
+      c("b.country_name", "r.country_name"),
+      db_type = db_type
+    ))
+  }
 
 
 #' @describeIn get_species_locations Convenience functions to list
 #'             all available states for the given species.
 #' @export
-get_species_states <- function(species_code, db_type="banding") {
-  return(get_species_locations(species_code, c("b.state_name", "r.state_name"), db_type=db_type))
+get_species_states <- function(species_code, db_type = "banding") {
+  return(get_species_locations(species_code, c("b.state_name", "r.state_name"), db_type =
+                                 db_type))
 }
 
 #' @describeIn get_species_locations Convenience functions to list
 #'             all available countries for the given species.
 #' @export
-get_species_flyways <- function(species_code, db_type="banding") {
-  return(get_species_locations(species_code, c("b.flyway_name", "r.flyway_name"), db_type=db_type))
+get_species_flyways <- function(species_code, db_type = "banding") {
+  return(get_species_locations(species_code, c("b.flyway_name", "r.flyway_name"), db_type =
+                                 db_type))
 }
 
 

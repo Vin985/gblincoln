@@ -30,7 +30,7 @@ lincoln_filter_db(filters, type="recoveries", band_type = "no_geo")
 
 # Get all direct recoveries dataframe. Actually call the filter function on
 # Banding and recoveries dataframe
-direct_recoveries <- get_all_direct_recoveries(filters=filters)
+direct_recoveries <- get_direct_recoveries(filters=filters)
 
 # hr dataframe (uses the direct recoveries dataframe and apply RHO reporting
 # probabilities)

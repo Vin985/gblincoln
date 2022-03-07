@@ -58,7 +58,7 @@ ATBRBAND2 <- ATBRBAND1 %>%
 ATBRBANDsum <- ATBRBAND2 %>%
   filter(B.Year %in% 2000:2019) %>%
   group_by(B.Year) %>%
-  summarise(total_banding = sum(Count.of.Birds))
+  summarise(n_banded = sum(Count.of.Birds))
 ATBRBANDsum
 
 
@@ -169,7 +169,7 @@ ATBRRECOV_by_band_type <- ATBRRECOV3 %>%
 
 DIRECT_RECOVS <- merge(ATBRBANDsum, ATBRRECOVsum)
 DRR <- DIRECT_RECOVS %>%
-  mutate(DRR = total_recoveries / total_banding)
+  mutate(DRR = total_recoveries / n_banded)
 
 
 RHO <-
@@ -182,7 +182,7 @@ RHO <-
 HR <- inner_join(DRR, RHO, by = "B.Year")
 HR_all_band <- HR %>%
   mutate(HR = DRR / rho) %>%
-  mutate(varDRR = (DRR * (1 - DRR)) / (total_banding - 1)) %>%
+  mutate(varDRR = (DRR * (1 - DRR)) / (n_banded - 1)) %>%
   mutate(seDRR = sqrt(varDRR)) %>%
   mutate(varh = (varDRR / (rho ^ 2)) + ((DRR ^ 2 * Var_rho) / rho ^ 4)) %>%
   mutate(seh = sqrt(varh)) %>%
@@ -196,7 +196,7 @@ ATBRBAND_no_geo <- ATBRBAND2 %>%
   filter(B.Year %in% 2000:2019) %>%
   filter(Add.Info %in% c(00, 01, 07)) %>%
   group_by(B.Year) %>%
-  summarise(total_banding = sum(Count.of.Birds))
+  summarise(n_banded = sum(Count.of.Birds))
 ATBRBAND_no_geo
 
 ATBRRECOV_no_geo <- ATBRRECOV3 %>%
@@ -207,12 +207,12 @@ ATBRRECOV_no_geo <- ATBRRECOV3 %>%
 
 
 DIRECT_RECOVS_no_geo <- merge(ATBRBAND_no_geo, ATBRRECOV_no_geo) %>%
-  mutate(DRR = total_recoveries / total_banding)
+  mutate(DRR = total_recoveries / n_banded)
 
 HR_no_geo <-
   inner_join(DIRECT_RECOVS_no_geo, RHO, by = "B.Year") %>%
   mutate(HR = DRR / rho) %>%
-  mutate(varDRR = (DRR * (1 - DRR)) / (total_banding - 1)) %>%
+  mutate(varDRR = (DRR * (1 - DRR)) / (n_banded - 1)) %>%
   mutate(seDRR = sqrt(varDRR)) %>%
   mutate(varh = (varDRR / (rho ^ 2)) + ((DRR ^ 2 * Var_rho) / rho ^ 4)) %>%
   mutate(seh = sqrt(varh)) %>%
@@ -234,13 +234,13 @@ lincoln1 <- lincoln %>%
   mutate(H_adj = harvest * 0.61) %>%
   mutate(H_adj_SE = se_harvest * 0.61) %>%
   mutate(H_adj_var = H_adj_SE ^ 2) %>%
-  mutate(N = ((((total_banding + 1) * (H_adj + 1) * rho
+  mutate(N = ((((n_banded + 1) * (H_adj + 1) * rho
   ) / (total_recoveries + 1)) - 1)) %>%
-  mutate(N_var_b.r = ((total_banding + 1) * (total_banding - total_recoveries)) / (((total_recoveries +
+  mutate(N_var_b.r = ((n_banded + 1) * (n_banded - total_recoveries)) / (((total_recoveries +
                                                                   1) ^ 2) * (total_recoveries + 2))) %>%
-  mutate(N_var_bH.r =  ((total_banding / total_recoveries) ^ 2) * H_adj_var + H_adj ^
+  mutate(N_var_bH.r =  ((n_banded / total_recoveries) ^ 2) * H_adj_var + H_adj ^
            2 * N_var_b.r) %>%
-  mutate(N_var = (((total_banding * H_adj) / total_recoveries) ^ 2) * Var_rho + rho ^
+  mutate(N_var = (((n_banded * H_adj) / total_recoveries) ^ 2) * Var_rho + rho ^
            2 * N_var_bH.r) %>%
   mutate(N_se = sqrt(N_var)) %>%
   mutate(N_cl = N_se * 1.96)

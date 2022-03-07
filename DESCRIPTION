@@ -27,3 +27,4 @@ Collate:
     globals.R
     prepare_datasets.R
     lincoln.R
+    datasets.R

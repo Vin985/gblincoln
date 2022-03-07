@@ -1,5 +1,5 @@
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
+#' @title Summarize bandings
+#' @description Counts the number of bird banded by year
 #' @param df PARAM_DESCRIPTION
 #' @param years PARAM_DESCRIPTION
 #' @return OUTPUT_DESCRIPTION
@@ -10,17 +10,17 @@
 #'  #EXAMPLE1
 #'  }
 #' }
-#' @rdname get_banding_summary
+#' @rdname summarize_bandings
 #' @export
-get_banding_summary <- function(df) {
+summarize_bandings <- function(df) {
   res = df %>%
     group_by(b.year) %>%
-    summarise(total_banding = sum(count_of_birds))
+    summarise(n_banded = sum(count_of_birds))
   return(res)
 }
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
+#' @title Summarize recoveries
+#' @description Count the number of recoveries by year
 #' @param df PARAM_DESCRIPTION
 #' @param years PARAM_DESCRIPTION
 #' @return OUTPUT_DESCRIPTION
@@ -31,9 +31,9 @@ get_banding_summary <- function(df) {
 #'  #EXAMPLE1
 #'  }
 #' }
-#' @rdname get_recoveries_summary
+#' @rdname summarize_recoveries
 #' @export
-get_recoveries_summary <- function(df, by_band = FALSE) {
+summarize_recoveries <- function(df, by_band = FALSE) {
   by_groups <- (if (by_band) {
     c("b.year", "add_info")
   } else {
@@ -57,9 +57,9 @@ get_recoveries_summary <- function(df, by_band = FALSE) {
 #'  #EXAMPLE1
 #'  }
 #' }
-#' @rdname get_all_direct_recoveries
+#' @rdname get_direct_recoveries
 #' @export
-get_all_direct_recoveries <-
+get_direct_recoveries <-
   function(filters,
            band_type = "all",
            banding_df = NULL,
@@ -69,18 +69,18 @@ get_all_direct_recoveries <-
                         df = banding_df,
                         type = "banding",
                         band_type = band_type)
-    bandings <- get_banding_summary(banding_db)
+    bandings <- summarize_bandings(banding_db)
 
     rec_db <-
       lincoln_filter_db(filters,
                         df = recoveries_df,
                         type = "recoveries",
                         band_type = band_type)
-    recoveries <- get_recoveries_summary(rec_db)
+    recoveries <- summarize_recoveries(rec_db)
 
     direct_recoveries <-
       merge(bandings, recoveries) %>% mutate(drr = total_recoveries /
-                                               total_banding)
+                                               n_banded)
     return(direct_recoveries)
   }
 
@@ -92,15 +92,15 @@ get_hr_df <-
            band_type = "all",
            ...) {
     if (is.null(drr_df)) {
-      drr_df <- get_all_direct_recoveries(band_type = band_type, ...)
+      drr_df <- get_direct_recoveries(band_type = band_type, ...)
     }
     if (is.null(rho_df)) {
-      rho_df = gb_reporting_probas
+        rho_df = gb_reporting_probas
     }
     hr_df <- inner_join(drr_df, rho_df, by = "b.year")
     hr_df <- hr_df %>%
       mutate(hr = drr / rho) %>%
-      mutate(var_drr = (drr * (1 - drr)) / (total_banding - 1)) %>%
+      mutate(var_drr = (drr * (1 - drr)) / (n_banded - 1)) %>%
       mutate(se_drr = sqrt(var_drr)) %>%
       mutate(var_h = (var_drr / (rho ^ 2)) + ((drr ^ 2 * var_rho) / rho ^ 4)) %>%
       mutate(se_h = sqrt(var_h)) %>%
@@ -200,17 +200,17 @@ get_lincoln_estimates <-
       mutate(harvest_adj = harvest * 0.61) %>%
       mutate(se_harvest_adj = se_harvest * 0.61) %>%
       mutate(var_harvest_adj = se_harvest_adj ^ 2) %>%
-      mutate(N = ((((total_banding + 1) * (harvest_adj + 1) * rho
+      mutate(N = ((((n_banded + 1) * (harvest_adj + 1) * rho
       ) / (
         total_recoveries + 1
       )) - 1)) %>%
-      mutate(var_N_b.r = ((total_banding + 1) * (total_banding - total_recoveries)) / (((
+      mutate(var_N_b.r = ((n_banded + 1) * (n_banded - total_recoveries)) / (((
         total_recoveries +
           1
       ) ^ 2) * (total_recoveries + 2))) %>%
-      mutate(var_N_bH.r =  ((total_banding / total_recoveries) ^ 2) * var_harvest_adj + harvest_adj ^
+      mutate(var_N_bH.r =  ((n_banded / total_recoveries) ^ 2) * var_harvest_adj + harvest_adj ^
                2 * var_N_b.r) %>%
-      mutate(var_N = (((total_banding * harvest_adj) / total_recoveries
+      mutate(var_N = (((n_banded * harvest_adj) / total_recoveries
       ) ^ 2) * var_rho + rho ^
         2 * var_N_bH.r) %>%
       mutate(se_N = sqrt(var_N)) %>%

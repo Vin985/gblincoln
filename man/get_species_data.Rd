@@ -4,7 +4,12 @@
 \alias{get_species_data}
 \title{FUNCTION_TITLE}
 \usage{
-get_species_data(species_name, db_dtype = "banding", use_spec_code = TRUE)
+get_species_data(
+  species_name,
+  df = NULL,
+  db_dtype = "banding",
+  use_spec_code = TRUE
+)
 }
 \arguments{
 \item{species_name}{PARAM_DESCRIPTION}

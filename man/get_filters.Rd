@@ -4,12 +4,12 @@
 \alias{get_filters}
 \title{FUNCTION_TITLE}
 \usage{
-get_filters(type, filters)
+get_filters(db_type, filters)
 }
 \arguments{
-\item{type}{PARAM_DESCRIPTION}
-
 \item{filters}{PARAM_DESCRIPTION}
+
+\item{type}{PARAM_DESCRIPTION}
 }
 \value{
 OUTPUT_DESCRIPTION
