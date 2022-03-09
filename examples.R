@@ -17,16 +17,17 @@ filters <- list(SPEC = "ATBR", b.state_name = "Nunavut",e.country_code = 'US',
 
 # Filter database to prepare for Lincoln estimates. By default, use banding dataset
 # and all bands
-lincoln_filter_db(filters)
+filter_database(gb_banding, filters)
 # Same thing, different way to call it
-lincoln_filter_db(filters, type="b", band_type = "all")
+filter_database(gb_banding, filters, db_type="b", band_type = "all")
 
 # Recoveries
-lincoln_filter_db(filters, type="recoveries")
+filter_database(gb_recoveries, filters, type="recoveries")
 # same thing, shortcut
-lincoln_filter_db(filters, type="r")
+filter_database(gb_recoveries,filters, type="r")
 # No gelocators
-lincoln_filter_db(filters, type="recoveries", band_type = "no_geo")
+filters_no_geo <- list_update(filters, list(add_info = c(00, 01, 07)))
+filter_database(gb_recoveries, filters_no_geo, type="recoveries")
 
 # Get all direct recoveries dataframe. Actually call the filter function on
 # Banding and recoveries dataframe
