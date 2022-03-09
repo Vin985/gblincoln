@@ -1,3 +1,20 @@
+#' @title Rename columns of a dataframe
+#' @description This function renames the columns of a dataframe using another
+#' dataframe with two columns `old_colnames` and `new_colnames`. Only the
+#' columns found in `old_colnames` will be renamed
+#' @param df The dataframe whose columns need to be renamed
+#' @param columns A dataframe tha contains at least two columns:
+#' `old_colnames` which contains the current column names found in df
+#' `new_colnames` which contains the new column names
+#' @return A dataframe with renamed columns
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @rdname rename_columns
+#' @export
 rename_columns <- function(df, columns) {
   found_columns <- match(colnames(df), columns$old_colnames)
   new_names <- columns[found_columns, "new_colnames"]
@@ -7,6 +24,20 @@ rename_columns <- function(df, columns) {
   return(df)
 }
 
+#' @title Set age classes
+#' @description FUNCTION_DESCRIPTION
+#' @param df PARAM_DESCRIPTION
+#' @param age_classes PARAM_DESCRIPTION, Default: NULL
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @rdname set_age_classes
+#' @export
 set_age_classes <- function(df, age_classes = NULL) {
   if (is.null(age_classes)) {
     age_classes <- AGE_CLASSES
@@ -52,15 +83,22 @@ set_sex_classes <- function(df, sex_classes = NULL) {
 #' @export
 
 clean_dataset <- function(df,
+                          rename_columns = TRUE,
                           colnames = NULL,
                           recoveries = FALSE) {
-  if (is.null(colnames)) {
-    colnames <- gb_colnames
+  cleaned <- df
+  # rename columns of the dataset
+  if (rename_columns) {
+    if (is.null(colnames)) {
+      # If no column names are provided, use the ones in the dataset
+      colnames <- gb_colnames
+    }
+    cleaned <- rename_columns(cleaned, colnames)
   }
+  # Add age classes and sex classes
+  cleaned = cleaned  %>% set_age_classes() %>% set_sex_classes()
 
-  cleaned <-
-    df %>% rename_columns(colnames) %>% set_age_classes() %>% set_sex_classes()
-
+  # If recoveries dataset, correct the recoveries year
   if (recoveries) {
     cleaned <- correct_recoveries_years(cleaned)
   }
@@ -68,6 +106,21 @@ clean_dataset <- function(df,
   return(cleaned)
 }
 
+
+#' @title FUNCTION_TITLE
+#' @description Correct the recovery year by considering all hunting done before
+#' April to belong to the previous year
+#' @param df PARAM_DESCRIPTION
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @rdname correct_recoveries_years
+#' @export
 correct_recoveries_years <- function(df) {
   df$r.corrected_year <- df$r.year
   idx <- which(df$r.month < 4)
@@ -128,7 +181,7 @@ get_species_data <-
     } else {
       col <- "species"
     }
-    return(df[df[col] == species_name,])
+    return(df[df[col] == species_name, ])
   }
 
 #' @title Check database type
@@ -313,11 +366,11 @@ filter_time_period <- function(df, filter, col_name) {
   }
   df <-
     df[df[[col_name]] >= filter["start"] &
-         df[[col_name]] <= filter["end"],]
+         df[[col_name]] <= filter["end"], ]
   return(df)
 }
 
-#' @title Performs filtering on the gb_banding dataset for Lincoln estimates
+#' @title Performs filtering on a dataset
 #' @description For time columns, i.e. 'year', 'month_code' and 'day_code',
 #' it is possible to select a period by
 #' providing a vector with two named values 'start' and 'end'.
@@ -331,26 +384,24 @@ filter_time_period <- function(df, filter, col_name) {
 #'  #EXAMPLE1
 #'  }
 #' }
-#' @rdname lincoln_filter_db
+#' @rdname filter_database
 #' @export
-lincoln_filter_db <-
-  function(filters = NULL,
-           df = NULL,
-           type = "banding",
-           band_type = "all") {
-    if (is.null(df)) {
-      df = get_db(type)
-    }
+filter_database <-
+  function(db,
+           filters = NULL,
+           db_type = "banding") {
     # Get filter list and updates it if needed
-    filters <- get_filters(type, filters)
+    filters <- get_filters(db_type, filters)
 
     # If no geolocators should be included
-    if (band_type == "no_geo") {
-      filters$add_info <- ADD_INFO_NO_GEO
-    }
+    # if (band_type == "no_geo") {
+    #   filters$add_info <- ADD_INFO_NO_GEO
+    # }
+
+
     # Select relevant columns
     if ("columns" %in% names(filters)) {
-      df <- df[, which(colnames(df) %in% check_columns(filters$columns))]
+      db <- db[, which(colnames(db) %in% check_columns(filters$columns))]
     }
 
     # Iterate on all other filters
@@ -360,19 +411,19 @@ lincoln_filter_db <-
       }
       col_name <- check_columns(names(filters)[i])
       # Check if the name of the filter is a column of the database
-      if (col_name %in% colnames(df)) {
+      if (col_name %in% colnames(db)) {
         filter = filters[[i]]
         # Check if the filter is a time filter
         if (col_name %in% TIME_COLUMNS) {
           if (!is.null(names(filter))) {
             # If so, check if it can be a range
-            df <- filter_time_period(df, filter, col_name)
+            db <- filter_time_period(db, filter, col_name)
             next
           }
         }
         # Else, subset the database based on the filter
-        df <- df[df[[col_name]] %in% filter,]
+        db <- db[db[[col_name]] %in% filter, ]
       }
     }
-    return(df)
+    return(db)
   }
