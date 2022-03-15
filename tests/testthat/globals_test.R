@@ -187,9 +187,9 @@ HR_all_band <- HR %>%
   mutate(varh = (varDRR / (rho ^ 2)) + ((DRR ^ 2 * Var_rho) / rho ^ 4)) %>%
   mutate(seh = sqrt(varh)) %>%
   mutate(CL_h = seh * 1.96) %>%
-  mutate(CV = seh / HR) %>%
-  mutate(band_type = 'all') %>%
-  select(-TAGE)
+  mutate(CV = seh / HR)
+  # mutate(band_type = 'all') %>%
+  # select(-TAGE)
 
 
 ATBRBAND_no_geo <- ATBRBAND2 %>%
@@ -218,9 +218,9 @@ HR_no_geo <-
   mutate(seh = sqrt(varh)) %>%
   mutate(CL_h = seh * 1.96) %>%
   mutate(CV = seh / HR) %>%
-  mutate(band_type = 'no_geo') %>%
-  filter(B.Year %in% 2018:2019) %>%
-  select(-TAGE)
+  # mutate(band_type = 'no_geo') %>%
+  filter(B.Year %in% 2018:2019)
+  # select(-TAGE)
 
 # HR_by_band_type <- rbind(HR_all_band, HR_no_geo)
 

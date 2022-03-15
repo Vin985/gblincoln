@@ -1,12 +1,5 @@
 source("globals_test.R")
 
-test_that("Summarize banding", {
-  filter <- list(SPEC = "ATBR", b.state_name = "Nunavut")
-  banding_db <- filter_database(gb_banding, filter)
-  pkg_sum <- summarize_bandings(banding_db)
-  colnames(pkg_sum) <- c("B.Year", "n_banded")
-  expect_equal(pkg_sum, ATBRBANDsum)
-})
 
 filters <-
   list(
@@ -17,6 +10,15 @@ filters <-
   )
 filters_no_geo <-
   list_update(filters, list(add_info = c(00, 01, 07)))
+
+
+test_that("Summarize banding", {
+  filter <- list(SPEC = "ATBR", b.state_name = "Nunavut")
+  banding_db <- filter_database(gb_banding, filter)
+  pkg_sum <- summarize_bandings(banding_db)
+  colnames(pkg_sum) <- c("B.Year", "n_banded")
+  expect_equal(pkg_sum, ATBRBANDsum)
+})
 
 test_that("Summarize recoveries", {
   recoveries_filter <-
@@ -66,6 +68,7 @@ test_that("Get direct recoveries, by bands", {
 test_that("Get total direct recoveries", {
   pkg_res <-
     get_direct_recoveries(filters, gb_banding, gb_recoveries)
+  pkg_res <- pkg_res[, -(7:8)]
   colnames(pkg_res) <-
     c("B.Year",
       "n_banded",
@@ -76,90 +79,60 @@ test_that("Get total direct recoveries", {
   expect_equal(pkg_res, DRR)
 })
 
-test_that("Get HR, all bands", {
+test_that("Get harvest rate, all bands", {
   pkg_res <-
-    get_hr_df(filters = filters,
-              banding_df = gb_banding,
-              recoveries_df = gb_recoveries)
+    get_harvest_rate(filters = filters,
+                     banding_df = gb_banding,
+                     recoveries_df = gb_recoveries)
   colnames(pkg_res) <-
     c(
       "B.Year",
       "n_banded",
+      "TAGE",
       "R.Corr.Year",
       "total_recoveries",
       "DRR",
+      "varDRR",
+      "seDRR",
       "rho",
       "Var_rho",
       "SE_rho",
       "HR",
-      "varDRR",
-      "seDRR",
       "varh",
       "seh",
       "CL_h",
-      "CV",
-      "band_type"
+      "CV"
     )
-  expect_equal(pkg_res, HR_all_band)
-})
-
-
-test_that("Get HR, all bands, filters", {
-  pkg_res <-
-    get_hr_df(filters = filters,
-              banding_df = gb_banding,
-              recoveries_df = gb_recoveries)
-  colnames(pkg_res) <-
-    c(
-      "B.Year",
-      "n_banded",
-      "R.Corr.Year",
-      "total_recoveries",
-      "DRR",
-      "rho",
-      "Var_rho",
-      "SE_rho",
-      "HR",
-      "varDRR",
-      "seDRR",
-      "varh",
-      "seh",
-      "CL_h",
-      "CV",
-      "band_type"
-    )
-  expect_equal(pkg_res, HR_all_band)
+  expect_equal(pkg_res[, sort(colnames(pkg_res))], HR_all_band[, sort(colnames(HR_all_band))])
 })
 
 
 test_that("Get HR, no_geo bands", {
   pkg_res <-
-    get_hr_df(filters = filters_no_geo,
-              ,
-              banding_df = gb_banding,
-              recoveries_df = gb_recoveries)
-  colnames(pkg_res) <-
-    c(
-      "B.Year",
-      "n_banded",
-      "R.Corr.Year",
-      "total_recoveries",
-      "DRR",
-      "rho",
-      "Var_rho",
-      "SE_rho",
-      "HR",
-      "varDRR",
-      "seDRR",
-      "varh",
-      "seh",
-      "CL_h",
-      "CV",
-      "band_type"
-    )
-  pkg_res <- pkg_res[pkg_res$B.Year %in% 2018:2019,]
+    get_harvest_rate(filters = filters_no_geo,
+                     banding_df = gb_banding,
+                     recoveries_df = gb_recoveries)
+  colnames(pkg_res) <- c(
+    "B.Year",
+    "n_banded",
+    "TAGE",
+    "R.Corr.Year",
+    "total_recoveries",
+    "DRR",
+    "varDRR",
+    "seDRR",
+    "rho",
+    "Var_rho",
+    "SE_rho",
+    "HR",
+    "varh",
+    "seh",
+    "CL_h",
+    "CV"
+  )
+  pkg_res <- pkg_res[pkg_res$B.Year %in% 2018:2019, ]
   rownames(pkg_res) <- 1:2
-  expect_equal(pkg_res, HR_no_geo)
+  expect_equal(pkg_res[, sort(colnames(pkg_res))], HR_no_geo[, sort(colnames(HR_no_geo))])
 })
 
 
