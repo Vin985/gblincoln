@@ -9,7 +9,7 @@ filters <-
     r.flyway_code = 1
   )
 filters_no_geo <-
-  list_update(filters, list(add_info = c(00, 01, 07)))
+  list_update(filters, list(add_info = c(00, 01, 07), b.year = 2018:2019))
 
 
 test_that("Summarize banding", {
@@ -68,7 +68,7 @@ test_that("Get direct recoveries, by bands", {
 test_that("Get total direct recoveries", {
   pkg_res <-
     get_direct_recoveries(filters, gb_banding, gb_recoveries)
-  pkg_res <- pkg_res[, -(7:8)]
+  pkg_res <- pkg_res[,-(7:8)]
   colnames(pkg_res) <-
     c("B.Year",
       "n_banded",
@@ -130,7 +130,7 @@ test_that("Get HR, no_geo bands", {
     "CL_h",
     "CV"
   )
-  pkg_res <- pkg_res[pkg_res$B.Year %in% 2018:2019, ]
+  pkg_res <- pkg_res[pkg_res$B.Year %in% 2018:2019,]
   rownames(pkg_res) <- 1:2
   expect_equal(pkg_res[, sort(colnames(pkg_res))], HR_no_geo[, sort(colnames(HR_no_geo))])
 })
@@ -138,6 +138,14 @@ test_that("Get HR, no_geo bands", {
 
 
 test_that("Use all bands", {
-  expect_equal(compare_filters(filters = filters, plot = FALSE)$overlap,
-               TRUE)
+  expect_equal(
+    compare_harvest_rates(
+      filters1 = filters,
+      filters2 = filters_no_geo,
+      banding_df = gb_banding,
+      recoveries_df = gb_recoveries,
+      plot = FALSE
+    ),
+    TRUE
+  )
 })

@@ -171,9 +171,9 @@ get_comparison_dataframe <-
     return(df)
   }
 
-#' @rdname check_all_bands
+#' @rdname compare_harvest_rates
 #' @export
-compare_filters_harvest_rate <-
+compare_harvest_rates <-
   function(df1 = NULL,
            df2 = NULL,
            filters1 = NULL,
@@ -184,8 +184,6 @@ compare_filters_harvest_rate <-
     # All Bands
     df1 <- get_comparison_dataframe(df1, filters1, 1, ...)
     df2 <- get_comparison_dataframe(df2, filters2, 2, ...)
-
-
 
     if (plot) {
       library(ggplot2)
@@ -202,25 +200,17 @@ compare_filters_harvest_rate <-
 
     if (check_overlap) {
       ## Compute overlap
-      # Get only relevant year for all bands
-      all_subset <-
-        hr_all[hr_all$b.year %in% geo_years,]
-      # Get confidence levels for all bands
-      all_cl <- get_confidence_levels(all_subset)
-      # Get confidence levels without geolocators
-      no_geo_cl <- get_confidence_levels(no_geo_subset)
+      common_years <- intersect(df1$b.year, df2$b.year)
+
+      # Get confidence levels
+      cl1 <- get_confidence_levels(df1[df1$b.year %in% common_years, ])
+      cl2 <- get_confidence_levels(df2[df2$b.year %in% common_years, ])
       # Check if there is an overlap
       overlap <-
-        (no_geo_cl$start <= all_cl$end) &
-        (no_geo_cl$end >= all_cl$start)
+        (cl2$start <= cl1$end) &
+        (cl2$end >= cl1$start)
       # Return TRUE if all confidence levels overlap
-      res <-
-        list(
-          overlap = all(overlap),
-          band_type = ifelse(overlap, "all", "no_geo"),
-          hr_df = ifelse(overlap, hr_all, hr_no_geo)
-        )
-      return(res)
+      return(all(overlap))
     }
   }
 
@@ -228,37 +218,35 @@ compare_filters_harvest_rate <-
 #' @rdname get_lincoln_estimates
 #' @export
 get_lincoln_estimates <-
-  function(filters,
-           hr_df = NULL,
+  function(df = NULL,
            harvest_df = NULL,
            plot_estimates = TRUE,
            save_estimates = TRUE,
-           save_path = ".") {
-    if (is.null(hr_df)) {
-      # TODO: how to select best hr_df? Compare bands?
-      hr_df <- get_hr_df(filters = filters)
+           save_path = ".",
+           ...) {
+    if (is.null(df)) {
+      df <- get_harvest_rate(...)
     }
     if (is.null(harvest_df)) {
       # Should be an error since it is a big portion of estimates
-      # TODO
       stop("A harvest dataframe for the selected species should be provided")
     }
-    lincoln_df <- inner_join(hr_df, harvest_df, by = "b.year")
+    lincoln_df <- inner_join(df, harvest_df, by = "b.year")
     lincoln <- lincoln_df %>%
       mutate(harvest_adj = harvest * 0.61) %>%
       mutate(se_harvest_adj = se_harvest * 0.61) %>%
       mutate(var_harvest_adj = se_harvest_adj ^ 2) %>%
       mutate(N = ((((n_banded + 1) * (harvest_adj + 1) * rho
       ) / (
-        total_recoveries + 1
+        n_recoveries + 1
       )) - 1)) %>%
-      mutate(var_N_b.r = ((n_banded + 1) * (n_banded - total_recoveries)) / (((
-        total_recoveries +
+      mutate(var_N_b.r = ((n_banded + 1) * (n_banded - n_recoveries)) / (((
+        n_recoveries +
           1
-      ) ^ 2) * (total_recoveries + 2))) %>%
-      mutate(var_N_bH.r =  ((n_banded / total_recoveries) ^ 2) * var_harvest_adj + harvest_adj ^
+      ) ^ 2) * (n_recoveries + 2))) %>%
+      mutate(var_N_bH.r =  ((n_banded / n_recoveries) ^ 2) * var_harvest_adj + harvest_adj ^
                2 * var_N_b.r) %>%
-      mutate(var_N = (((n_banded * harvest_adj) / total_recoveries
+      mutate(var_N = (((n_banded * harvest_adj) / n_recoveries
       ) ^ 2) * var_rho + rho ^
         2 * var_N_bH.r) %>%
       mutate(se_N = sqrt(var_N)) %>%
@@ -291,23 +279,23 @@ get_lincoln_estimates <-
     return(lincoln_est)
 
   }
-
-#' @rdname lincoln_estimates
-#' @export
-lincoln_estimates <- function(filters_list, ...) {
-  res = list()
-  if (length(filters_list) == 0) {
-    print("At least one set of filters must be defined")
-  } else {
-    for (filter in filters_list) {
-      sprintf("Calculating Lincoln estimates for filter %s",
-              toString(lapply(1:length(filters), function(i, filters) {
-                return(paste(names(filters)[i], as.character(filters[i]), sep = ": "))
-              }, filters)))
-      # TODO: make the function more user friendly
-      estimates <- get_lincoln_estimates(filter, ...)
-      res <- c(res, estimates)
-    }
-  }
-  return(res)
-}
+#'
+#' #' @rdname multiple_estimates
+#' #' @export
+#' multiple_estimates <- function(filters_list, ...) {
+#'   res = list()
+#'   if (length(filters_list) == 0) {
+#'     print("At least one set of filters must be defined")
+#'   } else {
+#'     for (filter in filters_list) {
+#'       sprintf("Calculating Lincoln estimates for filter %s",
+#'               toString(lapply(1:length(filters), function(i, filters) {
+#'                 return(paste(names(filters)[i], as.character(filters[i]), sep = ": "))
+#'               }, filters)))
+#'       # TODO: make the function more user friendly
+#'       estimates <- get_lincoln_estimates(filter, ...)
+#'       res <- c(res, estimates)
+#'     }
+#'   }
+#'   return(res)
+#' }
