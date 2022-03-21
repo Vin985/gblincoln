@@ -1,5 +1,5 @@
-SEX_CLASSES <- list("MALE" = 4, "FEMALE" = 5)
-AGE_CLASSES <- list("HY" = c(2, 3, 4), "AHY" = c(1, 5, 6, 7, 8))
+GB_SEX_CLASSES <- list("MALE" = 4, "FEMALE" = 5)
+GB_AGE_CLASSES <- list("HY" = c(2, 3, 4), "AHY" = c(1, 5, 6, 7, 8))
 
 ADD_INFO_NO_GEO <- c(00, 01, 07)
 ADD_INFO_ALL <- c(00, 01, 07, 08, 25, 18)
@@ -77,6 +77,6 @@ DEFAULT_LINCOLN_FILTERS = list(
   r.month = c(9, 10, 11, 12, 1, 2, 3)
 )
 
-BANDING_FILTERS <- list_update(DEFAULT_LINCOLN_FILTERS, list(b.year= 2000:2019))
-RECOVERIES_FILTERS <- list_update(DEFAULT_LINCOLN_FILTERS, list(r.corrected_year=2000:2019))
+DEFAULT_BANDING_FILTERS <- list_update(DEFAULT_LINCOLN_FILTERS, list(b.year= 2000:2019))
+DEFAULT_RECOVERIES_FILTERS <- list_update(DEFAULT_LINCOLN_FILTERS, list(r.corrected_year=2000:2019))
 TIME_COLUMNS = c("b.year", "b.month", "b.day", "r.year", "r.month", "r.day")

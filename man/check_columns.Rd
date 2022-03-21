@@ -4,7 +4,7 @@
 \alias{check_columns}
 \title{FUNCTION_TITLE}
 \usage{
-check_columns(col_names)
+check_columns(col_names, columns = NULL)
 }
 \arguments{
 \item{col_names}{PARAM_DESCRIPTION}

@@ -4,7 +4,16 @@
 \alias{clean_dataset}
 \title{Clean a data file directly exported from Gamebirds}
 \usage{
-clean_dataset(df, rename_columns = TRUE, colnames = NULL, recoveries = FALSE)
+clean_dataset(
+  df,
+  rename_columns = TRUE,
+  colnames = NULL,
+  add_age_classes = TRUE,
+  age_classes = NULL,
+  add_sex_classes = TRUE,
+  sex_classes = NULL,
+  correct_recovery_years = TRUE
+)
 }
 \arguments{
 \item{df}{PARAM_DESCRIPTION}

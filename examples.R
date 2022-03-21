@@ -85,7 +85,7 @@ ATBRharvest <-
 colnames(ATBRharvest)[1] <- "b.year"
 
 # Get Lincoln estimates for the data
-get_lincoln_estimates(hr_all_bands, harvest_df = ATBRharvest)
+get_lincoln_estimates(hr_all_bands, harvest_df = ATBR_harvest)
 
 get_lincoln_estimates(
   harvest_df = ATBRharvest,

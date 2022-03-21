@@ -154,10 +154,6 @@ test_that("Check type error", {
   expect_error(check_db_type("bANdin"))
 })
 
-test_that("Get database", {
-  expect_equal(get_db("bANdinG"), gb_banding)
-})
-
 test_that("Check columns", {
   expect_equal(check_columns(c("Add.Info", "add_info")), c("add_info", "add_info"))
 })

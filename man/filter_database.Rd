@@ -4,7 +4,13 @@
 \alias{filter_database}
 \title{Performs filtering on a dataset}
 \usage{
-filter_database(db, filters = NULL, db_type = "banding")
+filter_database(
+  db,
+  filters = NULL,
+  db_type = "banding",
+  columns = NULL,
+  use_default_filters = TRUE
+)
 }
 \arguments{
 \item{columns}{\link[gblincoln]{LINCOLN_BANDING_COLUMNS}, Default: LINCOLN_BANDING_COLUMNS}

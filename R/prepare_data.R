@@ -16,6 +16,10 @@
 #' @rdname rename_columns
 #' @export
 rename_columns <- function(df, columns) {
+  if (is.null(columns)) {
+    # If no column names are provided, use the ones in the dataset
+    columns <- gb_colnames
+  }
   found_columns <- match(colnames(df), columns$old_colnames)
   new_names <- columns[found_columns, "new_colnames"]
   new_columns <- colnames(df)
@@ -40,7 +44,7 @@ rename_columns <- function(df, columns) {
 #' @export
 set_age_classes <- function(df, age_classes = NULL) {
   if (is.null(age_classes)) {
-    age_classes <- AGE_CLASSES
+    age_classes <- GB_AGE_CLASSES
   }
   i = 1
   for (age_class in age_classes) {
@@ -55,7 +59,7 @@ set_age_classes <- function(df, age_classes = NULL) {
 
 set_sex_classes <- function(df, sex_classes = NULL) {
   if (is.null(sex_classes)) {
-    sex_classes <- SEX_CLASSES
+    sex_classes <- GB_SEX_CLASSES
   }
   i = 1
   for (sex_class in sex_classes) {
@@ -85,27 +89,79 @@ set_sex_classes <- function(df, sex_classes = NULL) {
 clean_dataset <- function(df,
                           rename_columns = TRUE,
                           colnames = NULL,
-                          recoveries = FALSE) {
+                          add_age_classes = TRUE,
+                          age_classes = NULL,
+                          add_sex_classes = TRUE,
+                          sex_classes = NULL,
+                          correct_recovery_years = TRUE) {
   cleaned <- df
   # rename columns of the dataset
   if (rename_columns) {
-    if (is.null(colnames)) {
-      # If no column names are provided, use the ones in the dataset
-      colnames <- gb_colnames
-    }
     cleaned <- rename_columns(cleaned, colnames)
   }
   # Add age classes and sex classes
-  cleaned = cleaned  %>% set_age_classes() %>% set_sex_classes()
+  if (is.null(add_age_classes) && "age_code" %in% colnames(cleaned)) {
+    cleaned <- set_age_classes(cleaned, age_classes)
+  }
+
+  if (add_sex_classes && "sex_code" %in% colnames(cleaned)) {
+    cleaned <- set_sex_classes(cleaned, sex_classes)
+  }
 
   # If recoveries dataset, correct the recoveries year
-  if (recoveries) {
+  if (correct_recovery_years && "r.year" %in% colnames(cleaned)) {
     cleaned <- correct_recoveries_years(cleaned)
   }
 
   return(cleaned)
 }
 
+
+
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param path PARAM_DESCRIPTION
+#' @param rename_columns PARAM_DESCRIPTION, Default: TRUE
+#' @param colnames PARAM_DESCRIPTION, Default: NULL
+#' @param add_age_classes PARAM_DESCRIPTION, Default: TRUE
+#' @param age_classes PARAM_DESCRIPTION, Default: NULL
+#' @param add_sex_classes PARAM_DESCRIPTION, Default: TRUE
+#' @param sex_classes PARAM_DESCRIPTION, Default: NULL
+#' @param correct_recovery_years PARAM_DESCRIPTION, Default: TRUE
+#' @param ... PARAM_DESCRIPTION
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @rdname load_dataset
+#' @export
+load_dataset <- function(path,
+                         rename_columns = TRUE,
+                         colnames = NULL,
+                         add_age_classes = TRUE,
+                         age_classes = NULL,
+                         add_sex_classes = TRUE,
+                         sex_classes = NULL,
+                         correct_recovery_years = TRUE,
+                         ...) {
+  df <- read.csv(path, ...)
+  df <-
+    clean_dataset(
+      df,
+      rename_columns,
+      colnames,
+      add_age_classes,
+      age_classes,
+      add_sex_classes,
+      sex_classes,
+      correct_recovery_years
+    )
+  return(df)
+}
 
 #' @title FUNCTION_TITLE
 #' @description Correct the recovery year by considering all hunting done before
@@ -143,8 +199,11 @@ correct_recoveries_years <- function(df) {
 #' }
 #' @rdname check_columns
 #' @export
-check_columns <- function(col_names) {
-  # TODO: ALWAYS use gb_colnames?
+check_columns <- function(col_names, columns = NULL) {
+  if (is.null(columns)) {
+    # If no column names are provided, use the ones in the dataset
+    columns <- gb_colnames
+  }
   old_cols <- match(col_names, gb_colnames$old_colnames)
   idx_to_replace <- (!is.na(old_cols))
   col_names[idx_to_replace] <-
@@ -211,27 +270,23 @@ check_db_type <- function(db_type) {
   }
 }
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param db_type PARAM_DESCRIPTION
-#' @return OUTPUT_DESCRIPTION
-#' @details DETAILS
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @rdname get_db
-#' @export
-get_db <- function(db_type) {
-  type <- check_db_type(db_type)
-  if (type == "r") {
-    return(gb_recoveries)
-  } else if (type == "b") {
-    return(gb_banding)
-  }
+
+is_recovery <- function(db_type) {
+  return (tolower(db_type) %in% c("recoveries", "r"))
 }
+
+is_banding <- function(db_type) {
+  return (tolower(db_type) %in% c("banding", "b"))
+}
+
+is_rho <- function(db_type) {
+  return (tolower(db_type) %in% c("rho"))
+}
+
+is_harvest <- function(db_type) {
+  return (tolower(db_type) %in% c("harvest", "h"))
+}
+
 
 #' @title FUNCTION_TITLE
 #' @description FUNCTION_DESCRIPTION
@@ -248,10 +303,9 @@ get_db <- function(db_type) {
 #' @rdname get_filters
 #' @export
 get_filters <- function(db_type, filters) {
-  type <- check_db_type(db_type)
-  default <- if (type == "r") {
+  default <- if (is_recovery(db_type)) {
     RECOVERIES_FILTERS
-  } else if (type == "b") {
+  } else if (is_banding(db_type)) {
     BANDING_FILTERS
   } else {
     DEFAULT_LINCOLN_FILTERS
@@ -389,19 +443,18 @@ filter_time_period <- function(df, filter, col_name) {
 filter_database <-
   function(db,
            filters = NULL,
-           db_type = "banding") {
+           db_type = "banding",
+           columns = NULL,
+           use_default_filters = TRUE) {
     # Get filter list and updates it if needed
-    filters <- get_filters(db_type, filters)
-
-    # If no geolocators should be included
-    # if (band_type == "no_geo") {
-    #   filters$add_info <- ADD_INFO_NO_GEO
-    # }
-
+    if (use_default_filters) {
+      filters <- get_filters(db_type, filters)
+    }
 
     # Select relevant columns
     if ("columns" %in% names(filters)) {
-      db <- db[, which(colnames(db) %in% check_columns(filters$columns))]
+      db <-
+        db[, which(colnames(db) %in% check_columns(filters$columns, columns))]
     }
 
     # Iterate on all other filters
@@ -409,7 +462,7 @@ filter_database <-
       if (is.null(filters[[i]])) {
         next
       }
-      col_name <- check_columns(names(filters)[i])
+      col_name <- check_columns(names(filters)[i], columns)
       # Check if the name of the filter is a column of the database
       if (col_name %in% colnames(db)) {
         filter = filters[[i]]

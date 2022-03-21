@@ -1,6 +1,10 @@
 ---
 title: "gblincoln"
 output: rmarkdown::html_vignette
+description: >
+  This is an introduction to the gblincoln package to calculate Lincoln
+  population abundance estimates using banding data recovered from the Gamebirds
+  database. 
 vignette: >
   %\VignetteIndexEntry{gblincoln}
   %\VignetteEngine{knitr::rmarkdown}
@@ -14,18 +18,230 @@ knitr::opts_chunk$set(
 )
 ```
 
+
+# Introduction
+
+## Description of the package
+
+The `gblincoln` package aims to calculate Lincoln estimates for population abundance 
+(Alisauskas et al., 2014) using banding data extracted from the Gamebirds
+database.
+The package offers functions to help clean and filter the Gamebirds datasets
+in order to prepare them for the abundance estimations. It also provides all
+the necessary functions to perform the estimations.
+
+The Lincoln estimates require data coming from 4 different sources:
+
+ * Banding data (Gamebirds)
+ * Recovery data of banded birds (Gamebirds)
+ * Probability of reporting banding information from recovered birds
+ * Harvest estimates for a given species and population
+  
+Besides, the user must provide a set of filters to apply to the gamebirds
+datasets to define which data to keep for the estimations.
+
+Since deciding which harvest data to use can be very dependent of the
+populations and species studied, this package only performs estimations for
+one species at a time. To perform multiple estimations, multiple filters
+should be defined and executed one at a time.
+
+## Goal of this vignette
+
+This vignette aims to give an overview of how to use the `gblincoln` package
+by providing a detailed example for calculating Lincoln estimates for a
+population of Atlantic brants (ATBR) using harvest data gathered in
+the United States.
+
+## Requirements
+
+This package depends on the tidyverse and ggplot2 libraries.
+
+# Example : Estimating the population of Atlantic Brant in North Armerica
+
+## Loading data
+
+
+All datasets should be loaded using  the `load_dataset()` function.
+This function performs the following:
+ * Load a csv file
+ * Rename the columns to ensure consistency between datasets. For more
+  information about column renaming, please refer to [this section](#column-names)
+ * Classify the age of the birds in two classes: Hatch year (HY) and after hatch
+  year (AHY) (Only for banding and recovery data)
+ * Correct the recovery year to account for hunting season (recovery data only).
+ [Click here](#recovery-year-correction)
+ * Ensure sex classes are properly defined (only banding and recovery data)
+ 
+If the data to be loaded is not in a csv format, it is possible to load the data
+using the appropriate method and then call the `clean_dataset()` function on the
+resulting dataframe.
+The type of action taken during cleaning is determined automatically by the columns present
+in the dataset. Please see the help page of the `clean_dataset()` function for
+further explanations.
+
+
+For this example, we will be using datasets provided with the package. For more 
+detailed information about these datasets please see 
+[this section](#provided-datasets). All the data provided with the package
+come from raw data loaded using the `load_dataset()` function.
+
+Four (4) datasets are required for the package to work. Here are the name of
+the variables containing them:
+ * Banding data. `gb_ATBR_banding`
+ * Recovery data: `gb_ATBR_recovery`
+ * Reporting_probabilities: `gb_reporting_probas`
+ * Harvest data: `gb_ATBR_harvest`
+ 
+Therefore to load the example data, all that is required is to load the package.
+
 ```{r setup}
+# Clean environment and load the package
+rm(list=ls())
 library(gblincoln)
+
+# Banding data
+str(gb_ATBR_banding)
+# Reporting probabilities
+head(gb_reporting_probas)
+# Harvest data
+head(gb_ATBR_harvest)
 ```
 
-# Available data
+To load a csv file from an external path, we would write something like this:
+
+```{r eval=FALSE}
+dataset <- load_dataset("path_to_file")
+```
+
+## Filtering the databases
+
+By default, the data extracted from gamebirds is unfiltered and can contain
+unwanted entries. Therefore, we need to define filters to select only the
+relevant data.
+In `gblincoln`, filtering is done using a list that associates a column name with
+the desired value.
+
+For example, let<s say we want to keep only birds banded between 2010 and 2020.
+Banding year in the datasets is stored in the column `b.year`. Therefore to create
+the appropriate filter, we would write:
+
+```{r}
+filter <- list(b.year=2010:2020) 
+```
+ 
+ 
+Note that `b.year` is the name of the column rename by the package. If you prefer
+to use the original name given by Gamebirds, it is also possible as long as the
+column is present in the list of columns accepted by the package. See the
+[section on column names](#column-names) for more information.
+For instance, in gamebirds, the original column is actually `B.Year` so you
+could define you filter like this:
+
+```{r}
+filter_old_name <- list(B.YEAR=2010:2020)
+```
+
+
+If you want to reuse an old filter and only change one of its values or add
+another filtering value, you can do so by updating the list using the
+`list_update()` function
+
+```{r}
+updated_list <- list_update(filter, list(b.year=2009:2019, spec="ATBR"))
+```
+
+Note that only the columns present in the dataframe will actually be filtered.
+This allows you to create only one filter that can be applied for banding and recovery
+data. Filtering will be done in the order in which the filter appear in the
+list. For our example, we will look into data of the ATBR species, banded in
+Nunavut, recovered in the United States in the flyway 1. (Note: if you need
+more information about location and flyways available for a given species
+please see [this section](#species-locations))
+
+```{r}
+filters <-
+  list(
+    SPEC = "ATBR",
+    b.state_name = "Nunavut",
+    e.country_code = 'US',
+    r.flyway_code = 1
+  )
+```
+
+To use the filter, you can then call the `filter_database()` function.
+
+```{r}
+filtered_banding <- filter_database(gb_ATBR_banding, filters)
+```
+
+Note that the `gblincoln` package offers default values for the filters. This
+in particular includes keeping only relevant columns and type of bands and birds.
+These values can be found in the following objects:
+
+```{r}
+# Default filters for all data
+DEFAULT_LINCOLN_FILTERS
+
+# Default filters for banding data only
+DEFAULT_BANDING_FILTERS
+
+# Default recoveries filters only
+DEFAULT_RECOVERIES_FILTERS
+```
+
+If you want to change the value of a specific column filter, just add it
+in your filter, it will automatically override it.
+If you do not want to use the default values, you can set the 
+`use_default_filters` argument of the `filter_database()` function to `FALSE`
 
 # Perform Single Lincoln estimation
 
-## use all bands/ no geolocs
+Say what the package does
+
+## Get direct recoveries
+## Calculate harvest rate from banding data (not used for estimates but for
+comparison between band types)
+## Estimate abundance based on harvest data
 
 ## See results
 
-# Perform multiple Estimations
 
-# Use custom database
+# Compare two filters
+## Defining the filters
+## Calculate harvest rate
+## Compare and plot
+
+
+# Additionnal information
+
+## Extracting data from gamebirds
+
+## Column names
+GB_COLNAMES
+### Add your own column names
+
+## Recovery year correction
+
+## Provided datasets
+
+This vignette uses datasets shipped with the gblincoln package. The provided
+datasets are:
+
+  * `gb_ATBR_banding`: Banding data for the ATBR species extracted from the
+  Gamebirds database. This  dataset has already been cleaned using
+  the `clean_dataset()` function.
+  
+TODO: Provide raw data to explain all steps
+  
+
+## Species locations
+
+### Gamebirds banding
+
+### Gamebirds recoveries
+
+### Reporting probability
+Say that a version is available in the package
+
+### Harvest data
+Depends on the species
