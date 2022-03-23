@@ -8,31 +8,30 @@
 \title{List the locations available for a species}
 \usage{
 get_species_locations(
+  df,
   species_code,
   columns = c("b.country_name", "b.state_name", "b.flyway_name", "r.country_name",
     "r.state_name", "r.flyway_name"),
-  df = NULL,
-  db_type = "banding",
   sort_by = NULL
 )
 
-get_species_countries(species_code, db_type = "banding")
+get_species_countries(df, species_code)
 
-get_species_states(species_code, db_type = "banding")
+get_species_states(df, species_code)
 
-get_species_flyways(species_code, db_type = "banding")
+get_species_flyways(df, species_code)
 }
 \arguments{
 \item{columns}{The desired columns. By default returns all the location
 related columns: "country_name", "state_name" and "flyway"}
-
-\item{db_type}{Which database to use, banding or encounters. Default: 'banding'}
 
 \item{sort_by}{Column by which the results are sorted. Default: NULL, the
 results are unsorted}
 
 \item{spec}{The 4 letters short code for the desired species
 (as found in the SPEC column of the gb_banding dataset)}
+
+\item{db_type}{Which database to use, banding or encounters. Default: 'banding'}
 }
 \value{
 If columns contains more than one element, a data frame with all

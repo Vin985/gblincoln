@@ -4,7 +4,13 @@
 \alias{get_direct_recoveries}
 \title{FUNCTION_TITLE}
 \usage{
-get_direct_recoveries(filters, banding_df, recoveries_df)
+get_direct_recoveries(
+  banding_df,
+  recoveries_df,
+  filters = NULL,
+  banding_filters = NULL,
+  recoveries_filters = NULL
+)
 }
 \arguments{
 \item{df}{PARAM_DESCRIPTION}

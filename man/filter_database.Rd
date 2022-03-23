@@ -7,9 +7,10 @@
 filter_database(
   db,
   filters = NULL,
-  db_type = "banding",
   columns = NULL,
-  use_default_filters = TRUE
+  use_default_filters = TRUE,
+  db_type = NULL,
+  filters_first = FALSE
 )
 }
 \arguments{

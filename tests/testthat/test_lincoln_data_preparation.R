@@ -6,50 +6,48 @@ filters <-
     SPEC = "ATBR",
     b.state_name = "Nunavut",
     e.country_code = 'US',
-    r.flyway_code = 1
+    r.flyway_code = 1,
+    banding_filters = list(
+      b.year= 2000:2019
+    ),
+    recoveries_filters = list(
+      r.corrected_year=2000:2019
+    )
   )
 filters_no_geo <-
-  list_update(filters, list(add_info = c(00, 01, 07), b.year = 2018:2019))
+  list_update(filters, list(add_info = c(00, 01, 07)))
+
+
+test_that("Add specific_filter", {
+  expect_equal(add_db_filters(filters, "b"),
+                 list(
+                   SPEC = "ATBR",
+                   b.state_name = "Nunavut",
+                   e.country_code = 'US',
+                   r.flyway_code = 1,
+                   b.year= 2000:2019))
+})
 
 
 test_that("Summarize banding", {
-  filter <- list(SPEC = "ATBR", b.state_name = "Nunavut")
-  banding_db <- filter_database(gb_ATBR_banding, filter)
+  banding_db <- filter_database(gb_ATBR_banding, filters, db_type="b")
   pkg_sum <- summarize_bandings(banding_db)
   colnames(pkg_sum) <- c("B.Year", "n_banded")
   expect_equal(pkg_sum, ATBRBANDsum)
 })
 
-test_that("Summarize recoveries", {
-  recoveries_filter <-
-    list(
-      SPEC = "ATBR",
-      e.country_code = 'US',
-      r.flyway_code = 1,
-      r.corrected_year = NULL
-    )
-  rec_db <-
-    filter_database(gb_ATBR_recoveries, recoveries_filter, db_type = "recoveries")
-  pkg_sum = rec_db %>%
-    group_by(r.month) %>%
-    summarise(total = n())
-  colnames(pkg_sum) <- c("R.Month", "total_recoveries")
-  expect_equal(pkg_sum, CHECK)
-})
+# test_that("Summarize recoveries", {
+#   rec_db <-
+#     filter_database(gb_ATBR_recoveries, filters)
+#   pkg_sum = summarize_recoveries(rec_db)
+#   colnames(pkg_sum) <- c("R.Month", "total_recoveries")
+#   expect_equal(pkg_sum, CHECK)
+# })
 
 
 test_that("Get direct recoveries", {
   rec_db <-
-    filter_database(gb_ATBR_recoveries, filters, db_type = "recoveries")
-  pkg_sum = summarize_recoveries(rec_db)
-  colnames(pkg_sum) <-
-    c("TAGE", "B.Year", "R.Corr.Year", "total_recoveries")
-  expect_equal(pkg_sum, ATBRRECOVsum)
-})
-
-test_that("Get direct recoveries, global filters ", {
-  rec_db <-
-    filter_database(gb_ATBR_recoveries, filters, db_type = "recoveries")
+    filter_database(gb_ATBR_recoveries, filters, db_type="r")
   pkg_sum = summarize_recoveries(rec_db)
   colnames(pkg_sum) <-
     c("TAGE", "B.Year", "R.Corr.Year", "total_recoveries")
@@ -59,7 +57,7 @@ test_that("Get direct recoveries, global filters ", {
 
 test_that("Get direct recoveries, by bands", {
   rec_db <-
-    filter_database(gb_ATBR_recoveries, filters, db_type = "recoveries")
+    filter_database(gb_ATBR_recoveries, filters, db_type="r")
   pkg_sum = summarize_recoveries(rec_db, by_band = TRUE)
   colnames(pkg_sum) <- c("B.Year", "Add.Info", "total_recoveries")
   expect_equal(pkg_sum, ATBRRECOV_by_band_type)
@@ -67,7 +65,7 @@ test_that("Get direct recoveries, by bands", {
 
 test_that("Get total direct recoveries", {
   pkg_res <-
-    get_direct_recoveries(filters, gb_ATBR_banding, gb_ATBR_recoveries)
+    get_direct_recoveries(gb_ATBR_banding, gb_ATBR_recoveries, filters)
   pkg_res <- pkg_res[,-(7:8)]
   colnames(pkg_res) <-
     c("B.Year",

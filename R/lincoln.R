@@ -60,15 +60,27 @@ summarize_recoveries <- function(df, by_band = FALSE) {
 #' @rdname get_direct_recoveries
 #' @export
 get_direct_recoveries <-
-  function(filters,
-           banding_df,
-           recoveries_df) {
+  function(banding_df,
+           recoveries_df,
+           filters = NULL,
+           banding_filters = NULL,
+           recoveries_filters = NULL) {
+    b_filters <-
+      if (is.null(banding_filters))
+        filters
+    else
+      banding_filters
     banding_db <-
       filter_database(db = banding_df,
-                      filters = filters,
+                      filters = b_filters,
                       db_type = "b")
     bandings <- summarize_bandings(banding_db)
 
+    r_filters <-
+      if (is.null(recoveries_filters))
+        filters
+    else
+      recoveries_filters
     rec_db <-
       filter_database(db = recoveries_df,
                       filters = filters,
@@ -203,8 +215,10 @@ compare_harvest_rates <-
       common_years <- intersect(df1$b.year, df2$b.year)
 
       # Get confidence levels
-      cl1 <- get_confidence_levels(df1[df1$b.year %in% common_years, ])
-      cl2 <- get_confidence_levels(df2[df2$b.year %in% common_years, ])
+      cl1 <-
+        get_confidence_levels(df1[df1$b.year %in% common_years, ])
+      cl2 <-
+        get_confidence_levels(df2[df2$b.year %in% common_years, ])
       # Check if there is an overlap
       overlap <-
         (cl2$start <= cl1$end) &
@@ -237,17 +251,14 @@ get_lincoln_estimates <-
       mutate(se_harvest_adj = se_harvest * 0.61) %>%
       mutate(var_harvest_adj = se_harvest_adj ^ 2) %>%
       mutate(N = ((((n_banded + 1) * (harvest_adj + 1) * rho
-      ) / (
-        n_recoveries + 1
-      )) - 1)) %>%
-      mutate(var_N_b.r = ((n_banded + 1) * (n_banded - n_recoveries)) / (((
-        n_recoveries +
-          1
-      ) ^ 2) * (n_recoveries + 2))) %>%
+      ) / (n_recoveries + 1)) - 1)) %>%
+      mutate(var_N_b.r = ((n_banded + 1) * (n_banded - n_recoveries)) / (((n_recoveries +
+                                                                             1) ^ 2) * (n_recoveries + 2))) %>%
       mutate(var_N_bH.r =  ((n_banded / n_recoveries) ^ 2) * var_harvest_adj + harvest_adj ^
                2 * var_N_b.r) %>%
-      mutate(var_N = (((n_banded * harvest_adj) / n_recoveries
-      ) ^ 2) * var_rho + rho ^
+      mutate(var_N = (((
+        n_banded * harvest_adj
+      ) / n_recoveries) ^ 2) * var_rho + rho ^
         2 * var_N_bH.r) %>%
       mutate(se_N = sqrt(var_N)) %>%
       mutate(cl_N = se_N * 1.96)

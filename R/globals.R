@@ -77,6 +77,4 @@ DEFAULT_LINCOLN_FILTERS = list(
   r.month = c(9, 10, 11, 12, 1, 2, 3)
 )
 
-DEFAULT_BANDING_FILTERS <- list_update(DEFAULT_LINCOLN_FILTERS, list(b.year= 2000:2019))
-DEFAULT_RECOVERIES_FILTERS <- list_update(DEFAULT_LINCOLN_FILTERS, list(r.corrected_year=2000:2019))
 TIME_COLUMNS = c("b.year", "b.month", "b.day", "r.year", "r.month", "r.day")

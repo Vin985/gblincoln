@@ -1,7 +1,8 @@
 rm(list=ls())
 
+
 ATBRBAND <-
-  read.csv("/mnt/win/dev/EC/Lincoln/data/ATBR_allbandings.csv",
+  read.csv("../../../data/ATBR_allbandings.csv",
            stringsAsFactors = FALSE)
 names(ATBRBAND) <-
   str_replace_all(names(ATBRBAND), c(" " = "." , "," = ""))
@@ -63,7 +64,7 @@ ATBRBANDsum
 
 
 ATBRRECOV <-
-  read.csv("/mnt/win/dev/EC/Lincoln/data/ATBR_allrecovs.csv",
+  read.csv("../../../data/ATBR_allrecovs.csv",
            stringsAsFactors = FALSE)
 names(ATBRRECOV) <-
   str_replace_all(names(ATBRRECOV), c(" " = "." , "," = ""))
@@ -174,7 +175,7 @@ DRR <- DIRECT_RECOVS %>%
 
 RHO <-
   read.csv(
-    "/mnt/win/dev/EC/Lincoln/data/RHO_1976_2010(Arnold2020)_2011_2019(linear).csv",
+    "../../../data/RHO_1976_2010(Arnold2020)_2011_2019(linear).csv",
     stringsAsFactors = FALSE
   )
 
@@ -225,7 +226,7 @@ HR_no_geo <-
 # HR_by_band_type <- rbind(HR_all_band, HR_no_geo)
 
 ATBRharvest <-
-  read.csv("/mnt/win/dev/EC/Lincoln/data/ATBR_harvest_2000_2019(atlantic flyway).csv",
+  read.csv("../../../data/ATBR_harvest_2000_2019(atlantic flyway).csv",
            stringsAsFactors = FALSE)
 
 

@@ -91,46 +91,58 @@ REF_LOCATIONS <-
         "Canada"
       )
     ),
-    row.names = c(NA, -20L),
+    row.names = c(NA,-20L),
     class = "data.frame"
   )
 
 test_that("Species countries", {
-  expect_equal(get_species_countries("ATBR"), REF_COUNTRIES)
+  expect_equal(get_species_countries(gb_ATBR_banding, "ATBR"),
+               REF_COUNTRIES)
 })
 
 test_that("Species flyways", {
-  expect_equal(get_species_flyways("ATBR"), REF_FLYWAYS)
+  expect_equal(get_species_flyways(gb_ATBR_banding, "ATBR"), REF_FLYWAYS)
 })
 
 test_that("Species states", {
-  expect_equal(get_species_states("ATBR"), REF_STATES)
+  expect_equal(get_species_states(gb_ATBR_banding, "ATBR"), REF_STATES)
 })
 
 test_that("Species states manual", {
-  expect_equal(get_species_locations("ATBR", "b.state_name"), REF_STATES)
+  expect_equal(get_species_locations(gb_ATBR_banding, "ATBR", "b.state_name"),
+               REF_STATES)
 })
 
 
 test_that("Species locations", {
-  expect_equal(get_species_locations("ATBR"), REF_LOCATIONS)
+  expect_equal(get_species_locations(gb_ATBR_banding, "ATBR"),
+               REF_LOCATIONS)
 })
 
 
 test_that("Species locations sort", {
   ref <- arrange(REF_LOCATIONS, b.state_name)
-  expect_equal(get_species_locations("ATBR", sort_by = "b.state_name"), ref)
+  expect_equal(get_species_locations(gb_ATBR_banding, "ATBR", sort_by = "b.state_name"),
+               ref)
 })
 
 test_that("Species locations sort, 2 cols", {
   ref <- unique(REF_LOCATIONS[, c("b.flyway_name", "b.country_name")])
   ref <- arrange(ref, b.country_name)
-  expect_equal(get_species_locations("ATBR", c("b.flyway_name", "b.country_name"), sort_by = "b.country_name"),
-               ref)
+  expect_equal(
+    get_species_locations(
+      gb_ATBR_banding,
+      "ATBR",
+      c("b.flyway_name", "b.country_name"),
+      sort_by = "b.country_name"
+    ),
+    ref
+  )
 })
 
 test_that("Missing column", {
-  expect_equal(get_species_locations("ATBR", columns = c("no_col")), NULL)
+  expect_equal(get_species_locations(gb_ATBR_banding, "ATBR", columns = c("no_col")),
+               NULL)
 })
 
 test_that("Check type r", {
@@ -156,4 +168,18 @@ test_that("Check type error", {
 
 test_that("Check columns", {
   expect_equal(check_columns(c("Add.Info", "add_info")), c("add_info", "add_info"))
+})
+
+test_that("Get database type recoveries", {
+  expect_equal(get_db_type("r"), "recoveries")
+})
+
+test_that("Get database type banding", {
+  expect_equal(get_db_type("banding"), "banding")
+})
+test_that("Get database type harvest", {
+  expect_equal(get_db_type("HarVest"), "harvest")
+})
+test_that("Get database type rho", {
+  expect_equal(get_db_type("RHO"), "rho")
 })

@@ -100,7 +100,8 @@ clean_dataset <- function(df,
     cleaned <- rename_columns(cleaned, colnames)
   }
   # Add age classes and sex classes
-  if (is.null(add_age_classes) && "age_code" %in% colnames(cleaned)) {
+  if (add_age_classes &&
+      "age_code" %in% colnames(cleaned)) {
     cleaned <- set_age_classes(cleaned, age_classes)
   }
 
@@ -288,30 +289,19 @@ is_harvest <- function(db_type) {
 }
 
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param type PARAM_DESCRIPTION
-#' @param filters PARAM_DESCRIPTION
-#' @return OUTPUT_DESCRIPTION
-#' @details DETAILS
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @rdname get_filters
-#' @export
-get_filters <- function(db_type, filters) {
-  default <- if (is_recovery(db_type)) {
-    RECOVERIES_FILTERS
-  } else if (is_banding(db_type)) {
-    BANDING_FILTERS
+get_db_type <- function(db_type) {
+  res <- if(is_banding(db_type)) {
+    "banding"
+  } else if (is_recovery(db_type)) {
+    "recoveries"
+  } else if (is_rho(db_type)) {
+    "rho"
+  } else if (is_harvest(db_type)) {
+    "harvest"
   } else {
-    DEFAULT_LINCOLN_FILTERS
+    stop("Unrecognized database type")
   }
-
-  return(list_update(default, filters))
+  return (res)
 }
 
 #' @title List the locations available for a species
@@ -341,7 +331,8 @@ get_filters <- function(db_type, filters) {
 #' @import tidyverse
 #' @export
 get_species_locations <-
-  function(species_code,
+  function(df,
+           species_code,
            columns = c(
              "b.country_name",
              "b.state_name",
@@ -350,12 +341,7 @@ get_species_locations <-
              "r.state_name",
              "r.flyway_name"
            ),
-           df = NULL,
-           db_type = "banding",
            sort_by = NULL) {
-    if (is.null(df)) {
-      df = get_db(db_type)
-    }
     columns = columns[columns %in% colnames(df)]
     if (length(columns) == 0) {
       print("No valid columns specified")
@@ -377,29 +363,25 @@ get_species_locations <-
 #'             all available countries for the given species.
 #' @export
 get_species_countries <-
-  function(species_code, db_type = "banding") {
-    return(get_species_locations(
-      species_code,
-      c("b.country_name", "r.country_name"),
-      db_type = db_type
-    ))
+  function(df, species_code) {
+    return(get_species_locations(df,
+                                 species_code,
+                                 c("b.country_name", "r.country_name"), ))
   }
 
 
 #' @describeIn get_species_locations Convenience functions to list
 #'             all available states for the given species.
 #' @export
-get_species_states <- function(species_code, db_type = "banding") {
-  return(get_species_locations(species_code, c("b.state_name", "r.state_name"), db_type =
-                                 db_type))
+get_species_states <- function(df, species_code) {
+  return(get_species_locations(df, species_code, c("b.state_name", "r.state_name")))
 }
 
 #' @describeIn get_species_locations Convenience functions to list
 #'             all available countries for the given species.
 #' @export
-get_species_flyways <- function(species_code, db_type = "banding") {
-  return(get_species_locations(species_code, c("b.flyway_name", "r.flyway_name"), db_type =
-                                 db_type))
+get_species_flyways <- function(df, species_code) {
+  return(get_species_locations(df, species_code, c("b.flyway_name", "r.flyway_name")))
 }
 
 
@@ -424,6 +406,17 @@ filter_time_period <- function(df, filter, col_name) {
   return(df)
 }
 
+#' @export
+add_db_filters <- function(filters, db_type, filters_first=FALSE) {
+  opt_name <- paste0(get_db_type(db_type), "_filters")
+  if (opt_name %in% names(filters)) {
+    filters <- list_update(filters, filters[[opt_name]], filters_first)
+  }
+  filters[endsWith(names(filters), "_filters")] <- NULL
+  return(filters)
+}
+
+
 #' @title Performs filtering on a dataset
 #' @description For time columns, i.e. 'year', 'month_code' and 'day_code',
 #' it is possible to select a period by
@@ -443,18 +436,24 @@ filter_time_period <- function(df, filter, col_name) {
 filter_database <-
   function(db,
            filters = NULL,
-           db_type = "banding",
            columns = NULL,
-           use_default_filters = TRUE) {
+           use_default_filters = TRUE,
+           db_type = NULL,
+           filters_first=FALSE) {
     # Get filter list and updates it if needed
     if (use_default_filters) {
-      filters <- get_filters(db_type, filters)
+      filters <- list_update(DEFAULT_LINCOLN_FILTERS, filters, filters_first)
+    }
+
+    if (!is.null(db_type)) {
+      filters <- add_db_filters(filters, db_type, filters_first)
     }
 
     # Select relevant columns
     if ("columns" %in% names(filters)) {
       db <-
         db[, which(colnames(db) %in% check_columns(filters$columns, columns))]
+      filters["columns"] <- NULL
     }
 
     # Iterate on all other filters
