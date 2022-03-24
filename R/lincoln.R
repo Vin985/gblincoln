@@ -93,6 +93,7 @@ get_direct_recoveries <-
       dr_df %>% mutate(recov_rate = n_recoveries / n_banded) %>%
       mutate(var_recov_rate = (recov_rate * (1 - recov_rate)) / (n_banded - 1)) %>%
       mutate(se_recov_rate = sqrt(var_recov_rate))
+    attr(dr_df, "SPEC") = b_filters$SPEC
     return(dr_df)
   }
 
@@ -278,10 +279,19 @@ get_lincoln_estimates <-
       as.data.frame(cbind(lincoln$b.year, lincoln$N, lincoln$cl_N))
     colnames(lincoln_est) <- c("year", "N", "NCL")
     if (save_estimates) {
+      print(attributes(df)$SPEC)
+      SPEC <- if ("SPEC" %in% names(attributes(df))) {
+        attributes(df)$SPEC
+      } else {
+        warning("Species was not found in the estimation dataframe. Please
+                make sure df was created by the get_harvest_rate() function.
+                Using 'UNKN' as species.")
+        "UNKN"
+      }
       file_path = file.path(save_path,
                             sprintf(
                               '%s_Lincoln_2000_2019_%s.csv',
-                              filters$SPEC,
+                              SPEC,
                               format(Sys.time(), "%b%d_%Y")
                             ))
       write.csv(lincoln_est,

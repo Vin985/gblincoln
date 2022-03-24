@@ -7,25 +7,23 @@ filters <-
     b.state_name = "Nunavut",
     e.country_code = 'US',
     r.flyway_code = 1,
-    banding_filters = list(
-      b.year= 2000:2019
-    ),
-    recoveries_filters = list(
-      r.corrected_year=2000:2019
-    )
+    b.year= 2000:2019,
+    r.corrected_year=2000:2019
   )
 filters_no_geo <-
   list_update(filters, list(add_info = c(00, 01, 07)))
 
 
 test_that("Add specific_filter", {
-  expect_equal(add_db_filters(filters, "b"),
+  spec_filter <- list_update(filters, list(banding_filters=list(b.year=2010:2019)))
+  spec_filter["r.corrected_year"] <- NULL
+  expect_equal(add_db_filters(spec_filter, "b"),
                  list(
                    SPEC = "ATBR",
                    b.state_name = "Nunavut",
                    e.country_code = 'US',
                    r.flyway_code = 1,
-                   b.year= 2000:2019))
+                   b.year= 2010:2019))
 })
 
 
