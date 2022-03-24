@@ -27,15 +27,12 @@ by:
 
   * [Explaining concepts](#basic-concepts-regarding-lincoln-estimations) 
   surrounding Lincoln estimation
+  * [Providing a quick example](#quick-start) to show how to calculate Lincoln
+  estimates for a population of Atlantic brants (ATBR) using harvest data
+  gathered in the United States.
   * [Describing how to perform each task](#package-description) with the package
-  * [Providing a detailed example](#example) for calculating Lincoln estimates for a
-population of Atlantic brants (ATBR) using harvest data gathered in
-the United States.
   * [Providing additional information](#additional-information) about the package
 
-
-Note that all relevant code portions of this example can
-be found in the `ATBR_example.R` file found at the root of the gblincoln package.
 
 ## Package requirements
 
@@ -72,6 +69,93 @@ as follows:
  * Estimate the harvest rate
  * Calculate the Lincoln estimates for that population
  
+
+## Quick start
+
+This section provides a quick example on how to use the `gblincoln` package.
+More information on how each task works can be found by clicking on each section.
+
+Note that all relevant code portions of this example can
+be found in the `ATBR_example.R` file found at the root of the package.
+
+For this example, we will be using datasets provided with the package. For more 
+detailed information about these datasets please see 
+[this section](#provided-datasets). 
+ 
+Therefore to load the example data, all that is required is to load the package.
+To load your own data, please read [this section](#loading-data)
+
+```{r setup}
+# Clean environment and load the package
+rm(list=ls())
+library(gblincoln)
+
+```
+
+We need to [create filters](#creating-filters) to filter our database. All filter
+names can be either [column names](#columns-names) from the Gamebirds database,
+or the corresponding renamed columns as found in the `gb_colnames` object. Please
+see the Gamebirds documentation to know what each column contains.
+
+For our example, we will look into data of the ATBR species, banded in
+Nunavut and shot in the United States in the flyway 1 between 2000 and 2019.
+(Note: if you need more information about location and flyways available for a given species
+please see [this section](#species-locations))
+Also keep in mind that [default](#default-filters), are automatically applied
+and can be seen in the `DEFAULT_LINCOLN_FILTERS` object.
+
+
+```{r}
+filters_ATBR <-
+  list(
+    SPEC = "ATBR",
+    b.state_name = "Nunavut",
+    e.country_code = 'US',
+    r.flyway_code = 1,
+    b.year= 2000:2019,
+    r.corrected_year=2000:2019
+  )
+```
+
+Then, the quickest way to calculate the estimates is by calling the
+`get_lincoln_estimates()` function:
+
+```{r}
+lincoln_estimates <-
+  get_lincoln_estimates(
+    filters = filters_ATBR,
+    banding_df = gb_ATBR_banding,
+    recoveries_df = gb_ATBR_recoveries,
+    harvest_df = gb_ATBR_harvest,
+    rho_df = gb_reporting_probas
+  )
+lincoln_estimates
+```
+
+
+If you prefer to perform every step manually you can do the following:
+
+[Get direct recoveries](#get-direct-recoveries) (this function actually 
+[filters the databases](#filtering-the-databases))
+
+```{r}
+dr_df <-
+  get_direct_recoveries(banding_df = gb_ATBR_banding,
+                        recoveries_df = gb_ATBR_recoveries,
+                        filters = filters_ATBR)
+```
+
+
+[Get the harvest_rate](#get_harvest_rate)
+```{r}
+hr_df <- get_harvest_rate(df = dr_df, rho_df = gb_reporting_probas)
+```
+ 
+ 
+[Calculate the Lincoln estimates](#calculate-lincoln-estimates)
+```{r}
+get_lincoln_estimates(df = hr_df, harvest_df = gb_ATBR_harvest)
+```
  
 ## Package description
 
@@ -119,7 +203,7 @@ To load a csv file from an external path, we would write something like this:
 dataset <- load_dataset("path_to_file")
 ```
 
-### Filtering the databases
+### Creating filters
 
 By default, the data extracted from gamebirds is unfiltered and can contain
 unwanted entries. Therefore, we need to define filters to select only the
@@ -151,38 +235,42 @@ filter_old_name <- list(B.Year=2010:2020)
 
 If you want to reuse an old filter and only change one of its values or add
 another filtering value, you can do so by updating the list using the
-`list_update()` function
+`list_update(old, new)` function that will add or replace any filter present
+in `new` to the `old` list.
 
 ```{r}
-updated_list <- list_update(filter, list(b.year=2009:2019, spec="ATBR"))
+# Replace the b.year filter and add the SPEC filter
+filters <- list_update(filter, list(b.year=2009:2019, SPEC="ATBR"))
+filters
 ```
 
-Note that only the columns present in the dataframe will actually be filtered.
-This allows you to create only one filter that can be applied for banding and recovery
-data. Filtering will be done in the order in which the filter appear in the
-list. 
+Since filters will be applied in the order in which they are found, you can use
+the `new_first` argument to specify if the new filters will be added at the
+beginning or the end of the list. Note that all filters that are already present
+will remain at the same place.
 
-
-For our example, we will look into data of the ATBR species, banded in
-Nunavut, recovered in the United States in the flyway 1. (Note: if you need
-more information about location and flyways available for a given species
-please see [this section](#species-locations))
 
 ```{r}
-filters_ATBR <-
-  list(
-    SPEC = "ATBR",
-    b.state_name = "Nunavut",
-    e.country_code = 'US',
-    r.flyway_code = 1
-  )
+# Replace the b.year filter and add the SPEC filter
+filters2 <- list_update(filter, list(b.year=2009:2019, SPEC="ATBR"),
+                            new_first=TRUE)
+filters2
 ```
 
-To use the filter, you can then call the `filter_database()` function.
+
+### Filter the databases
+ 
+To apply the filters, you can then call the `filter_database()` function. Here
+we use the `gb_ATBR_banding` database provided with the package as an example
+(see [here](#load-data) for more information)
 
 ```{r}
-ATBR_banding <- filter_database(gb_ATBR_banding, filters_ATBR)
+ATBR_banding <- filter_database(gb_ATBR_banding, filters=filters)
 ```
+
+Filtering will be done in the order in which the filter appear in the list.
+
+#### Default filters
 
 Note that by default, the `filter_database()` function automatically adds some
 filters. This include keeping only relevant columns, type of bands,
@@ -196,67 +284,37 @@ DEFAULT_LINCOLN_FILTERS
 If you want to change the value of a specific filter, just add it
 in your filter list, it will automatically override the default value.
 If you do not want to use the default values, you can set 
-`use_default_filters=FALSE` when calling the `filter_database()`function.
+`use_default_filters=FALSE` when calling the `filter_database()` function.
 
+Also, if you want to apply you filters before the default filters, you can
+set the `filters_first` argument to `TRUE`.
 
+For creating database specific filters, please see [this section](#database-specific-filters)
 
-## Example
+### Get direct recoveries
 
-Estimating the population of Atlantic Brant in North America
+Once our databases are filtered, the next step is to get all the recoveries. In
+practice, this is done by calling the **`get_direct_recoveries()`** function.
+This function will summarize banding and recovery data to count how many of
+each event happened in one year and then merge the results and compute a
+recovery rate.
 
-### Load data
-
-For this example, we will be using datasets provided with the package. For more 
-detailed information about these datasets please see 
-[this section](#provided-datasets). All the data provided with the package
-come from raw data loaded using the `load_dataset()` function.
-
-The four (4) required datasets are provided in the packaeg. Here are the name of
-the variables containing them:
-
- * Banding data. `gb_ATBR_banding`
- * Recovery data: `gb_ATBR_recovery`
- * Reporting_probabilities: `gb_reporting_probas`
- * Harvest data: `gb_ATBR_harvest`
- 
-Therefore to load the example data, all that is required is to load the package.
-
-```{r setup}
-# Clean environment and load the package
-rm(list=ls())
-library(gblincoln)
-
-# Banding data
-str(gb_ATBR_banding)
-# Reporting probabilities
-head(gb_reporting_probas)
-# Harvest data
-head(gb_ATBR_harvest)
-```
-
-### Filter datasets
-
-
-For our example, we will look into data of the ATBR species, banded in
-Nunavut, recovered in the United States in the flyway 1. (Note: if you need
-more information about location and flyways available for a given species
-please see [this section](#species-locations))
+The `get_direct_recoveries()` function takes the banding and recoveries databases
+as argument and either a list of filters with database specific filters in it,
+or a list of filters for the banding data and a list of filters for the recoveries
+data
+([see here for more information on database specific filters](##database-specific-filters)).
 
 ```{r}
-filters_ATBR <-
-  list(
-    SPEC = "ATBR",
-    b.state_name = "Nunavut",
-    e.country_code = 'US',
-    r.flyway_code = 1
-  )
+# dr_df <- get_direct_recoveries(gb_ATBR_banding, )
 ```
 
-To use the filter, you can then call the `filter_database()` function.
 
-```{r}
-ATBR_banding <- filter_database(gb_ATBR_banding, filters_ATBR)
-```
+### Calculate harvest rate
+
+### Get Lincoln estimates
+
+
 
 
 ### Get direct recoveries
@@ -285,6 +343,17 @@ GB_COLNAMES
 
 ### Provided datasets
 
+All the data provided with the package
+come from raw data loaded using the `load_dataset()` function.
+
+The four (4) required datasets are provided in the packaeg. Here are the name of
+the variables containing them:
+
+ * Banding data. `gb_ATBR_banding`
+ * Recovery data: `gb_ATBR_recovery`
+ * Reporting_probabilities: `gb_reporting_probas`
+ * Harvest data: `gb_ATBR_harvest`
+
 This vignette uses datasets shipped with the gblincoln package. The provided
 datasets are:
 
@@ -293,9 +362,85 @@ datasets are:
   the `clean_dataset()` function.
   
 TODO: Provide raw data to explain all steps
+
+```{r}
+# Banding data
+str(gb_ATBR_banding)
+# Reporting probabilities
+head(gb_reporting_probas)
+# Harvest data
+head(gb_ATBR_harvest)
+```
   
 
 ### Species locations
+
+### Database specific filters
+
+If columns are present in both datasets, and you desire a
+different set of filters for the banding dataset and the recoveries dataset, 
+we propose two methods:
+
+ * Create two different filters, one for each dataset. For example, if we want
+ to filter based on banding year but only apply it on the banding database, we
+ could write:
+ 
+```{r}
+default_filter <- list(SPEC="ATBR") # Common filters that can be applied to all datasets
+banding_filter <- list_update(default_filter, list(b.year=2010:2019))
+recoveries_filter <- list_update(default_filter, list(r.corrected_year=2010:2019))
+```
+
+ The only problem with this approach is that you need to manipulate several objects.
+ 
+ * Use special keywords in the filter list. It is possible to add filters used
+ only on a specific type of dataset using the keywords `banding_filters`,
+ `recoveries_filter`, `rho_filters` and `harvest_filters`. The following code
+ would give the same result than the code described above:
+ 
+```{r}
+ 
+ filters <- list(SPEC="ATBR", banding_filters=list(b.year=2010:2019),
+                 recoveries_filters = list(r.corrected_year=2010:2019))
+ 
+```
+
+
+If you choose to use the second method, you **MUST** specify the database type
+using the `db_type` option when calling the `filter_database()` function, 
+otherwise these filters will not be applied. Please refer to the help page of
+the function for accepted values of `db_type`.
+
+
+```{r}
+filtered_db <- filter_database(gb_ATBR_banding, filters=filters, db_type="b")
+```
+
+Also note that filters defined using special database keywords will override
+every other existing filters present. Therefore special care must be taken
+when updating a filter list containing these filters.
+
+For instance, let's say we want to create a filter based on the `filters` object 
+we defined earlier where we want to filter the banding years for all datasets.
+
+The method below will not work for the banding dataset. This is because
+a `b.year` filter exists in the `banding_filters` option. Therefore, this value
+will be used for the banding dataset.
+
+```{r}
+list_update(filters, list(b.year=2015:2019))
+```
+
+This is the way to do it:
+```{r}
+list_update(filters, list(
+  b.year = 2015:2019,
+  banding_filters = list(b.year = 2015:2019)
+))
+```
+
+In this case, it might be better to create separate filters for each database.
+
 
 ### Gamebirds banding
 
