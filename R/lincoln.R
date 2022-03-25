@@ -1,7 +1,6 @@
 #' @title Summarize bandings
 #' @description Counts the number of bird banded by year
 #' @param df PARAM_DESCRIPTION
-#' @param years PARAM_DESCRIPTION
 #' @return OUTPUT_DESCRIPTION
 #' @details DETAILS
 #' @examples
@@ -22,7 +21,7 @@ summarize_bandings <- function(df) {
 #' @title Summarize recoveries
 #' @description Count the number of recoveries by year
 #' @param df PARAM_DESCRIPTION
-#' @param years PARAM_DESCRIPTION
+#' @param by_band PARAM_DESCRIPTION, Default: FALSE
 #' @return OUTPUT_DESCRIPTION
 #' @details DETAILS
 #' @examples
@@ -47,8 +46,12 @@ summarize_recoveries <- function(df, by_band = FALSE) {
 
 #' @title FUNCTION_TITLE
 #' @description FUNCTION_DESCRIPTION
-#' @param df PARAM_DESCRIPTION
-#' @param years PARAM_DESCRIPTION
+#' @param banding_df PARAM_DESCRIPTION
+#' @param recoveries_df PARAM_DESCRIPTION
+#' @param filters PARAM_DESCRIPTION, Default: NULL
+#' @param banding_filters PARAM_DESCRIPTION, Default: NULL
+#' @param recoveries_filters PARAM_DESCRIPTION, Default: NULL
+#' @param filtered PARAM_DESCRIPTION, Default: FALSE
 #' @return OUTPUT_DESCRIPTION
 #' @details DETAILS
 #' @examples
@@ -64,27 +67,35 @@ get_direct_recoveries <-
            recoveries_df,
            filters = NULL,
            banding_filters = NULL,
-           recoveries_filters = NULL) {
-    b_filters <-
-      if (is.null(banding_filters))
-        filters
-    else
-      banding_filters
-    banding_db <-
-      filter_database(db = banding_df,
-                      filters = b_filters,
-                      db_type = "b")
-    bandings <- summarize_bandings(banding_db)
+           recoveries_filters = NULL,
+           filtered=FALSE) {
+    if (!filtered) {
+      b_filters <-
+        if (is.null(banding_filters))
+          filters
+      else
+        banding_filters
+      banding_db <-
+        filter_database(db = banding_df,
+                        filters = b_filters,
+                        db_type = "b")
+      r_filters <-
+        if (is.null(recoveries_filters))
+          filters
+      else
+        recoveries_filters
+      rec_db <-
+        filter_database(db = recoveries_df,
+                        filters = filters,
+                        db_type = "r")
+      SPEC = b_filters$SPEC
+    } else {
+      banding_db <- banding_df
+      rec_db <- recoveries_df
+      SPEC = unique(banding_db$SPEC)
+    }
 
-    r_filters <-
-      if (is.null(recoveries_filters))
-        filters
-    else
-      recoveries_filters
-    rec_db <-
-      filter_database(db = recoveries_df,
-                      filters = filters,
-                      db_type = "r")
+    bandings <- summarize_bandings(banding_db)
     recoveries <- summarize_recoveries(rec_db)
 
     dr_df <- merge(bandings, recoveries)
@@ -93,7 +104,7 @@ get_direct_recoveries <-
       dr_df %>% mutate(recov_rate = n_recoveries / n_banded) %>%
       mutate(var_recov_rate = (recov_rate * (1 - recov_rate)) / (n_banded - 1)) %>%
       mutate(se_recov_rate = sqrt(var_recov_rate))
-    attr(dr_df, "SPEC") = b_filters$SPEC
+    attr(dr_df, "SPEC") = SPEC
     return(dr_df)
   }
 
@@ -116,7 +127,20 @@ get_reporting_probabilities <- function(df, rho_df) {
 }
 
 
-#' @rdname get_hr_df
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param df PARAM_DESCRIPTION, Default: NULL
+#' @param rho_df PARAM_DESCRIPTION, Default: NULL
+#' @param ... PARAM_DESCRIPTION
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @rdname get_harvest_rate
 #' @export
 get_harvest_rate <-
   function(df = NULL,
@@ -184,6 +208,23 @@ get_comparison_dataframe <-
     return(df)
   }
 
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param df1 PARAM_DESCRIPTION, Default: NULL
+#' @param df2 PARAM_DESCRIPTION, Default: NULL
+#' @param filters1 PARAM_DESCRIPTION, Default: NULL
+#' @param filters2 PARAM_DESCRIPTION, Default: NULL
+#' @param plot PARAM_DESCRIPTION, Default: TRUE
+#' @param check_overlap PARAM_DESCRIPTION, Default: TRUE
+#' @param ... PARAM_DESCRIPTION
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
 #' @rdname compare_harvest_rates
 #' @export
 compare_harvest_rates <-
@@ -230,11 +271,29 @@ compare_harvest_rates <-
   }
 
 
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param df PARAM_DESCRIPTION, Default: NULL
+#' @param harvest_df PARAM_DESCRIPTION, Default: NULL
+#' @param harvest_correction_factor PARAM_DESCRIPTION, Default: 0.61
+#' @param plot_estimates PARAM_DESCRIPTION, Default: TRUE
+#' @param save_estimates PARAM_DESCRIPTION, Default: TRUE
+#' @param save_path PARAM_DESCRIPTION, Default: '.'
+#' @param ... PARAM_DESCRIPTION
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
 #' @rdname get_lincoln_estimates
 #' @export
 get_lincoln_estimates <-
   function(df = NULL,
            harvest_df = NULL,
+           harvest_correction_factor = 0.61,
            plot_estimates = TRUE,
            save_estimates = TRUE,
            save_path = ".",
@@ -248,8 +307,8 @@ get_lincoln_estimates <-
     }
     lincoln_df <- inner_join(df, harvest_df, by = "b.year")
     lincoln <- lincoln_df %>%
-      mutate(harvest_adj = harvest * 0.61) %>%
-      mutate(se_harvest_adj = se_harvest * 0.61) %>%
+      mutate(harvest_adj = harvest * harvest_correction_factor) %>%
+      mutate(se_harvest_adj = se_harvest * harvest_correction_factor) %>%
       mutate(var_harvest_adj = se_harvest_adj ^ 2) %>%
       mutate(N = ((((n_banded + 1) * (harvest_adj + 1) * rho
       ) / (n_recoveries + 1)) - 1)) %>%
@@ -300,23 +359,3 @@ get_lincoln_estimates <-
     return(lincoln_est)
 
   }
-#'
-#' #' @rdname multiple_estimates
-#' #' @export
-#' multiple_estimates <- function(filters_list, ...) {
-#'   res = list()
-#'   if (length(filters_list) == 0) {
-#'     print("At least one set of filters must be defined")
-#'   } else {
-#'     for (filter in filters_list) {
-#'       sprintf("Calculating Lincoln estimates for filter %s",
-#'               toString(lapply(1:length(filters), function(i, filters) {
-#'                 return(paste(names(filters)[i], as.character(filters[i]), sep = ": "))
-#'               }, filters)))
-#'       # TODO: make the function more user friendly
-#'       estimates <- get_lincoln_estimates(filter, ...)
-#'       res <- c(res, estimates)
-#'     }
-#'   }
-#'   return(res)
-#' }

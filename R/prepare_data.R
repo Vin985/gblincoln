@@ -57,6 +57,20 @@ set_age_classes <- function(df, age_classes = NULL) {
 }
 
 
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param df PARAM_DESCRIPTION
+#' @param sex_classes PARAM_DESCRIPTION, Default: NULL
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @rdname set_sex_classes
+#' @export
 set_sex_classes <- function(df, sex_classes = NULL) {
   if (is.null(sex_classes)) {
     sex_classes <- GB_SEX_CLASSES
@@ -72,9 +86,13 @@ set_sex_classes <- function(df, sex_classes = NULL) {
 #' @title Clean a data file directly exported from Gamebirds
 #' @description FUNCTION_DESCRIPTION
 #' @param df PARAM_DESCRIPTION
-#' @param colnames A data frame with old column names (old_colnames) and
-#' new column names (new_colnames), Default: NULL
-#' @param recoveries PARAM_DESCRIPTION, Default: FALSE
+#' @param rename_columns PARAM_DESCRIPTION, Default: TRUE
+#' @param colnames PARAM_DESCRIPTION, Default: NULL
+#' @param add_age_classes PARAM_DESCRIPTION, Default: TRUE
+#' @param age_classes PARAM_DESCRIPTION, Default: NULL
+#' @param add_sex_classes PARAM_DESCRIPTION, Default: TRUE
+#' @param sex_classes PARAM_DESCRIPTION, Default: NULL
+#' @param correct_recovery_years PARAM_DESCRIPTION, Default: TRUE
 #' @return OUTPUT_DESCRIPTION
 #' @details DETAILS
 #' @examples
@@ -85,7 +103,6 @@ set_sex_classes <- function(df, sex_classes = NULL) {
 #' }
 #' @rdname clean_dataset
 #' @export
-
 clean_dataset <- function(df,
                           rename_columns = TRUE,
                           colnames = NULL,
@@ -190,6 +207,7 @@ correct_recoveries_years <- function(df) {
 #' @title FUNCTION_TITLE
 #' @description FUNCTION_DESCRIPTION
 #' @param col_names PARAM_DESCRIPTION
+#' @param columns PARAM_DESCRIPTION, Default: NULL
 #' @return OUTPUT_DESCRIPTION
 #' @details DETAILS
 #' @examples
@@ -230,12 +248,8 @@ check_columns <- function(col_names, columns = NULL) {
 #' @export
 get_species_data <-
   function(species_name,
-           df = NULL,
-           db_dtype = "banding",
+           df,
            use_spec_code = TRUE) {
-    if (is.null(df)) {
-      df <- get_db(db_type)
-    }
     if (use_spec_code) {
       col <- "SPEC"
     } else {
@@ -308,11 +322,11 @@ get_db_type <- function(db_type) {
 #' @description This is a convenience function to list all available locations
 #' for a given species. By default, a data frame is returned with available
 #' countries, states and flyways
-#' @param spec The 4 letters short code for the desired species
+#' @param df The dataframe in which to search
+#' @param species_code The 4 letters short code for the desired species
 #' (as found in the SPEC column of the gb_banding dataset)
 #' @param columns The desired columns. By default returns all the location
 #' related columns: "country_name", "state_name" and "flyway"
-#' @param db_type Which database to use, banding or encounters. Default: 'banding'
 #' @param sort_by Column by which the results are sorted. Default: NULL, the
 #' results are unsorted
 #' @return If columns contains more than one element, a data frame with all
@@ -406,6 +420,20 @@ filter_time_period <- function(df, filter, col_name) {
   return(df)
 }
 
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param filters PARAM_DESCRIPTION
+#' @param db_type PARAM_DESCRIPTION
+#' @param filters_first PARAM_DESCRIPTION, Default: FALSE
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @rdname add_db_filters
 #' @export
 add_db_filters <- function(filters, db_type, filters_first=FALSE) {
   opt_name <- paste0(get_db_type(db_type), "_filters")
@@ -422,7 +450,12 @@ add_db_filters <- function(filters, db_type, filters_first=FALSE) {
 #' it is possible to select a period by
 #' providing a vector with two named values 'start' and 'end'.
 #' If a filter is NULL, it will be skipped
-#' @param columns \link[gblincoln]{LINCOLN_BANDING_COLUMNS}, Default: LINCOLN_BANDING_COLUMNS
+#' @param db PARAM_DESCRIPTION
+#' @param filters PARAM_DESCRIPTION, Default: NULL
+#' @param columns PARAM_DESCRIPTION, Default: NULL
+#' @param use_default_filters PARAM_DESCRIPTION, Default: TRUE
+#' @param db_type PARAM_DESCRIPTION, Default: NULL
+#' @param filters_first PARAM_DESCRIPTION, Default: FALSE
 #' @return OUTPUT_DESCRIPTION
 #' @details DETAILS
 #' @examples
@@ -433,6 +466,7 @@ add_db_filters <- function(filters, db_type, filters_first=FALSE) {
 #' }
 #' @rdname filter_database
 #' @export
+
 filter_database <-
   function(db,
            filters = NULL,

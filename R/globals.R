@@ -1,12 +1,6 @@
 GB_SEX_CLASSES <- list("MALE" = 4, "FEMALE" = 5)
 GB_AGE_CLASSES <- list("HY" = c(2, 3, 4), "AHY" = c(1, 5, 6, 7, 8))
 
-ADD_INFO_NO_GEO <- c(00, 01, 07)
-ADD_INFO_ALL <- c(00, 01, 07, 08, 25, 18)
-GEO_YEARS <- 2018:2019
-
-DEFAULT_BANDING_MONTHS <- c()
-DEFAULT_RECOVERIES_MONTHS <- c()
 
 #' @title Default filters to prepare the gb_banding dataset for Lincoln estimates
 #' @description This lists contains all the default filters used to preprare
