@@ -9,7 +9,7 @@ summarize_recoveries(df, by_band = FALSE)
 \arguments{
 \item{df}{PARAM_DESCRIPTION}
 
-\item{years}{PARAM_DESCRIPTION}
+\item{by_band}{PARAM_DESCRIPTION, Default: FALSE}
 }
 \value{
 OUTPUT_DESCRIPTION

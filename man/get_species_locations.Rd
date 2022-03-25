@@ -22,16 +22,16 @@ get_species_states(df, species_code)
 get_species_flyways(df, species_code)
 }
 \arguments{
+\item{df}{The dataframe in which to search}
+
+\item{species_code}{The 4 letters short code for the desired species
+(as found in the SPEC column of the gb_banding dataset)}
+
 \item{columns}{The desired columns. By default returns all the location
 related columns: "country_name", "state_name" and "flyway"}
 
 \item{sort_by}{Column by which the results are sorted. Default: NULL, the
 results are unsorted}
-
-\item{spec}{The 4 letters short code for the desired species
-(as found in the SPEC column of the gb_banding dataset)}
-
-\item{db_type}{Which database to use, banding or encounters. Default: 'banding'}
 }
 \value{
 If columns contains more than one element, a data frame with all

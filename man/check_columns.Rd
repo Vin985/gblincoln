@@ -8,6 +8,8 @@ check_columns(col_names, columns = NULL)
 }
 \arguments{
 \item{col_names}{PARAM_DESCRIPTION}
+
+\item{columns}{PARAM_DESCRIPTION, Default: NULL}
 }
 \value{
 OUTPUT_DESCRIPTION

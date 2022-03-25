@@ -9,13 +9,22 @@ get_direct_recoveries(
   recoveries_df,
   filters = NULL,
   banding_filters = NULL,
-  recoveries_filters = NULL
+  recoveries_filters = NULL,
+  filtered = FALSE
 )
 }
 \arguments{
-\item{df}{PARAM_DESCRIPTION}
+\item{banding_df}{PARAM_DESCRIPTION}
 
-\item{years}{PARAM_DESCRIPTION}
+\item{recoveries_df}{PARAM_DESCRIPTION}
+
+\item{filters}{PARAM_DESCRIPTION, Default: NULL}
+
+\item{banding_filters}{PARAM_DESCRIPTION, Default: NULL}
+
+\item{recoveries_filters}{PARAM_DESCRIPTION, Default: NULL}
+
+\item{filtered}{PARAM_DESCRIPTION, Default: FALSE}
 }
 \value{
 OUTPUT_DESCRIPTION

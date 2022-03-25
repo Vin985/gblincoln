@@ -18,10 +18,19 @@ clean_dataset(
 \arguments{
 \item{df}{PARAM_DESCRIPTION}
 
-\item{colnames}{A data frame with old column names (old_colnames) and
-new column names (new_colnames), Default: NULL}
+\item{rename_columns}{PARAM_DESCRIPTION, Default: TRUE}
 
-\item{recoveries}{PARAM_DESCRIPTION, Default: FALSE}
+\item{colnames}{PARAM_DESCRIPTION, Default: NULL}
+
+\item{add_age_classes}{PARAM_DESCRIPTION, Default: TRUE}
+
+\item{age_classes}{PARAM_DESCRIPTION, Default: NULL}
+
+\item{add_sex_classes}{PARAM_DESCRIPTION, Default: TRUE}
+
+\item{sex_classes}{PARAM_DESCRIPTION, Default: NULL}
+
+\item{correct_recovery_years}{PARAM_DESCRIPTION, Default: TRUE}
 }
 \value{
 OUTPUT_DESCRIPTION

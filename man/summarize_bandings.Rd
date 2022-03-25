@@ -8,8 +8,6 @@ summarize_bandings(df)
 }
 \arguments{
 \item{df}{PARAM_DESCRIPTION}
-
-\item{years}{PARAM_DESCRIPTION}
 }
 \value{
 OUTPUT_DESCRIPTION

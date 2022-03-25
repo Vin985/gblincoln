@@ -14,7 +14,17 @@ filter_database(
 )
 }
 \arguments{
-\item{columns}{\link[gblincoln]{LINCOLN_BANDING_COLUMNS}, Default: LINCOLN_BANDING_COLUMNS}
+\item{db}{PARAM_DESCRIPTION}
+
+\item{filters}{PARAM_DESCRIPTION, Default: NULL}
+
+\item{columns}{PARAM_DESCRIPTION, Default: NULL}
+
+\item{use_default_filters}{PARAM_DESCRIPTION, Default: TRUE}
+
+\item{db_type}{PARAM_DESCRIPTION, Default: NULL}
+
+\item{filters_first}{PARAM_DESCRIPTION, Default: FALSE}
 }
 \value{
 OUTPUT_DESCRIPTION
