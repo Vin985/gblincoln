@@ -54,9 +54,12 @@ Data from four (4) sources are required to perform the estimations:
 
  * Banding data
  * Recovery data of banded birds
- * Probability of reporting banding information from recovered birds
- * Harvest data
+ * Probability of reporting banding information from recovered birds.
+ * Harvest data containing the number of birds collected each year. This data
+ is very dependent on the species and must be chose with care.
 
+All datasets must have a column labeled either **`b.year`** or **`B.Year`** to
+be able to be linked together.
 
 ### Actions performed
 
@@ -83,7 +86,7 @@ detailed information about these datasets please see
 [this section](#provided-datasets). 
  
 Therefore to load the example data, all that is required is to load the package.
-To load your own data, please read [this section](#loading-data)
+To load your own data, please read [this section](#loading-data).
 
 ```{r setup}
 # Clean environment and load the package
@@ -98,11 +101,14 @@ or the corresponding renamed columns as found in the `gb_colnames` object. Pleas
 see the Gamebirds documentation to know what each column contains.
 
 For our example, we will look into data of the ATBR species, banded in
-Nunavut and shot in the United States in the flyway 1 between 2000 and 2019.
-(Note: if you need more information about location and flyways available for a given species
-please see [this section](#species-locations))
+Nunavut and shot in the United States in the flyway 1 (atlantic flyway) between
+2000 and 2019. (Note: if you need more information about location and flyways
+available for a given species please see [this section](#species-locations)).
 Also keep in mind that [default](#default-filters), are automatically applied
 and can be seen in the `DEFAULT_LINCOLN_FILTERS` object.
+
+Only the `SPEC` filter is absolutely required and must take a unique value,
+otherwise the estimation will not work. 
 
 
 ```{r}
@@ -127,11 +133,17 @@ lincoln_estimates <-
     banding_df = gb_ATBR_banding,
     recoveries_df = gb_ATBR_recoveries,
     harvest_df = gb_ATBR_harvest,
-    rho_df = gb_reporting_probas
+    rho_df = gb_reporting_probas,
+    harvest_correction_factor = 0.61
   )
 lincoln_estimates
 ```
 
+Note that the `harvest_correction_factor` is based on recommendations from 
+Padding and Royle (2012) saying that harvest surveys are overestimated and
+should be corrected.
+The value of 0.61 (the default of the package) is the one recommended for goose
+species collected after 1999.
 
 If you prefer to perform every step manually you can do the following:
 
@@ -257,15 +269,20 @@ filters2 <- list_update(filter, list(b.year=2009:2019, SPEC="ATBR"),
 filters2
 ```
 
+Note that to be able to calculate a Lincoln estimation, it is necessary 
+that your filter list contains the `SPEC` filter with the short alpha code of the
+species for which the estimation is performed. This filter must take only one
+value, otherwise the estimation will not work. 
 
 ### Filter the databases
  
 To apply the filters, you can then call the `filter_database()` function. Here
-we use the `gb_ATBR_banding` database provided with the package as an example
-(see [here](#load-data) for more information)
+we use the `gb_ATBR_banding` and `gb_ATBR_recoveries` databases provided with
+the package as an example (see [here](#load-data) for more information)
 
 ```{r}
 ATBR_banding <- filter_database(gb_ATBR_banding, filters=filters)
+ATBR_recoveries <- filter_database(gb_ATBR_recoveries, filters=filters)
 ```
 
 Filtering will be done in the order in which the filter appear in the list.
@@ -281,6 +298,8 @@ The complete list of default values can be found in the following object:
 DEFAULT_LINCOLN_FILTERS
 ```
 
+Please type `?DEFAULT_LINCOLN_FILTERS` for a description of each filter.
+
 If you want to change the value of a specific filter, just add it
 in your filter list, it will automatically override the default value.
 If you do not want to use the default values, you can set 
@@ -293,11 +312,15 @@ For creating database specific filters, please see [this section](#database-spec
 
 ### Get direct recoveries
 
-Once our databases are filtered, the next step is to get all the recoveries. In
+Once our filters are defined, the next step is to get all direct recoveries. In
 practice, this is done by calling the **`get_direct_recoveries()`** function.
-This function will summarize banding and recovery data to count how many of
-each event happened in one year and then merge the results and compute a
-recovery rate.
+By default, the function assumes the databases are not filtered and will
+automatically call the `filter_database()` function described above. If you
+want to provide filtered databases, set the `filtered` argument to TRUE.
+
+Then the function will summarize the banding and recovery data to count how
+many of each event happened in one year and then merge the results and compute
+a recovery rate.
 
 The `get_direct_recoveries()` function takes the banding and recoveries databases
 as argument and either a list of filters with database specific filters in it,
@@ -306,62 +329,132 @@ data
 ([see here for more information on database specific filters](##database-specific-filters)).
 
 ```{r}
-# dr_df <- get_direct_recoveries(gb_ATBR_banding, )
+# This will actually filter the databases
+dr_df <- get_direct_recoveries(gb_ATBR_banding, gb_ATBR_recoveries, filters=filters)
+
+# If we provide already filtered databases
+dr_df2 <- get_direct_recoveries(ATBR_banding, ATBR_recoveries, filtered=TRUE)
+
+# The two methods are similar
+all.equal(dr_df, dr_df2)
 ```
 
 
 ### Calculate harvest rate
 
+The next step is then to calculate the harvest rate for the species based on
+the recovery rate calculated in the previous step and the probability of
+reporting a band after harvesting a bird on a given year.
+Therefore, by default this function takes as arguments a dataframe created by
+the `get_direct_recoveries()` function as well as a dataframe with the reporting
+probabilities.
+If no direct recoveries dataframe is present, this function will call
+`get_direct_recoveries()` using the arguments passed as `...`. This means that
+you can provide all the arguments needed for `get_direct_recoveries()` directly
+inside `get_harvest_rate()`. Note that in this case, it is mandatory to provide
+argument names.
+
+
+```{r}
+# We can call the function like this
+hr_df <- get_harvest_rate(dr_df, gb_reporting_probas)
+
+# Or if we did not create the direct recoveries dataframe, we can pass
+# all arguments directly to the function that will create it.
+
+hr_df2 <-
+  get_harvest_rate(
+    rho_df = gb_reporting_probas,
+    banding_df = gb_ATBR_banding,
+    recoveries_df = gb_ATBR_recoveries,
+    filters = filters
+  )
+
+# The two methods are similar
+all.equal(hr_df, hr_df2)
+
+```
+
+
 ### Get Lincoln estimates
 
+Finally, we can calculate the Lincoln estimates by calling 
+`get_lincoln_estimates()`. This function takes a harvest rate dataframe created
+with `get_harvest_rate()` and a harvest dataframe with the number of birds
+harvested each year. Just like `get_harvest_rate()`, if a harvest rate dataframe
+has not been created, it is possible to pass all arguments necessary to create
+it automatically.
+
+```{r}
+# We can call the function like this
+lincoln1 <-
+  get_lincoln_estimates(df = hr_df,
+                        harvest_df = gb_ATBR_harvest,
+                        plot_estimates = FALSE,
+                        save_estimates = FALSE)
+
+# Or if we did not create the harvest rate dataframe, we can pass
+# all arguments directly to the function that will create it.
+
+lincoln2 <- get_lincoln_estimates(
+  banding_df = gb_ATBR_banding,
+  recoveries_df = gb_ATBR_recoveries,
+  rho_df = gb_reporting_probas,
+  filters = filters,
+  harvest_df = gb_ATBR_harvest,
+  plot_estimates = FALSE,
+  save_estimates = FALSE
+)
 
 
+# The two methods are similar
+all.equal(lincoln1, lincoln2)
 
-### Get direct recoveries
-### Calculate harvest rate from banding data (not used for estimates but for
-comparison between band types)
-### Estimate abundance based on harvest data
+```
 
-### See results
+In addition, it is possible to plot the estimates using the `plot_estimates`
+arguments, and to save them using the `save_estimates` flag. To select the save
+path, you can do it with the `save_path` argument
 
+```{r}
+get_lincoln_estimates(df = hr_df,
+                      harvest_df = gb_ATBR_harvest,
+                      plot_estimates = TRUE,
+                      save_estimates = TRUE,
+                      save_path= ".")
 
-# Compare two filters
-## Defining the filters
-## Calculate harvest rate
-## Compare and plot
+```
+
 
 
 ## Additional information
 
 ### Extracting data from gamebirds
 
-### Column names
-GB_COLNAMES
-#### Add your own column names
-
-### Recovery year correction
+#### Banding data
+#### Recovery data
 
 ### Provided datasets
 
-All the data provided with the package
-come from raw data loaded using the `load_dataset()` function.
+The `gblincoln` packages comes with ready to use datasets used in the examples
+of this vignette. The package provided an example of the four (4) 
+datasets required for calculating Lincoln estimates for a North American
+population of Atlantic brants.
 
-The four (4) required datasets are provided in the packaeg. Here are the name of
-the variables containing them:
+Here are the name of the variables containing them:
 
- * Banding data. `gb_ATBR_banding`
- * Recovery data: `gb_ATBR_recovery`
- * Reporting_probabilities: `gb_reporting_probas`
- * Harvest data: `gb_ATBR_harvest`
+ * Banding data: `gb_ATBR_banding`. This contains the banding data for
+ Atlantic brants [extracted from Gamebirds](#banding-data).
+ * Recovery data: `gb_ATBR_recovery`. This contains the banding data for
+ Atlantic brants [extracted from Gamebirds](#recovery-data). 
+ * Reporting_probabilities: `gb_reporting_probas`. This contains the reporting
+ probabilities and their standard deviation between 1976 and 2019 estimated
+ using the model created for mallard ducks in Arnold *et al,.* (2020).
+ * Harvest data: `gb_ATBR_harvest`. Estimation of United States harvest for
+ Altrantic Brants between 2000 and 2019 in the Atlantic flyway.
 
-This vignette uses datasets shipped with the gblincoln package. The provided
-datasets are:
-
-  * `gb_ATBR_banding`: Banding data for the ATBR species extracted from the
-  Gamebirds database. This  dataset has already been cleaned using
-  the `clean_dataset()` function.
-  
-TODO: Provide raw data to explain all steps
+All these datasets come from raw data loaded using the `load_dataset()`
+function as described in [this section](#loading-data).
 
 ```{r}
 # Banding data
@@ -371,7 +464,47 @@ head(gb_reporting_probas)
 # Harvest data
 head(gb_ATBR_harvest)
 ```
+
+
+### Column names
+
+In addition to the datasets, the `gblincoln` packages also comes with an
+dataframe mapping columns names from Gamebirds to the one used in the package.
+Columns from Gamebirds were renamed for ease of use and consistency.
+
+This object contains only 2 columns:
+
+ * `old_colnames`: Columns as extracted by Gamebirds
+ * `new_colnames`: Columns used in the gblincoln package.
+ 
+ As described in the [filtering section](#creating-filters), it is possible to
+ create filters based on their Gamebirds name. Keep in mind though that when
+ loading dataframes, R can change the name of the columns, for instance by
+ replacing all spaces with dots by default.
+ 
+ #### Add your own column names
+ 
+ If you want to provide a custom list of columns, you can do so when calling
+ the `filter_database()` function by passing it as the `columns` argument.
+ Note that this argument still must be a dataframe with two columns named
+ `old_colnames` and `new_colnames`.
+ 
+ IMPORTANT: By creating your custom column names, we cannot guarantee the package
+ will continue to work as some columns might be called by name. These include,
+ but are not limited to:
+ 
+  * `b.year`
+  * `SPEC`
   
+
+### Recovery year correction
+
+Please note that by default recovery years are corrected when calculating Lincoln
+estimates. If the recovery happens before month 4 (April), then the recovery
+is considered to happen the year before.
+If you do not want to correct the recovery years, when loading recovery data,
+set the `correct_recovery_years` argument of the `load_dataset()` function to
+FALSE.
 
 ### Species locations
 
@@ -441,13 +574,7 @@ list_update(filters, list(
 
 In this case, it might be better to create separate filters for each database.
 
-
-### Gamebirds banding
-
-### Gamebirds recoveries
-
-### Reporting probability
-Say that a version is available in the package
-
-### Harvest data
-Depends on the species
+### Comparing two filters
+#### Defining the filters
+#### Calculate harvest rate
+#### Compare and plot
