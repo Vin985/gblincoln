@@ -1,0 +1,4 @@
+*** Finish vignette
+* Finish help documentation
+
+
