@@ -302,16 +302,29 @@ is_harvest <- function(db_type) {
   return (tolower(db_type) %in% c("harvest", "h"))
 }
 
-
-get_db_type <- function(db_type) {
-  res <- if(is_banding(db_type)) {
-    "banding"
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param db_type PARAM_DESCRIPTION
+#' @param short PARAM_DESCRIPTION, Default: FALSE
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @rdname get_db_type
+#' @export
+get_db_type <- function(db_type, short = FALSE) {
+  res <- if (is_banding(db_type)) {
+    ifelse(short, "b", "banding")
   } else if (is_recovery(db_type)) {
-    "recoveries"
+    ifelse(short, "r", "recoveries")
   } else if (is_rho(db_type)) {
     "rho"
   } else if (is_harvest(db_type)) {
-    "harvest"
+    ifelse(short, "h", "harvest")
   } else {
     stop("Unrecognized database type")
   }
@@ -325,6 +338,11 @@ get_db_type <- function(db_type) {
 #' @param df The dataframe in which to search
 #' @param species_code The 4 letters short code for the desired species
 #' (as found in the SPEC column of the gb_banding dataset)
+#' @param type The type of data desired. Can be one of "country", "state" or
+#' "flyway", Default: c("country", "state", "flyway")
+#' @param db_type The type of data desired, banding or recovery. Can take any
+#' value accepted by \code{\link{get_db_type}} but will only work for banding
+#' or recovery data, Default: c("b", "r")
 #' @param columns The desired columns. By default returns all the location
 #' related columns: "country_name", "state_name" and "flyway"
 #' @param sort_by Column by which the results are sorted. Default: NULL, the
@@ -347,15 +365,30 @@ get_db_type <- function(db_type) {
 get_species_locations <-
   function(df,
            species_code,
-           columns = c(
-             "b.country_name",
-             "b.state_name",
-             "b.flyway_name",
-             "r.country_name",
-             "r.state_name",
-             "r.flyway_name"
-           ),
+           type = c("country", "state", "flyway"),
+           db_types = c("b", "r"),
+           columns = NULL,
+           return_names = TRUE,
+           return_codes = TRUE,
            sort_by = NULL) {
+    if (is.null(columns)) {
+      columns = NULL
+      for (db_type in db_types) {
+        str_type = get_db_type(db_type, short = TRUE)
+        for (loc in type) {
+          if (!loc %in% c("country", "state", "flyway")) {
+            warning(sprintf("Unrecognized type %s. Skipping."))
+          }
+          if (return_names) {
+            columns = c(columns, paste0(str_type, ".", loc, "_name"))
+          }
+          if (return_codes) {
+            columns = c(columns, paste0(str_type, ".", loc, "_code"))
+          }
+        }
+      }
+    }
+
     columns = columns[columns %in% colnames(df)]
     if (length(columns) == 0) {
       print("No valid columns specified")
@@ -377,25 +410,25 @@ get_species_locations <-
 #'             all available countries for the given species.
 #' @export
 get_species_countries <-
-  function(df, species_code) {
+  function(df, species_code, ...) {
     return(get_species_locations(df,
                                  species_code,
-                                 c("b.country_name", "r.country_name"), ))
+                                 type = "country", ...))
   }
 
 
 #' @describeIn get_species_locations Convenience functions to list
 #'             all available states for the given species.
 #' @export
-get_species_states <- function(df, species_code) {
-  return(get_species_locations(df, species_code, c("b.state_name", "r.state_name")))
+get_species_states <- function(df, species_code, ...) {
+  return(get_species_locations(df, species_code, type = "state", ...))
 }
 
 #' @describeIn get_species_locations Convenience functions to list
 #'             all available countries for the given species.
 #' @export
-get_species_flyways <- function(df, species_code) {
-  return(get_species_locations(df, species_code, c("b.flyway_name", "r.flyway_name")))
+get_species_flyways <- function(df, species_code, ...) {
+  return(get_species_locations(df, species_code, type = "flyway", ...))
 }
 
 
@@ -435,14 +468,15 @@ filter_time_period <- function(df, filter, col_name) {
 #' }
 #' @rdname add_db_filters
 #' @export
-add_db_filters <- function(filters, db_type, filters_first=FALSE) {
-  opt_name <- paste0(get_db_type(db_type), "_filters")
-  if (opt_name %in% names(filters)) {
-    filters <- list_update(filters, filters[[opt_name]], filters_first)
+add_db_filters <-
+  function(filters, db_type, filters_first = FALSE) {
+    opt_name <- paste0(get_db_type(db_type), "_filters")
+    if (opt_name %in% names(filters)) {
+      filters <- list_update(filters, filters[[opt_name]], filters_first)
+    }
+    filters[endsWith(names(filters), "_filters")] <- NULL
+    return(filters)
   }
-  filters[endsWith(names(filters), "_filters")] <- NULL
-  return(filters)
-}
 
 
 #' @title Performs filtering on a dataset
@@ -473,10 +507,11 @@ filter_database <-
            columns = NULL,
            use_default_filters = TRUE,
            db_type = NULL,
-           filters_first=FALSE) {
+           filters_first = FALSE) {
     # Get filter list and updates it if needed
     if (use_default_filters) {
-      filters <- list_update(DEFAULT_LINCOLN_FILTERS, filters, filters_first)
+      filters <-
+        list_update(DEFAULT_LINCOLN_FILTERS, filters, filters_first)
     }
 
     if (!is.null(db_type)) {

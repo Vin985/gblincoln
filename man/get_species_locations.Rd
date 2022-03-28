@@ -10,16 +10,19 @@
 get_species_locations(
   df,
   species_code,
-  columns = c("b.country_name", "b.state_name", "b.flyway_name", "r.country_name",
-    "r.state_name", "r.flyway_name"),
+  type = c("country", "state", "flyway"),
+  db_types = c("b", "r"),
+  columns = NULL,
+  return_names = TRUE,
+  return_codes = TRUE,
   sort_by = NULL
 )
 
-get_species_countries(df, species_code)
+get_species_countries(df, species_code, ...)
 
-get_species_states(df, species_code)
+get_species_states(df, species_code, ...)
 
-get_species_flyways(df, species_code)
+get_species_flyways(df, species_code, ...)
 }
 \arguments{
 \item{df}{The dataframe in which to search}
@@ -27,11 +30,18 @@ get_species_flyways(df, species_code)
 \item{species_code}{The 4 letters short code for the desired species
 (as found in the SPEC column of the gb_banding dataset)}
 
+\item{type}{The type of data desired. Can be one of "country", "state" or
+"flyway", Default: c("country", "state", "flyway")}
+
 \item{columns}{The desired columns. By default returns all the location
 related columns: "country_name", "state_name" and "flyway"}
 
 \item{sort_by}{Column by which the results are sorted. Default: NULL, the
 results are unsorted}
+
+\item{db_type}{The type of data desired, banding or recovery. Can take any
+value accepted by \code{\link{get_db_type}} but will only work for banding
+or recovery data, Default: c("b", "r")}
 }
 \value{
 If columns contains more than one element, a data frame with all
