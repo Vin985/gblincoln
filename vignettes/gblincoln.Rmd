@@ -431,8 +431,157 @@ get_lincoln_estimates(df = hr_df,
 
 ### Extracting data from gamebirds
 
+Here are the steps for extracting data from gamebirds. We will show how to
+extract data for Atlantic brants. Note that these steps describe how to export
+data based on a single criteria, species. We assume that all additional filtering
+will be done by the package. Other filtering can be done directly in Gamebirds,
+however this will not be covered here and we recommend that all fitering done 
+at export be documented and kept in mind at all time during processing. 
+
 #### Banding data
-#### Recovery data
+
+When launching Gamebirds, select **Summarized bandings**
+
+<br/>
+
+![](images/gb_home_band.png)
+  
+<br/>
+
+This leads to a page that displays banding information. For searching bands
+related to a species, click on the **Find** icon
+
+<br/>
+  
+![](images/gb_b_1.png)
+
+<br/>
+
+A new form with blank entries appears
+
+<br/>
+  
+![](images/gb_b_2.png)
+
+<br/>
+
+On the species line (1), in the middle entry, select **ATBR** (2). Once this
+is done, click on **Perform Find** (3).
+
+<br/>
+  
+![](images/gb_b_3.png)
+
+<br/>
+
+**OPTIONAL** (this step is not executed as part of this example): If we want to 
+extract more than one species at the same time, before clicking on 
+**Perform find**, click on **New request** (1). We can see 
+the number is now 2 (2). We can then select
+another species (for example, Lesser Snow Goose LSGO). Note that the `gblincoln`
+package works with databases containing more than one species, so it might be
+easier to extract all target species at the same time (unless the size of
+the database grows too fast).
+
+<br/>
+
+![](images/gb_b_4.png)
+
+
+<br/>
+
+Once the search is performed, the results are displayed. We can see that when
+selecting only ATBR records, 2072 entries are returned (1).
+To save them, click on **Export records** (2)
+
+<br/>
+
+![](images/gb_b_5.png)
+
+<br/>
+
+When exporting the data, we recommend saving as an Excel (.xlsx) file. This is
+because it seems .csv files do not save the column names.
+
+<br/>
+
+![](images/gb_b_6.png)
+
+<br/>
+
+Leave the next box empty and click on **Continue...**
+
+<br/>
+
+![](images/gb_b_7.png)
+
+<br/>
+
+Then, when selecting columns to export. Click on **Move all** (1) and then
+**Export** (2).
+
+<br/>
+
+![](images/gb_b_8.png)
+
+<br/>
+
+The last step now consists in converting the Excel file to csv. For that,
+open Excel (or another software like LibreOffice), click on **Save as** and
+then select **.csv**.
+
+<br/>
+
+![](images/gb_export_csv.png)
+<br/>
+
+#### Recoveries data
+
+Exporting recoveries data is very similar to exporting banding data.
+The first major difference is the database selection on the main menu.
+Now, we select **Encounters**
+
+<br/>
+
+![](images/gb_e_1.png)
+
+<br/>
+
+The encounters screen display both the banding data and the encounter data.
+To select recordings of interest, click on **Find** like precedently.
+
+<br/>
+
+![](images/gb_e_2.png)
+
+<br/>
+
+In the filter form, we select the species in the middle input (1), choose
+ATBR (2) and then click on **Perform Find** (3)
+
+<br/>
+
+![](images/gb_e_3.png)
+
+<br/>
+
+We can see that 14521 records have been found. Now we can export them just like
+banding data.
+
+<br/>
+
+![](images/gb_e_4.png)
+
+<br/>
+
+The rest of the export process is the same as for the banding data. The only thing
+different will be that when you select the columns, new columns specific to
+the recoveries will be present.
+
+<br/>
+
+![](images/gb_e_5.png)
+
 
 ### Provided datasets
 
@@ -446,12 +595,12 @@ Here are the name of the variables containing them:
  * Banding data: `gb_ATBR_banding`. This contains the banding data for
  Atlantic brants [extracted from Gamebirds](#banding-data).
  * Recovery data: `gb_ATBR_recovery`. This contains the banding data for
- Atlantic brants [extracted from Gamebirds](#recovery-data). 
+ Atlantic brants [extracted from Gamebirds](#recoveries-data). 
  * Reporting_probabilities: `gb_reporting_probas`. This contains the reporting
  probabilities and their standard deviation between 1976 and 2019 estimated
  using the model created for mallard ducks in Arnold *et al,.* (2020).
  * Harvest data: `gb_ATBR_harvest`. Estimation of United States harvest for
- Altrantic Brants between 2000 and 2019 in the Atlantic flyway.
+ Atlantic Brants between 2000 and 2019 in the Atlantic flyway.
 
 All these datasets come from raw data loaded using the `load_dataset()`
 function as described in [this section](#loading-data).
@@ -507,6 +656,33 @@ set the `correct_recovery_years` argument of the `load_dataset()` function to
 FALSE.
 
 ### Species locations
+
+`gblincoln` offers convenience function to know where a target species can be
+found. Especially, it allows the user to find information about country, state
+and flyways. If present, these function will return information about banding
+and recovery data.
+
+Four (4) functions are offered, with 3 being just convenience shortcuts of the
+main one:
+
+ * `get_species_locations`: The main function. Takes a dataframe, a type of data
+ to return ("country", "state" or "flyway"). By default this function returns
+ names and codes (as recorded in Gamebirds). The results are sortable by a given
+ column.
+ * `get_species_countries`: Shortcut to return only information about the countries
+ * `get_species_states`: Shortcut to return only information about the states
+ * `get_species_flyways`: Shortcut to return only information about the flyways
+
+```{r}
+
+get_species_locations(gb_ATBR_banding, "ATBR", sort_by = "b.country_name")
+
+get_species_countries(gb_ATBR_banding, "ATBR", return_codes=FALSE)
+get_species_flyways(gb_ATBR_recoveries, "ATBR")
+get_species_states(gb_ATBR_banding, "ATBR", return_names = FALSE)
+
+```
+
 
 ### Database specific filters
 
