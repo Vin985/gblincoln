@@ -126,7 +126,7 @@ filters_ATBR <-
 Then, the quickest way to calculate the estimates is by calling the
 `get_lincoln_estimates()` function:
 
-```{r}
+```{r fig.dim = c(6, 4)}
 lincoln_estimates <-
   get_lincoln_estimates(
     filters = filters_ATBR,
@@ -165,7 +165,7 @@ hr_df <- get_harvest_rate(df = dr_df, rho_df = gb_reporting_probas)
  
  
 [Calculate the Lincoln estimates](#calculate-lincoln-estimates)
-```{r}
+```{r fig.dim = c(6, 4)}
 get_lincoln_estimates(df = hr_df, harvest_df = gb_ATBR_harvest)
 ```
  
@@ -385,7 +385,7 @@ harvested each year. Just like `get_harvest_rate()`, if a harvest rate dataframe
 has not been created, it is possible to pass all arguments necessary to create
 it automatically.
 
-```{r}
+```{r fig.dim = c(6, 4)}
 # We can call the function like this
 lincoln1 <-
   get_lincoln_estimates(df = hr_df,
@@ -444,7 +444,7 @@ When launching Gamebirds, select **Summarized bandings**
 
 <br/>
 
-![](images/gb_home_band.png)
+![](images/gb_home_band.png){width=90%}
   
 <br/>
 
@@ -453,7 +453,7 @@ related to a species, click on the **Find** icon
 
 <br/>
   
-![](images/gb_b_1.png)
+![](images/gb_b_1.png){width=90%}
 
 <br/>
 
@@ -461,7 +461,7 @@ A new form with blank entries appears
 
 <br/>
   
-![](images/gb_b_2.png)
+![](images/gb_b_2.png){width=90%}
 
 <br/>
 
@@ -470,7 +470,7 @@ is done, click on **Perform Find** (3).
 
 <br/>
   
-![](images/gb_b_3.png)
+![](images/gb_b_3.png){width=90%}
 
 <br/>
 
@@ -485,7 +485,7 @@ the database grows too fast).
 
 <br/>
 
-![](images/gb_b_4.png)
+![](images/gb_b_4.png){width=90%}
 
 
 <br/>
@@ -496,7 +496,7 @@ To save them, click on **Export records** (2)
 
 <br/>
 
-![](images/gb_b_5.png)
+![](images/gb_b_5.png){width=90%}
 
 <br/>
 
@@ -505,7 +505,7 @@ because it seems .csv files do not save the column names.
 
 <br/>
 
-![](images/gb_b_6.png)
+![](images/gb_b_6.png){width=90%}
 
 <br/>
 
@@ -513,7 +513,7 @@ Leave the next box empty and click on **Continue...**
 
 <br/>
 
-![](images/gb_b_7.png)
+![](images/gb_b_7.png){width=90%}
 
 <br/>
 
@@ -522,7 +522,7 @@ Then, when selecting columns to export. Click on **Move all** (1) and then
 
 <br/>
 
-![](images/gb_b_8.png)
+![](images/gb_b_8.png){width=90%}
 
 <br/>
 
@@ -532,7 +532,7 @@ then select **.csv**.
 
 <br/>
 
-![](images/gb_export_csv.png)
+![](images/gb_export_csv.png){width=90%}
 <br/>
 
 #### Recoveries data
@@ -543,7 +543,7 @@ Now, we select **Encounters**
 
 <br/>
 
-![](images/gb_e_1.png)
+![](images/gb_e_1.png){width=90%}
 
 <br/>
 
@@ -552,7 +552,7 @@ To select recordings of interest, click on **Find** like precedently.
 
 <br/>
 
-![](images/gb_e_2.png)
+![](images/gb_e_2.png){width=90%}
 
 <br/>
 
@@ -561,7 +561,7 @@ ATBR (2) and then click on **Perform Find** (3)
 
 <br/>
 
-![](images/gb_e_3.png)
+![](images/gb_e_3.png){width=90%}
 
 <br/>
 
@@ -570,7 +570,7 @@ banding data.
 
 <br/>
 
-![](images/gb_e_4.png)
+![](images/gb_e_4.png){width=90%}
 
 <br/>
 
@@ -580,7 +580,7 @@ the recoveries will be present.
 
 <br/>
 
-![](images/gb_e_5.png)
+![](images/gb_e_5.png){width=90%}
 
 
 ### Provided datasets
@@ -751,6 +751,61 @@ list_update(filters, list(
 In this case, it might be better to create separate filters for each database.
 
 ### Comparing two filters
+
+Sometimes it could be interesting to compare two filters to see how they
+influence the estimations. For examples, we could try to see if including
+bands with geolocators influence the estimations of harvest rates.
+
 #### Defining the filters
-#### Calculate harvest rate
+
+We will define two filters: one with all band types,
+and one without geolocators.
+
+```{r}
+
+
+# Filters with all band types
+filters_ATBR_all <- filters_ATBR <-
+  list(
+    SPEC = "ATBR",
+    b.state_name = "Nunavut",
+    e.country_code = 'US',
+    r.flyway_code = 1,
+    b.year = 2000:2019,
+    r.corrected_year = 2000:2019
+  )
+
+# Geolocators were only deployed in 2018:2019. So we remove them only these years
+# for the comparison
+filters_ATBR_nogeo <-
+  list_update(filters_ATBR, list(add_info = c(00, 01, 07), b.year = 2018:2019))
+
+```
+
 #### Compare and plot
+
+We can then compare how the two filters influence the estimation of the harvest
+rate using the `compare_filters()` function. This function takes 2 dataframes 
+calcualted by `get_harvest_rate()` as input or 2 sets of filters and the required
+databases.
+
+By default, this function plots the harvest rates and check if there is an
+overlap 
+
+```{r fig.dim = c(6, 4)}
+
+res <-
+  compare_harvest_rates(
+    filters1 = filters_ATBR_all,
+    filters2 = filters_ATBR_nogeo,
+    banding_df = gb_ATBR_banding,
+    recoveries_df = gb_ATBR_recoveries,
+    rho_df = gb_reporting_probas
+  )
+# res checks if the confidence levels of the harvest rates overlap for all values
+res # All confidence levels overlap, so there should not be a problem to use geolocators
+
+
+```
+
+
