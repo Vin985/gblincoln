@@ -1,18 +1,14 @@
 #' @title Rename columns of a dataframe
 #' @description This function renames the columns of a dataframe using another
-#' dataframe with two columns `old_colnames` and `new_colnames`. Only the
-#' columns found in `old_colnames` will be renamed
+#' reference dataframe with two columns **old_colnames** and **new_colnames**. Only the
+#' columns found in **old_colnames** will be renamed. By default, this package
+#' ships with default values for renaming that #' can be found in
+#' the \code{\link{gb_colnames}} object.
 #' @param df The dataframe whose columns need to be renamed
 #' @param columns A dataframe tha contains at least two columns:
 #' `old_colnames` which contains the current column names found in df
-#' `new_colnames` which contains the new column names
+#' `new_colnames` which contains the new column names.
 #' @return A dataframe with renamed columns
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @rdname rename_columns
 #' @export
 rename_columns <- function(df, columns) {
@@ -29,17 +25,18 @@ rename_columns <- function(df, columns) {
 }
 
 #' @title Set age classes
-#' @description FUNCTION_DESCRIPTION
-#' @param df PARAM_DESCRIPTION
-#' @param age_classes PARAM_DESCRIPTION, Default: NULL
-#' @return OUTPUT_DESCRIPTION
-#' @details DETAILS
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
+#' @description Classify age codes found in Gamebirds in subclasses. Subclasses
+#' are defined in the **age_classes** argument where each class is associated to
+#' one or several age codes.
+#' @param df The dataframe in which we want to add age classes
+#' @param age_classes A list that associates a new class with the age codes
+#' found in the "Age" column of the Gamebirds dataset, Default: NULL
+#' @return The modified dataframe with a new column named **age_short**
+#' @details The age codes are found in the Gamebirds "Age" column
+#' (renamed "age_code" by default in the dataframe loaded by the package).
+#'
+#' If no value is given for the `age_classes` argument, the following values are
+#' used: age_classes = list("HY" = c(2, 3, 4), "AHY" = c(1, 5, 6, 7, 8)).
 #' @rdname set_age_classes
 #' @export
 set_age_classes <- function(df, age_classes = NULL) {
@@ -57,18 +54,20 @@ set_age_classes <- function(df, age_classes = NULL) {
 }
 
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param df PARAM_DESCRIPTION
-#' @param sex_classes PARAM_DESCRIPTION, Default: NULL
-#' @return OUTPUT_DESCRIPTION
-#' @details DETAILS
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
+#' @title Set sex classes
+#' @description Classify sex codes found in Gamebirds in subclasses. Subclasses
+#' are defined in the **sex_classes** argument where each class is associated to
+#' one or several sex codes.
+#' @param df The dataframe in which we want to add sex classes
+#' @param sex_classes A list that associates a new class with the sex codes
+#' found in the "Sex" column of the Gamebirds dataset, Default: NULL
+#' @return The modified dataframe with the sex classes placed in the column
+#' **sex**
+#' @details The sex codes are found in the Gamebirds "Sex" column
+#' (renamed "sex_code" by default in the dataframe loaded by the package).
+#'
+#' If no value is given for the `sex_classes` argument, the following values are
+#' used: sex_classes = list("MALE" = 4, "FEMALE" = 5).
 #' @rdname set_sex_classes
 #' @export
 set_sex_classes <- function(df, sex_classes = NULL) {
@@ -83,24 +82,34 @@ set_sex_classes <- function(df, sex_classes = NULL) {
   return(df)
 }
 
-#' @title Clean a data file directly exported from Gamebirds
-#' @description FUNCTION_DESCRIPTION
-#' @param df PARAM_DESCRIPTION
-#' @param rename_columns PARAM_DESCRIPTION, Default: TRUE
-#' @param colnames PARAM_DESCRIPTION, Default: NULL
-#' @param add_age_classes PARAM_DESCRIPTION, Default: TRUE
-#' @param age_classes PARAM_DESCRIPTION, Default: NULL
-#' @param add_sex_classes PARAM_DESCRIPTION, Default: TRUE
-#' @param sex_classes PARAM_DESCRIPTION, Default: NULL
-#' @param correct_recovery_years PARAM_DESCRIPTION, Default: TRUE
-#' @return OUTPUT_DESCRIPTION
-#' @details DETAILS
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
+#' @title Clean datasets from Gamebirds for Lincoln estimations
+#' @description This function takes a dataframe directly exported from Gamebirds
+#' and prepares it to be used by the *gblincoln* package. It performs the
+#' following actions in the following order:
+#'  * Rename columns (see \code{\link{rename_columns}})
+#'  * Add age classes (see \code{\link{set_age_classes}})
+#'  * Add sex classes (see \code{\link{set_sex_classes}})
+#'  * Correct recovery years (see \code{\link{correct_recovery_years}})
+#' @param df The dataframe to clean. Must contain untouched data coming from
+#' Gamebirds.
+#' @param rename_columns Should the columns be renamed? Default: TRUE
+#' @param colnames Data frame. The columns to rename. Will be passed as the `columns`
+#' argument to the \code{\link{rename_columns}} function, Default: NULL
+#' @param add_age_classes Should the function add age classes? Default: TRUE
+#' @param age_classes The age classes that will be passed as the `age_classes`
+#' argument of the (see \code{\link{set_age_classes}}) function. Default: NULL
+#' @param add_sex_classes Should the function add sex classes? Default: TRUE
+#' @param sex_classes The sex classes that will be passed as the `sex_classes`
+#' argument of the (see \code{\link{set_sex_classes}}) function. Default: NULL
+#' @param correct_recovery_years Should the recovery years be corrected? Default: TRUE
+#' @return The modified dataframe
+#' @details
+#'  * Adding age classes will only work if the **age_code** column is present in
+#'  the dataframe.
+#'  * Adding sex classes will only work if the **sex_code** column is present in
+#'  the dataframe.
+#'  * Correcting recovery years will only work if the **r.year** column is present
+#'  in the dataframe
 #' @rdname clean_dataset
 #' @export
 clean_dataset <- function(df,
@@ -128,7 +137,7 @@ clean_dataset <- function(df,
 
   # If recoveries dataset, correct the recoveries year
   if (correct_recovery_years && "r.year" %in% colnames(cleaned)) {
-    cleaned <- correct_recoveries_years(cleaned)
+    cleaned <- correct_recovery_years(cleaned)
   }
 
   return(cleaned)
@@ -136,25 +145,24 @@ clean_dataset <- function(df,
 
 
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param path PARAM_DESCRIPTION
-#' @param rename_columns PARAM_DESCRIPTION, Default: TRUE
-#' @param colnames PARAM_DESCRIPTION, Default: NULL
-#' @param add_age_classes PARAM_DESCRIPTION, Default: TRUE
-#' @param age_classes PARAM_DESCRIPTION, Default: NULL
-#' @param add_sex_classes PARAM_DESCRIPTION, Default: TRUE
-#' @param sex_classes PARAM_DESCRIPTION, Default: NULL
-#' @param correct_recovery_years PARAM_DESCRIPTION, Default: TRUE
-#' @param ... PARAM_DESCRIPTION
-#' @return OUTPUT_DESCRIPTION
-#' @details DETAILS
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
+#' @title Loads a csv dataset exported from Gamebirds
+#' @description This functions loads a csv dataset exported from Gamebirds and
+#' cleans it to be used by the **gblincoiln** package. This is the recommended
+#' way to import data for use by the package.
+#' @param path Path to the data file. Should point to a csv file.
+#' @param rename_columns Should the columns be renamed? Default: TRUE
+#' @param colnames Data frame. The columns to rename. Will be passed as the `columns`
+#' argument to the \code{\link{rename_columns}} function, Default: NULL
+#' @param add_age_classes Should the function add age classes? Default: TRUE
+#' @param age_classes The age classes that will be passed as the `age_classes`
+#' argument of the (see \code{\link{set_age_classes}}) function. Default: NULL
+#' @param add_sex_classes Should the function add sex classes? Default: TRUE
+#' @param sex_classes The sex classes that will be passed as the `sex_classes`
+#' argument of the (see \code{\link{set_sex_classes}}) function. Default: NULL
+#' @param correct_recovery_years Should the recovery years be corrected? Default: TRUE
+#' @param ... Additional arguments passed to the \code{\link{read.csv}} function
+#' @return A dataframe formatted to use in the **gblincoln** package
+#' @seealso \code{\link{clean_dataset}}
 #' @rdname load_dataset
 #' @export
 load_dataset <- function(path,
@@ -181,21 +189,15 @@ load_dataset <- function(path,
   return(df)
 }
 
-#' @title FUNCTION_TITLE
+#' @title Correct recovery years
 #' @description Correct the recovery year by considering all hunting done before
-#' April to belong to the previous year
-#' @param df PARAM_DESCRIPTION
-#' @return OUTPUT_DESCRIPTION
-#' @details DETAILS
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @rdname correct_recoveries_years
+#' April to belong to the previous year.
+#' @param df The data frame to modify
+#' @return The modified dataframe
+#' @seealso \code{\link{clean_dataset}}
+#' @rdname correct_recovery_years
 #' @export
-correct_recoveries_years <- function(df) {
+correct_recovery_years <- function(df) {
   df$r.corrected_year <- df$r.year
   idx <- which(df$r.month < 4)
   df$r.corrected_year[idx] <-  df$r.corrected_year[idx] - 1
@@ -204,18 +206,17 @@ correct_recoveries_years <- function(df) {
 
 
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param col_names PARAM_DESCRIPTION
-#' @param columns PARAM_DESCRIPTION, Default: NULL
-#' @return OUTPUT_DESCRIPTION
-#' @details DETAILS
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
+#' @title Check column names for filters
+#' @description When creating filters, either new columns names defined by the
+#' **gblincoln** package or column names provided by Gamebirds are accepted.
+#' This function takes as input a vector of column names and replaces all
+#' Gamebirds columns found by the package ones.
+#' @param col_names A vector of column names
+#' @param columns A dataframe that contains equivalence between Gamebirds
+#' columns and the package ones. Default: NULL
+#' @return A vector of same length as *col_names* but containing only renamed
+#' columns
+#' @seealso \code{\link{rename_columns}}
 #' @rdname check_columns
 #' @export
 check_columns <- function(col_names, columns = NULL) {
@@ -231,19 +232,16 @@ check_columns <- function(col_names, columns = NULL) {
 }
 
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param species_name PARAM_DESCRIPTION
-#' @param db_dtype PARAM_DESCRIPTION, Default: 'banding'
-#' @param use_spec_code PARAM_DESCRIPTION, Default: TRUE
-#' @return OUTPUT_DESCRIPTION
-#' @details DETAILS
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
+#' @title Get data for a given species
+#' @description Convenience function to extract data for a given species. The
+#' species can be selected either by its 4 letters alpha code (use_spec_code=TRUE)
+#' or its full name (use_spec_code=FALSE
+#' @param species_name The species name. Should be either a 4 letters alpha
+#' code (as found in the SPEC column of the Gamebirds dataset) if *use_spec_code*
+#' is set to TRUE, or the full name as found in the **Species** column.
+#' @param df The dataframe to subset
+#' @param use_spec_code Use the species code?, Default: TRUE
+#' @return A subset of *df* containing only the target species
 #' @rdname get_species_data
 #' @export
 get_species_data <-
@@ -257,34 +255,6 @@ get_species_data <-
     }
     return(df[df[col] == species_name, ])
   }
-
-#' @title Check database type
-#' @description FUNCTION_DESCRIPTION
-#' @param type PARAM_DESCRIPTION
-#' @return OUTPUT_DESCRIPTION
-#' @details DETAILS
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @rdname check_db_type
-#' @export
-check_db_type <- function(db_type) {
-  type <- tolower(db_type)
-  if (type %in% c("banding", "b")) {
-    return("b")
-  } else if (type %in% c("recoveries", "r")) {
-    return("r")
-  } else {
-    #TODO : change manual reference for error message
-    stop(
-      "Unexpected value for 'db_type' argument. Please refer to ?check_db_type for accepted values."
-    )
-  }
-}
-
 
 is_recovery <- function(db_type) {
   return (tolower(db_type) %in% c("recoveries", "r"))
@@ -302,18 +272,29 @@ is_harvest <- function(db_type) {
   return (tolower(db_type) %in% c("harvest", "h"))
 }
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param db_type PARAM_DESCRIPTION
-#' @param short PARAM_DESCRIPTION, Default: FALSE
-#' @return OUTPUT_DESCRIPTION
-#' @details DETAILS
+#' @title Get database type
+#' @description Get a unique consistent database identifier type depending on the
+#' code provided as input
+#' @param db_type A character string describing a database type
+#' @param short Return a short identifier or not, Default: FALSE
+#' @return A unique identifier describing the database type
+#' @details There are four accepted database types: *banding*, *recoveries*,
+#' *harvest* and *rho* (reporting probabilities).
+#' Here are the possible values db_type can take and the returning values. Note
+#' that the long values of db_type are case insensitive.
+#'
+#' | **Database** | **db_type** | **Short id** | **Long id** |
+#' | :--- | :---: | :---: | :---: |
+#' | Banding | "banding" / "b" | "b" | "banding" |
+#' | Recoveries | "recoveries" / "r" | "r" | "recoveries" |
+#' | Reporting probabilities | "rho" | "rho" | "rho" |
+#' | Harvest |  "harvest" / "h" | "h" | "harvest" |
+#'
+#'
 #' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
+#' get_db_type("banding")
+#' get_db_type("HARVEST", short = TRUE)
+#'
 #' @rdname get_db_type
 #' @export
 get_db_type <- function(db_type, short = FALSE) {

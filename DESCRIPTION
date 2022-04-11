@@ -19,6 +19,7 @@ Depends:
     tidyverse,
     ggplot2
 RoxygenNote: 7.1.2
+Roxygen: list(markdown = TRUE)
 Imports:
     xlsx
 Config/testthat/edition: 3

@@ -312,27 +312,6 @@ test_that("Missing column", {
                NULL)
 })
 
-test_that("Check type r", {
-  expect_equal(check_db_type("rECOVERIEs"), "r")
-})
-
-test_that("Check type r2", {
-  expect_equal(check_db_type("R"), "r")
-})
-
-test_that("Check type b", {
-  expect_equal(check_db_type("b"), "b")
-})
-
-
-test_that("Check type b2", {
-  expect_equal(check_db_type("bANdinG"), "b")
-})
-
-test_that("Check type error", {
-  expect_error(check_db_type("bANdin"))
-})
-
 test_that("Check columns", {
   expect_equal(check_columns(c("Add.Info", "add_info")), c("add_info", "add_info"))
 })
