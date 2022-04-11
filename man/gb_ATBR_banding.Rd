@@ -7,56 +7,56 @@
 \format{
 A data frame with 2072 rows and 50 variables:
 \describe{
-  \item{\code{GISBLong}}{double COLUMN_DESCRIPTION}
-  \item{\code{GISBLat}}{double COLUMN_DESCRIPTION}
-  \item{\code{Object_Name}}{character COLUMN_DESCRIPTION}
-  \item{\code{MARPLOT_layer_name}}{character COLUMN_DESCRIPTION}
-  \item{\code{MARPLOT_map_name}}{character COLUMN_DESCRIPTION}
-  \item{\code{symbol}}{integer COLUMN_DESCRIPTION}
-  \item{\code{color}}{character COLUMN_DESCRIPTION}
-  \item{\code{idmarplot}}{integer COLUMN_DESCRIPTION}
-  \item{\code{add_info}}{integer COLUMN_DESCRIPTION}
-  \item{\code{age_code}}{integer COLUMN_DESCRIPTION}
-  \item{\code{b.coordinate_precision}}{integer COLUMN_DESCRIPTION}
-  \item{\code{b.day_code}}{integer COLUMN_DESCRIPTION}
-  \item{\code{b.dir}}{integer COLUMN_DESCRIPTION}
-  \item{\code{b.flyway_code}}{integer COLUMN_DESCRIPTION}
-  \item{\code{b.lat}}{integer COLUMN_DESCRIPTION}
-  \item{\code{b.long}}{integer COLUMN_DESCRIPTION}
-  \item{\code{b.month}}{integer COLUMN_DESCRIPTION}
-  \item{\code{b.region}}{integer COLUMN_DESCRIPTION}
-  \item{\code{b.year}}{integer COLUMN_DESCRIPTION}
-  \item{\code{band_prefix_plus}}{integer COLUMN_DESCRIPTION}
-  \item{\code{band_size}}{character COLUMN_DESCRIPTION}
-  \item{\code{band_type}}{character COLUMN_DESCRIPTION}
-  \item{\code{count_of_birds}}{integer COLUMN_DESCRIPTION}
-  \item{\code{b.country_code}}{character COLUMN_DESCRIPTION}
-  \item{\code{how_aged}}{character COLUMN_DESCRIPTION}
-  \item{\code{how_sexed}}{character COLUMN_DESCRIPTION}
-  \item{\code{permit}}{integer COLUMN_DESCRIPTION}
-  \item{\code{sex_code}}{integer COLUMN_DESCRIPTION}
-  \item{\code{sp_num}}{integer COLUMN_DESCRIPTION}
-  \item{\code{b.state_code}}{integer COLUMN_DESCRIPTION}
-  \item{\code{status_code}}{integer COLUMN_DESCRIPTION}
-  \item{\code{age}}{character COLUMN_DESCRIPTION}
-  \item{\code{VAI}}{character COLUMN_DESCRIPTION}
-  \item{\code{btype_vbtype}}{character COLUMN_DESCRIPTION}
-  \item{\code{btype_text}}{character COLUMN_DESCRIPTION}
-  \item{\code{location_accuracy_desc}}{character COLUMN_DESCRIPTION}
-  \item{\code{day_span}}{character COLUMN_DESCRIPTION}
-  \item{\code{how_aged_desc}}{character COLUMN_DESCRIPTION}
-  \item{\code{how_sexed_desc}}{character COLUMN_DESCRIPTION}
-  \item{\code{b.country_name}}{character COLUMN_DESCRIPTION}
-  \item{\code{b.loc_state_name}}{character COLUMN_DESCRIPTION}
-  \item{\code{month_name}}{character COLUMN_DESCRIPTION}
-  \item{\code{permittee}}{character COLUMN_DESCRIPTION}
-  \item{\code{b.flyway_name}}{character COLUMN_DESCRIPTION}
-  \item{\code{b.state_name}}{character COLUMN_DESCRIPTION}
-  \item{\code{sex}}{character COLUMN_DESCRIPTION}
-  \item{\code{SPEC}}{character COLUMN_DESCRIPTION}
-  \item{\code{species}}{character COLUMN_DESCRIPTION}
-  \item{\code{status_text}}{character COLUMN_DESCRIPTION}
-  \item{\code{age_short}}{character COLUMN_DESCRIPTION}
+\item{\code{GISBLong}}{double COLUMN_DESCRIPTION}
+\item{\code{GISBLat}}{double COLUMN_DESCRIPTION}
+\item{\code{Object_Name}}{character COLUMN_DESCRIPTION}
+\item{\code{MARPLOT_layer_name}}{character COLUMN_DESCRIPTION}
+\item{\code{MARPLOT_map_name}}{character COLUMN_DESCRIPTION}
+\item{\code{symbol}}{integer COLUMN_DESCRIPTION}
+\item{\code{color}}{character COLUMN_DESCRIPTION}
+\item{\code{idmarplot}}{integer COLUMN_DESCRIPTION}
+\item{\code{add_info}}{integer COLUMN_DESCRIPTION}
+\item{\code{age_code}}{integer COLUMN_DESCRIPTION}
+\item{\code{b.coordinate_precision}}{integer COLUMN_DESCRIPTION}
+\item{\code{b.day_code}}{integer COLUMN_DESCRIPTION}
+\item{\code{b.dir}}{integer COLUMN_DESCRIPTION}
+\item{\code{b.flyway_code}}{integer COLUMN_DESCRIPTION}
+\item{\code{b.lat}}{integer COLUMN_DESCRIPTION}
+\item{\code{b.long}}{integer COLUMN_DESCRIPTION}
+\item{\code{b.month}}{integer COLUMN_DESCRIPTION}
+\item{\code{b.region}}{integer COLUMN_DESCRIPTION}
+\item{\code{b.year}}{integer COLUMN_DESCRIPTION}
+\item{\code{band_prefix_plus}}{integer COLUMN_DESCRIPTION}
+\item{\code{band_size}}{character COLUMN_DESCRIPTION}
+\item{\code{band_type}}{character COLUMN_DESCRIPTION}
+\item{\code{count_of_birds}}{integer COLUMN_DESCRIPTION}
+\item{\code{b.country_code}}{character COLUMN_DESCRIPTION}
+\item{\code{how_aged}}{character COLUMN_DESCRIPTION}
+\item{\code{how_sexed}}{character COLUMN_DESCRIPTION}
+\item{\code{permit}}{integer COLUMN_DESCRIPTION}
+\item{\code{sex_code}}{integer COLUMN_DESCRIPTION}
+\item{\code{sp_num}}{integer COLUMN_DESCRIPTION}
+\item{\code{b.state_code}}{integer COLUMN_DESCRIPTION}
+\item{\code{status_code}}{integer COLUMN_DESCRIPTION}
+\item{\code{age}}{character COLUMN_DESCRIPTION}
+\item{\code{VAI}}{character COLUMN_DESCRIPTION}
+\item{\code{btype_vbtype}}{character COLUMN_DESCRIPTION}
+\item{\code{btype_text}}{character COLUMN_DESCRIPTION}
+\item{\code{location_accuracy_desc}}{character COLUMN_DESCRIPTION}
+\item{\code{day_span}}{character COLUMN_DESCRIPTION}
+\item{\code{how_aged_desc}}{character COLUMN_DESCRIPTION}
+\item{\code{how_sexed_desc}}{character COLUMN_DESCRIPTION}
+\item{\code{b.country_name}}{character COLUMN_DESCRIPTION}
+\item{\code{b.loc_state_name}}{character COLUMN_DESCRIPTION}
+\item{\code{month_name}}{character COLUMN_DESCRIPTION}
+\item{\code{permittee}}{character COLUMN_DESCRIPTION}
+\item{\code{b.flyway_name}}{character COLUMN_DESCRIPTION}
+\item{\code{b.state_name}}{character COLUMN_DESCRIPTION}
+\item{\code{sex}}{character COLUMN_DESCRIPTION}
+\item{\code{SPEC}}{character COLUMN_DESCRIPTION}
+\item{\code{species}}{character COLUMN_DESCRIPTION}
+\item{\code{status_text}}{character COLUMN_DESCRIPTION}
+\item{\code{age_short}}{character COLUMN_DESCRIPTION}
 }
 }
 \usage{

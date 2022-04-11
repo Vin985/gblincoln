@@ -2,23 +2,33 @@
 % Please edit documentation in R/prepare_data.R
 \name{get_db_type}
 \alias{get_db_type}
-\title{FUNCTION_TITLE}
+\title{Get database type}
 \usage{
 get_db_type(db_type, short = FALSE)
 }
 \arguments{
-\item{db_type}{PARAM_DESCRIPTION}
+\item{db_type}{A character string describing a database type}
 
-\item{short}{PARAM_DESCRIPTION, Default: FALSE}
+\item{short}{Return a short identifier or not, Default: FALSE}
 }
 \value{
-OUTPUT_DESCRIPTION
+A unique identifier describing the database type
 }
 \description{
-FUNCTION_DESCRIPTION
+Get a unique consistent database identifier type depending on the
+code provided as input
 }
 \details{
-DETAILS
+There are four accepted database types: \emph{banding}, \emph{recoveries},
+\emph{harvest} and \emph{rho} (reporting probabilities).
+Here are the possible values db_type can take and the returning values. Note
+that the long values of db_type are case insensitive.\tabular{lccc}{
+   \strong{Database} \tab \strong{db_type} \tab \strong{Short id} \tab \strong{Long id} \cr
+   Banding \tab "banding" / "b" \tab "b" \tab "banding" \cr
+   Recoveries \tab "recoveries" / "r" \tab "r" \tab "recoveries" \cr
+   Reporting probabilities \tab "rho" \tab "rho" \tab "rho" \cr
+   Harvest \tab "harvest" / "h" \tab "h" \tab "harvest" \cr
+}
 }
 \examples{
 \dontrun{

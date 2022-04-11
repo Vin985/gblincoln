@@ -7,23 +7,23 @@
 set_age_classes(df, age_classes = NULL)
 }
 \arguments{
-\item{df}{PARAM_DESCRIPTION}
+\item{df}{The dataframe in which we want to add age classes}
 
-\item{age_classes}{PARAM_DESCRIPTION, Default: NULL}
+\item{age_classes}{A list that associates a new class with the age codes
+found in the "Age" column of the Gamebirds dataset, Default: NULL}
 }
 \value{
-OUTPUT_DESCRIPTION
+The modified dataframe with a new column named \strong{age_short}
 }
 \description{
-FUNCTION_DESCRIPTION
+Classify age codes found in Gamebirds in subclasses. Subclasses
+are defined in the \strong{age_classes} argument where each class is associated to
+one or several age codes.
 }
 \details{
-DETAILS
-}
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
+The age codes are found in the Gamebirds "Age" column
+(renamed "age_code" by default in the dataframe loaded by the package).
+
+If no value is given for the \code{age_classes} argument, the following values are
+used: age_classes = list("HY" = c(2, 3, 4), "AHY" = c(1, 5, 6, 7, 8)).
 }

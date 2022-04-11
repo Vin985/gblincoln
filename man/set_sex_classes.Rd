@@ -2,28 +2,29 @@
 % Please edit documentation in R/prepare_data.R
 \name{set_sex_classes}
 \alias{set_sex_classes}
-\title{FUNCTION_TITLE}
+\title{Set sex classes}
 \usage{
 set_sex_classes(df, sex_classes = NULL)
 }
 \arguments{
-\item{df}{PARAM_DESCRIPTION}
+\item{df}{The dataframe in which we want to add sex classes}
 
-\item{sex_classes}{PARAM_DESCRIPTION, Default: NULL}
+\item{sex_classes}{A list that associates a new class with the sex codes
+found in the "Sex" column of the Gamebirds dataset, Default: NULL}
 }
 \value{
-OUTPUT_DESCRIPTION
+The modified dataframe with the sex classes placed in the column
+\strong{sex}
 }
 \description{
-FUNCTION_DESCRIPTION
+Classify sex codes found in Gamebirds in subclasses. Subclasses
+are defined in the \strong{sex_classes} argument where each class is associated to
+one or several sex codes.
 }
 \details{
-DETAILS
-}
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
+The sex codes are found in the Gamebirds "Sex" column
+(renamed "sex_code" by default in the dataframe loaded by the package).
+
+If no value is given for the \code{sex_classes} argument, the following values are
+used: sex_classes = list("MALE" = 4, "FEMALE" = 5).
 }

@@ -7,10 +7,10 @@
 \format{
 A data frame with 44 rows and 4 variables:
 \describe{
-  \item{\code{b.year}}{integer COLUMN_DESCRIPTION}
-  \item{\code{rho}}{double COLUMN_DESCRIPTION}
-  \item{\code{var_rho}}{double COLUMN_DESCRIPTION}
-  \item{\code{se_rho}}{double COLUMN_DESCRIPTION}
+\item{\code{b.year}}{integer COLUMN_DESCRIPTION}
+\item{\code{rho}}{double COLUMN_DESCRIPTION}
+\item{\code{var_rho}}{double COLUMN_DESCRIPTION}
+\item{\code{se_rho}}{double COLUMN_DESCRIPTION}
 }
 }
 \usage{

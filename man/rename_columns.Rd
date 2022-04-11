@@ -10,21 +10,16 @@ rename_columns(df, columns)
 \item{df}{The dataframe whose columns need to be renamed}
 
 \item{columns}{A dataframe tha contains at least two columns:
-`old_colnames` which contains the current column names found in df
-`new_colnames` which contains the new column names}
+\code{old_colnames} which contains the current column names found in df
+\code{new_colnames} which contains the new column names.}
 }
 \value{
 A dataframe with renamed columns
 }
 \description{
 This function renames the columns of a dataframe using another
-dataframe with two columns `old_colnames` and `new_colnames`. Only the
-columns found in `old_colnames` will be renamed
-}
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
+reference dataframe with two columns \strong{old_colnames} and \strong{new_colnames}. Only the
+columns found in \strong{old_colnames} will be renamed. By default, this package
+ships with default values for renaming that #' can be found in
+the \code{\link{gb_colnames}} object.
 }

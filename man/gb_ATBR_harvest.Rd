@@ -7,11 +7,11 @@
 \format{
 A data frame with 20 rows and 5 variables:
 \describe{
-  \item{\code{b.year}}{integer COLUMN_DESCRIPTION}
-  \item{\code{harvest}}{integer COLUMN_DESCRIPTION}
-  \item{\code{var_harvest}}{integer COLUMN_DESCRIPTION}
-  \item{\code{se_harvest}}{integer COLUMN_DESCRIPTION}
-  \item{\code{cl_harvest}}{integer COLUMN_DESCRIPTION}
+\item{\code{b.year}}{integer COLUMN_DESCRIPTION}
+\item{\code{harvest}}{integer COLUMN_DESCRIPTION}
+\item{\code{var_harvest}}{integer COLUMN_DESCRIPTION}
+\item{\code{se_harvest}}{integer COLUMN_DESCRIPTION}
+\item{\code{cl_harvest}}{integer COLUMN_DESCRIPTION}
 }
 }
 \usage{

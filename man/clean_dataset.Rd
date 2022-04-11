@@ -2,7 +2,7 @@
 % Please edit documentation in R/prepare_data.R
 \name{clean_dataset}
 \alias{clean_dataset}
-\title{Clean a data file directly exported from Gamebirds}
+\title{Clean datasets from Gamebirds for Lincoln estimations}
 \usage{
 clean_dataset(
   df,
@@ -16,35 +16,47 @@ clean_dataset(
 )
 }
 \arguments{
-\item{df}{PARAM_DESCRIPTION}
+\item{df}{The dataframe to clean. Must contain untouched data coming from
+Gamebirds.}
 
-\item{rename_columns}{PARAM_DESCRIPTION, Default: TRUE}
+\item{rename_columns}{Should the columns be renamed? Default: TRUE}
 
-\item{colnames}{PARAM_DESCRIPTION, Default: NULL}
+\item{colnames}{Data frame. The columns to rename. Will be passed as the \code{columns}
+argument to the \code{\link{rename_columns}} function, Default: NULL}
 
-\item{add_age_classes}{PARAM_DESCRIPTION, Default: TRUE}
+\item{add_age_classes}{Should the function add age classes? Default: TRUE}
 
-\item{age_classes}{PARAM_DESCRIPTION, Default: NULL}
+\item{age_classes}{The age classes that will be passed as the \code{age_classes}
+argument of the (see \code{\link{set_age_classes}}) function. Default: NULL}
 
-\item{add_sex_classes}{PARAM_DESCRIPTION, Default: TRUE}
+\item{add_sex_classes}{Should the function add sex classes? Default: TRUE}
 
-\item{sex_classes}{PARAM_DESCRIPTION, Default: NULL}
+\item{sex_classes}{The sex classes that will be passed as the \code{sex_classes}
+argument of the (see \code{\link{set_sex_classes}}) function. Default: NULL}
 
-\item{correct_recovery_years}{PARAM_DESCRIPTION, Default: TRUE}
+\item{correct_recovery_years}{Should the recovery years be corrected? Default: TRUE}
 }
 \value{
-OUTPUT_DESCRIPTION
+The modified dataframe
 }
 \description{
-FUNCTION_DESCRIPTION
+This function takes a dataframe directly exported from Gamebirds
+and prepares it to be used by the \emph{gblincoln} package. It performs the
+following actions in the following order:
+\itemize{
+\item Rename columns (see \code{\link{rename_columns}})
+\item Add age classes (see \code{\link{set_age_classes}})
+\item Add sex classes (see \code{\link{set_sex_classes}})
+\item Correct recovery years (see \code{\link{correct_recovery_years}})
+}
 }
 \details{
-DETAILS
-}
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
+\itemize{
+\item Adding age classes will only work if the \strong{age_code} column is present in
+the dataframe.
+\item Adding sex classes will only work if the \strong{sex_code} column is present in
+the dataframe.
+\item Correcting recovery years will only work if the \strong{r.year} column is present
+in the dataframe
 }
 }

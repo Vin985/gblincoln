@@ -2,28 +2,26 @@
 % Please edit documentation in R/prepare_data.R
 \name{check_columns}
 \alias{check_columns}
-\title{FUNCTION_TITLE}
+\title{Check column names for filters}
 \usage{
 check_columns(col_names, columns = NULL)
 }
 \arguments{
-\item{col_names}{PARAM_DESCRIPTION}
+\item{col_names}{A vector of column names}
 
-\item{columns}{PARAM_DESCRIPTION, Default: NULL}
+\item{columns}{A dataframe that contains equivalence between Gamebirds
+columns and the package ones. Default: NULL}
 }
 \value{
-OUTPUT_DESCRIPTION
+A vector of same length as \emph{col_names} but containing only renamed
+columns
 }
 \description{
-FUNCTION_DESCRIPTION
+When creating filters, either new columns names defined by the
+\strong{gblincoln} package or column names provided by Gamebirds are accepted.
+This function takes as input a vector of column names and replaces all
+Gamebirds columns found by the package ones.
 }
-\details{
-DETAILS
-}
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
+\seealso{
+\code{\link{rename_columns}}
 }

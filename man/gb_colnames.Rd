@@ -7,8 +7,8 @@
 \format{
 A data frame with 103 rows and 2 variables:
 \describe{
-  \item{\code{old_colnames}}{character COLUMN_DESCRIPTION}
-  \item{\code{new_colnames}}{character COLUMN_DESCRIPTION}
+\item{\code{old_colnames}}{character COLUMN_DESCRIPTION}
+\item{\code{new_colnames}}{character COLUMN_DESCRIPTION}
 }
 }
 \usage{

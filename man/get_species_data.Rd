@@ -2,30 +2,24 @@
 % Please edit documentation in R/prepare_data.R
 \name{get_species_data}
 \alias{get_species_data}
-\title{FUNCTION_TITLE}
+\title{Get data for a given species}
 \usage{
 get_species_data(species_name, df, use_spec_code = TRUE)
 }
 \arguments{
-\item{species_name}{PARAM_DESCRIPTION}
+\item{species_name}{The species name. Should be either a 4 letters alpha
+code (as found in the SPEC column of the Gamebirds dataset) if \emph{use_spec_code}
+is set to TRUE, or the full name as found in the \strong{Species} column.}
 
-\item{use_spec_code}{PARAM_DESCRIPTION, Default: TRUE}
+\item{df}{The dataframe to subset}
 
-\item{db_dtype}{PARAM_DESCRIPTION, Default: 'banding'}
+\item{use_spec_code}{Use the species code?, Default: TRUE}
 }
 \value{
-OUTPUT_DESCRIPTION
+A subset of \emph{df} containing only the target species
 }
 \description{
-FUNCTION_DESCRIPTION
-}
-\details{
-DETAILS
-}
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
+Convenience function to extract data for a given species. The
+species can be selected either by its 4 letters alpha code (use_spec_code=TRUE)
+or its full name (use_spec_code=FALSE
 }

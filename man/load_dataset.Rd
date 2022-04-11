@@ -2,7 +2,7 @@
 % Please edit documentation in R/prepare_data.R
 \name{load_dataset}
 \alias{load_dataset}
-\title{FUNCTION_TITLE}
+\title{Loads a csv dataset exported from Gamebirds}
 \usage{
 load_dataset(
   path,
@@ -17,37 +17,35 @@ load_dataset(
 )
 }
 \arguments{
-\item{path}{PARAM_DESCRIPTION}
+\item{path}{Path to the data file. Should point to a csv file.}
 
-\item{rename_columns}{PARAM_DESCRIPTION, Default: TRUE}
+\item{rename_columns}{Should the columns be renamed? Default: TRUE}
 
-\item{colnames}{PARAM_DESCRIPTION, Default: NULL}
+\item{colnames}{Data frame. The columns to rename. Will be passed as the \code{columns}
+argument to the \code{\link{rename_columns}} function, Default: NULL}
 
-\item{add_age_classes}{PARAM_DESCRIPTION, Default: TRUE}
+\item{add_age_classes}{Should the function add age classes? Default: TRUE}
 
-\item{age_classes}{PARAM_DESCRIPTION, Default: NULL}
+\item{age_classes}{The age classes that will be passed as the \code{age_classes}
+argument of the (see \code{\link{set_age_classes}}) function. Default: NULL}
 
-\item{add_sex_classes}{PARAM_DESCRIPTION, Default: TRUE}
+\item{add_sex_classes}{Should the function add sex classes? Default: TRUE}
 
-\item{sex_classes}{PARAM_DESCRIPTION, Default: NULL}
+\item{sex_classes}{The sex classes that will be passed as the \code{sex_classes}
+argument of the (see \code{\link{set_sex_classes}}) function. Default: NULL}
 
-\item{correct_recovery_years}{PARAM_DESCRIPTION, Default: TRUE}
+\item{correct_recovery_years}{Should the recovery years be corrected? Default: TRUE}
 
-\item{...}{PARAM_DESCRIPTION}
+\item{...}{Additional arguments passed to the \code{\link{read.csv}} function}
 }
 \value{
-OUTPUT_DESCRIPTION
+A dataframe formatted to use in the \strong{gblincoln} package
 }
 \description{
-FUNCTION_DESCRIPTION
+This functions loads a csv dataset exported from Gamebirds and
+cleans it to be used by the \strong{gblincoiln} package. This is the recommended
+way to import data for use by the package.
 }
-\details{
-DETAILS
-}
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
+\seealso{
+\code{\link{clean_dataset}}
 }
