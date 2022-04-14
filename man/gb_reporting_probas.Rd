@@ -3,23 +3,15 @@
 \docType{data}
 \name{gb_reporting_probas}
 \alias{gb_reporting_probas}
-\title{DATASET_TITLE}
+\title{Reporting probabilities for banding data}
 \format{
-A data frame with 44 rows and 4 variables:
-\describe{
-\item{\code{b.year}}{integer COLUMN_DESCRIPTION}
-\item{\code{rho}}{double COLUMN_DESCRIPTION}
-\item{\code{var_rho}}{double COLUMN_DESCRIPTION}
-\item{\code{se_rho}}{double COLUMN_DESCRIPTION}
-}
+An object of class \code{data.frame} with 44 rows and 4 columns.
 }
 \usage{
 gb_reporting_probas
 }
 \description{
-DATASET_DESCRIPTION
-}
-\details{
-DETAILS
+Reporting probabilities of banding data as described in
+Arnold \emph{et al.} (2020)
 }
 \keyword{datasets}

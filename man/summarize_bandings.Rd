@@ -7,21 +7,13 @@
 summarize_bandings(df)
 }
 \arguments{
-\item{df}{PARAM_DESCRIPTION}
+\item{df}{A banding dataframe}
 }
 \value{
-OUTPUT_DESCRIPTION
+A summary dataframe with a new column named \emph{n_banded} which contains
+the number of banded birds by year
 }
 \description{
-Counts the number of bird banded by year
-}
-\details{
-DETAILS
-}
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
+Counts the number of bird banded by year. Grouping is done on the
+\emph{b.year} column.
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/lincoln.R
 \name{compare_harvest_rates}
 \alias{compare_harvest_rates}
-\title{FUNCTION_TITLE}
+\title{Compares two harvest rates dataframes created from different filters}
 \usage{
 compare_harvest_rates(
   df1 = NULL,
@@ -15,33 +15,31 @@ compare_harvest_rates(
 )
 }
 \arguments{
-\item{df1}{PARAM_DESCRIPTION, Default: NULL}
+\item{df1}{First dataframe to compare, Default: NULL}
 
-\item{df2}{PARAM_DESCRIPTION, Default: NULL}
+\item{df2}{Second dataframe to compare, Default: NULL}
 
-\item{filters1}{PARAM_DESCRIPTION, Default: NULL}
+\item{filters1}{Filters used to create \emph{df1} if it is not provided, Default: NULL}
 
-\item{filters2}{PARAM_DESCRIPTION, Default: NULL}
+\item{filters2}{Filters used to create \emph{df2} if it is not provided, Default: NULL}
 
-\item{plot}{PARAM_DESCRIPTION, Default: TRUE}
+\item{plot}{Plot the comparisons, Default: TRUE}
 
-\item{check_overlap}{PARAM_DESCRIPTION, Default: TRUE}
+\item{check_overlap}{Check if all confidence levels overlap, Default: TRUE}
 
-\item{...}{PARAM_DESCRIPTION}
+\item{...}{Additional arguments needed by \code{\link{get_harvest_rate}} to
+create the dataframes if they are not provided}
 }
 \value{
-OUTPUT_DESCRIPTION
+A logical specifiying if all confidence levels overlap if \emph{check_overlap}
+is set to TRUE.
 }
 \description{
-FUNCTION_DESCRIPTION
+This function takes either two dataframes returned by
+\code{\link{get_harvest_rate}} or creates two from different filters.
+It then compares the harvest rates for the two dataframes over the years
+to see if differences exist.
 }
-\details{
-DETAILS
-}
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
+\seealso{
+\code{\link{get_harvest_rate}}
 }

@@ -31,9 +31,7 @@ that the long values of db_type are case insensitive.\tabular{lccc}{
 }
 }
 \examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
+get_db_type("banding")
+get_db_type("HARVEST", short = TRUE)
+
 }

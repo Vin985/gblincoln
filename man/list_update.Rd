@@ -2,30 +2,25 @@
 % Please edit documentation in R/utils.R
 \name{list_update}
 \alias{list_update}
-\title{FUNCTION_TITLE}
+\title{Update a list with another one}
 \usage{
 list_update(old, new, new_first = FALSE)
 }
 \arguments{
-\item{old}{PARAM_DESCRIPTION}
+\item{old}{A list to be updated}
 
-\item{new}{PARAM_DESCRIPTION}
+\item{new}{A list with values to be added or updated}
 
-\item{new_first}{PARAM_DESCRIPTION, Default: FALSE}
+\item{new_first}{Should the values found in the new list not present in the
+old list be added at the beginning of the list or the end, Default: FALSE}
 }
 \value{
-OUTPUT_DESCRIPTION
+The updated list
 }
 \description{
-FUNCTION_DESCRIPTION
-}
-\details{
-DETAILS
-}
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
+This function takes two lists with named elements, the one to
+be updated and the #' one with the updates. If elements from the new list are
+not present in the one to be updated, they will be added. If they are presents,
+their value will be changed. Note that if elements are not named, they will
+not be updated.
 }

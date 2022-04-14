@@ -7,23 +7,15 @@
 summarize_recoveries(df, by_band = FALSE)
 }
 \arguments{
-\item{df}{PARAM_DESCRIPTION}
+\item{df}{A recovery dataframe.}
 
-\item{by_band}{PARAM_DESCRIPTION, Default: FALSE}
+\item{by_band}{Should the results be sorted by band type? Default: FALSE}
 }
 \value{
-OUTPUT_DESCRIPTION
+The summarized dataframe
 }
 \description{
-Count the number of recoveries by year
-}
-\details{
-DETAILS
-}
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
+Counts the number of recoveries of birds banded in the same year.
+If the data is not grouped by bands, it will be grouped by age class
+(\emph{age_short} column), banding year(\emph{b.year}) and recovery year (\emph{r.corrected_year}).
 }

@@ -3,22 +3,15 @@
 \docType{data}
 \name{gb_ATBR_harvest}
 \alias{gb_ATBR_harvest}
-\title{DATASET_TITLE}
+\title{US Harvest data for the Atlantic Brant}
 \format{
 A data frame with 20 rows and 5 variables:
-\describe{
-\item{\code{b.year}}{integer COLUMN_DESCRIPTION}
-\item{\code{harvest}}{integer COLUMN_DESCRIPTION}
-\item{\code{var_harvest}}{integer COLUMN_DESCRIPTION}
-\item{\code{se_harvest}}{integer COLUMN_DESCRIPTION}
-\item{\code{cl_harvest}}{integer COLUMN_DESCRIPTION}
-}
 }
 \usage{
 gb_ATBR_harvest
 }
 \description{
-DATASET_DESCRIPTION
+US Harvest data for the Atlantic Brant
 }
 \details{
 DETAILS

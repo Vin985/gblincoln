@@ -13,9 +13,9 @@ get_species_locations(
   type = c("country", "state", "flyway"),
   db_types = c("b", "r"),
   columns = NULL,
+  sort_by = NULL,
   return_names = TRUE,
-  return_codes = TRUE,
-  sort_by = NULL
+  return_codes = TRUE
 )
 
 get_species_countries(df, species_code, ...)
@@ -39,6 +39,12 @@ related columns: "country_name", "state_name" and "flyway"}
 \item{sort_by}{Column by which the results are sorted. Default: NULL, the
 results are unsorted}
 
+\item{return_names}{Return the name values of the desired columns?
+Default: TRUE}
+
+\item{return_codes}{Return the code values for the desired columns?
+Default: TRUE}
+
 \item{db_type}{The type of data desired, banding or recovery. Can take any
 value accepted by \code{\link{get_db_type}} but will only work for banding
 or recovery data, Default: c("b", "r")}
@@ -55,7 +61,10 @@ for a given species. By default, a data frame is returned with available
 countries, states and flyways
 }
 \details{
-DETAILS
+\emph{return_names} and \emph{return_code} will add the appropriate columns
+from the dataset. For example, if \emph{type} is \code{country}, and \emph{return_names} is
+set to \code{TRUE}, the function will return the column \strong{country_name} if it is
+not already present in \emph{columns}.
 }
 \section{Functions}{
 \itemize{

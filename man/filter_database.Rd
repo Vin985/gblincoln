@@ -16,32 +16,34 @@ filter_database(
 \arguments{
 \item{db}{PARAM_DESCRIPTION}
 
-\item{filters}{PARAM_DESCRIPTION, Default: NULL}
+\item{filters}{a list of filters. Each entry should have a name that
+represents a column name, associated with the values you want to keep.
+Please see \code{\link{check_columns}} to see what
+column names are accepted, Default: NULL}
 
-\item{columns}{PARAM_DESCRIPTION, Default: NULL}
+\item{columns}{A dataframe that contains equivalence between Gamebirds
+columns and the package ones. This will be passed to
+\code{\link{check_columns}} Default: NULL}
 
-\item{use_default_filters}{PARAM_DESCRIPTION, Default: TRUE}
+\item{use_default_filters}{Should the function add a default value to the
+filters? See the object \code{DEFAULT_LINCOLN_VALUES} for the default values.
+Default: TRUE}
 
-\item{db_type}{PARAM_DESCRIPTION, Default: NULL}
+\item{db_type}{The type of database used if database specific filters
+are defined, Default: NULL}
 
-\item{filters_first}{PARAM_DESCRIPTION, Default: FALSE}
+\item{filters_first}{If default filters or database specific filters
+are used, should they be treated first?, Default: FALSE}
 }
 \value{
-OUTPUT_DESCRIPTION
+A filtered dataframe
 }
 \description{
+Apply a list of filters to a database
+}
+\details{
 For time columns, i.e. 'year', 'month_code' and 'day_code',
 it is possible to select a period by
 providing a vector with two named values 'start' and 'end'.
-If a filter is NULL, it will be skipped
-}
-\details{
-DETAILS
-}
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
+If a filter is NULL, it will be skipped.
 }

@@ -2,30 +2,47 @@
 % Please edit documentation in R/prepare_data.R
 \name{add_db_filters}
 \alias{add_db_filters}
-\title{FUNCTION_TITLE}
+\title{Add database specific filters}
 \usage{
 add_db_filters(filters, db_type, filters_first = FALSE)
 }
 \arguments{
-\item{filters}{PARAM_DESCRIPTION}
+\item{filters}{The filters list}
 
-\item{db_type}{PARAM_DESCRIPTION}
+\item{db_type}{A database type. Must be a valid entry for
+\code{\link{get_db_type}}}
 
-\item{filters_first}{PARAM_DESCRIPTION, Default: FALSE}
+\item{filters_first}{Should the database filters be placed at the beginning
+of the list?, Default: FALSE}
 }
 \value{
-OUTPUT_DESCRIPTION
+A filters list with the database specific filters added. All other
+database specific filters are removed if present.
 }
 \description{
-FUNCTION_DESCRIPTION
+This functions looks into a filter list to add database specific
+filters (e.g. filters only applied to a banding dataset). The database specific
+fitlers should be defined in their own list. This function allows to define
+some filters applied only to a single database without having to define
+multiple objects.
 }
 \details{
-DETAILS
+The function looks in the filters list for entries following the
+"DBTYPE_filters" pattern where DBTYPE is a long identifier returned by
+\code{\link{get_db_type}}. For example, for filters only applied to the
+banding database, the filters should be named "banding_filters". If a
+relevant filter is found, it is added to the filters list.
 }
 \examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
+
+filters <-  list(SPEC = "ATBR",
+                banding_filters=list(b.year=2010:2019, b.state_name = "Nunavut"),
+                recoveries_filters = list(e.country_code = 'US', r.flyway_code = 1))
+
+add_db_filters(filters, "b")
+add_db_filters(filters, "r")
+
 }
+\seealso{
+\code{\link{get_db_type}}
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/lincoln.R
 \name{get_direct_recoveries}
 \alias{get_direct_recoveries}
-\title{FUNCTION_TITLE}
+\title{Get direct recoveries}
 \usage{
 get_direct_recoveries(
   banding_df,
@@ -14,31 +14,37 @@ get_direct_recoveries(
 )
 }
 \arguments{
-\item{banding_df}{PARAM_DESCRIPTION}
+\item{banding_df}{A dataframe contaning banding data extracted from Gamebirds
+and already cleaned.}
 
-\item{recoveries_df}{PARAM_DESCRIPTION}
+\item{recoveries_df}{A dataframe contaning recovery data extracted from Gamebirds
+and already cleaned.}
 
-\item{filters}{PARAM_DESCRIPTION, Default: NULL}
+\item{filters}{Filters to apply to the dataframes. Can contain database
+specific filters. This argument will be used if the data is not filtered
+and \emph{banding_filters} or \emph{recoveries_filters} are not provided, Default: NULL}
 
-\item{banding_filters}{PARAM_DESCRIPTION, Default: NULL}
+\item{banding_filters}{Filters to apply to the banding dataset, Default: NULL}
 
-\item{recoveries_filters}{PARAM_DESCRIPTION, Default: NULL}
+\item{recoveries_filters}{Filters to apply to the recoveries dataset, Default: NULL}
 
-\item{filtered}{PARAM_DESCRIPTION, Default: FALSE}
+\item{filtered}{Are the datasets already filtered?, Default: FALSE}
 }
 \value{
-OUTPUT_DESCRIPTION
+A dataframe containing summarized banding and recoveries data with
+a recovery rate, variance and standard error.
 }
 \description{
-FUNCTION_DESCRIPTION
+Get all direct recoveries by merging summaries of banding and
+recovery data. This function takes raw datasets, filters them if needed,
+summarizes them, merge them and calculates recovery rate with variance and
+standard error.
 }
 \details{
-DETAILS
+The species for which the data is compiled is stored in the SPEC
+attribute of the returned dataframe
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
+\seealso{
+\code{\link{clean_dataset}}, \code{\link{summarize_bandings}},
+\code{\link{summarize_recoveries}}
 }

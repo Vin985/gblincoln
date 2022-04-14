@@ -253,7 +253,7 @@ get_species_data <-
     } else {
       col <- "species"
     }
-    return(df[df[col] == species_name, ])
+    return(df[df[col] == species_name,])
   }
 
 is_recovery <- function(db_type) {
@@ -328,11 +328,18 @@ get_db_type <- function(db_type, short = FALSE) {
 #' related columns: "country_name", "state_name" and "flyway"
 #' @param sort_by Column by which the results are sorted. Default: NULL, the
 #' results are unsorted
+#' @param return_names Return the name values of the desired columns?
+#' Default: TRUE
+#' @param return_codes Return the code values for the desired columns?
+#' Default: TRUE
 #' @return If columns contains more than one element, a data frame with all
 #' available combinations of the selected columns.
 #' If columns contains only one element, a sorted vector of the unique values
 #' of the selected column
-#' @details DETAILS
+#' @details *return_names* and *return_code* will add the appropriate columns
+#' from the dataset. For example, if *type* is `country`, and *return_names* is
+#' set to `TRUE`, the function will return the column **country_name** if it is
+#' not already present in *columns*.
 #' @examples
 #' get_species_location("ATBR")
 #'
@@ -349,9 +356,9 @@ get_species_locations <-
            type = c("country", "state", "flyway"),
            db_types = c("b", "r"),
            columns = NULL,
+           sort_by = NULL,
            return_names = TRUE,
-           return_codes = TRUE,
-           sort_by = NULL) {
+           return_codes = TRUE) {
     if (is.null(columns)) {
       columns = NULL
       for (db_type in db_types) {
@@ -361,10 +368,17 @@ get_species_locations <-
             warning(sprintf("Unrecognized type %s. Skipping."))
           }
           if (return_names) {
-            columns = c(columns, paste0(str_type, ".", loc, "_name"))
+            names_col =  paste0(str_type, ".", loc, "_name")
+            if (!names_col %in% columns) {
+              columns = c(columns, names_col)
+            }
+
           }
           if (return_codes) {
-            columns = c(columns, paste0(str_type, ".", loc, "_code"))
+            codes_col = paste0(str_type, ".", loc, "_code")
+            if (!codes_col %in% columns) {
+              columns = c(columns, codes_col)
+            }
           }
         }
       }
@@ -430,23 +444,38 @@ filter_time_period <- function(df, filter, col_name) {
   }
   df <-
     df[df[[col_name]] >= filter["start"] &
-         df[[col_name]] <= filter["end"], ]
+         df[[col_name]] <= filter["end"],]
   return(df)
 }
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param filters PARAM_DESCRIPTION
-#' @param db_type PARAM_DESCRIPTION
-#' @param filters_first PARAM_DESCRIPTION, Default: FALSE
-#' @return OUTPUT_DESCRIPTION
-#' @details DETAILS
+#' @title Add database specific filters
+#' @description This functions looks into a filter list to add database specific
+#' filters (e.g. filters only applied to a banding dataset). The database specific
+#' fitlers should be defined in their own list. This function allows to define
+#' some filters applied only to a single database without having to define
+#' multiple objects.
+#' @param filters The filters list
+#' @param db_type A database type. Must be a valid entry for
+#' \code{\link{get_db_type}}
+#' @param filters_first Should the database filters be placed at the beginning
+#' of the list?, Default: FALSE
+#' @return A filters list with the database specific filters added. All other
+#' database specific filters are removed if present.
+#' @details The function looks in the filters list for entries following the
+#' "DBTYPE_filters" pattern where DBTYPE is a long identifier returned by
+#' \code{\link{get_db_type}}. For example, for filters only applied to the
+#' banding database, the filters should be named "banding_filters". If a
+#' relevant filter is found, it is added to the filters list.
+#' @seealso \code{\link{get_db_type}}
 #' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
+#'
+#' filters <-  list(SPEC = "ATBR",
+#'                 banding_filters=list(b.year=2010:2019, b.state_name = "Nunavut"),
+#'                 recoveries_filters = list(e.country_code = 'US', r.flyway_code = 1))
+#'
+#' add_db_filters(filters, "b")
+#' add_db_filters(filters, "r")
+#'
 #' @rdname add_db_filters
 #' @export
 add_db_filters <-
@@ -461,24 +490,27 @@ add_db_filters <-
 
 
 #' @title Performs filtering on a dataset
-#' @description For time columns, i.e. 'year', 'month_code' and 'day_code',
+#' @description Apply a list of filters to a database
+#' @param db PARAM_DESCRIPTION
+#' @param filters a list of filters. Each entry should have a name that
+#' represents a column name, associated with the values you want to keep.
+#' Please see \code{\link{check_columns}} to see what
+#' column names are accepted, Default: NULL
+#' @param columns A dataframe that contains equivalence between Gamebirds
+#' columns and the package ones. This will be passed to
+#' \code{\link{check_columns}} Default: NULL
+#' @param use_default_filters Should the function add a default value to the
+#' filters? See the object \code{DEFAULT_LINCOLN_VALUES} for the default values.
+#' Default: TRUE
+#' @param db_type The type of database used if database specific filters
+#' are defined, Default: NULL
+#' @param filters_first If default filters or database specific filters
+#' are used, should they be treated first?, Default: FALSE
+#' @return A filtered dataframe
+#' @details For time columns, i.e. 'year', 'month_code' and 'day_code',
 #' it is possible to select a period by
 #' providing a vector with two named values 'start' and 'end'.
-#' If a filter is NULL, it will be skipped
-#' @param db PARAM_DESCRIPTION
-#' @param filters PARAM_DESCRIPTION, Default: NULL
-#' @param columns PARAM_DESCRIPTION, Default: NULL
-#' @param use_default_filters PARAM_DESCRIPTION, Default: TRUE
-#' @param db_type PARAM_DESCRIPTION, Default: NULL
-#' @param filters_first PARAM_DESCRIPTION, Default: FALSE
-#' @return OUTPUT_DESCRIPTION
-#' @details DETAILS
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
+#' If a filter is NULL, it will be skipped.
 #' @rdname filter_database
 #' @export
 
@@ -524,7 +556,7 @@ filter_database <-
           }
         }
         # Else, subset the database based on the filter
-        db <- db[db[[col_name]] %in% filter, ]
+        db <- db[db[[col_name]] %in% filter,]
       }
     }
     return(db)

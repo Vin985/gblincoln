@@ -3,19 +3,17 @@
 \docType{data}
 \name{gb_colnames}
 \alias{gb_colnames}
-\title{DATASET_TITLE}
+\title{Mapping between Gamebirds column and gblincoln}
 \format{
 A data frame with 103 rows and 2 variables:
-\describe{
-\item{\code{old_colnames}}{character COLUMN_DESCRIPTION}
-\item{\code{new_colnames}}{character COLUMN_DESCRIPTION}
-}
 }
 \usage{
 gb_colnames
 }
 \description{
-DATASET_DESCRIPTION
+Default column renaming for the gblincoln package to ensure
+consistency. old_columns are columns provided by Gamebirds and new_columns
+the ones used in the gblincoln package.
 }
 \details{
 DETAILS
